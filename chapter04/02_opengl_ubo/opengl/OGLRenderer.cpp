@@ -96,7 +96,7 @@ void OGLRenderer::draw() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glEnable(GL_CULL_FACE);
 
-  blm::vec3 cameraPosition = glm::vec3(0.4f, 0.3f, 1.0f);
+  glm::vec3 cameraPosition = glm::vec3(0.4f, 0.3f, 1.0f);
   glm::vec3 cameraLookAtPosition = glm::vec3(0.0f, 0.0f, 0.0f);
   glm::vec3 cameraUpVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
