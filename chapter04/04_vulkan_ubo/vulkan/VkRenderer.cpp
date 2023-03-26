@@ -212,6 +212,13 @@ bool VkRenderer::createSwapchain(VkRenderData &renderData) {
 }
 
 bool VkRenderer::recreateSwapchain(VkRenderData &renderData) {
+  /* handle minimize */
+  int width = 0, height = 0;
+  glfwGetFramebufferSize(mWindow, &width, &height);
+  while (width == 0 || height == 0) {
+    glfwGetFramebufferSize(mWindow, &width, &height);
+    glfwWaitEvents();
+  }
   vkDeviceWaitIdle(renderData.rdVkbDevice.device);
 
   /* cleanup */
@@ -502,14 +509,14 @@ bool VkRenderer::draw() {
   mMatrices.projectionMatrix = glm::perspective(glm::radians(90.0f), static_cast<float>(mRenderData.rdVkbSwapchain.extent.width) / static_cast<float>(mRenderData.rdVkbSwapchain.extent.height), 0.1f, 10.0f);
 
   float t = glfwGetTime();
-  glm::mat4 view = glm::mat4(1.0f);
+  glm::mat4 model = glm::mat4(1.0f);
 
   if (!mUseChangedShader) {
-    view = glm::rotate(glm::mat4(1.0f), -t, glm::vec3(0.0f, 0.0f, 1.0f));
+    model = glm::rotate(glm::mat4(1.0f), -t, glm::vec3(0.0f, 0.0f, 1.0f));
   } else {
-    view = glm::rotate(glm::mat4(1.0f), t, glm::vec3(0.0f, 0.0f, 1.0f));
+    model = glm::rotate(glm::mat4(1.0f), t, glm::vec3(0.0f, 0.0f, 1.0f));
   }
-  mMatrices.viewMatrix = glm::lookAt(cameraPosition, cameraLookAtPosition, cameraUpVector) * view;
+  mMatrices.viewMatrix = glm::lookAt(cameraPosition, cameraLookAtPosition, cameraUpVector) * model;
 
   vkCmdBeginRenderPass(mRenderData.rdCommandBuffer, &rpInfo, VK_SUBPASS_CONTENTS_INLINE);
 

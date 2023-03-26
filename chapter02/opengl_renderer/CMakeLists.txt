@@ -68,4 +68,10 @@ if(UNIX)
 endif()
 
 include_directories(${GLFW3_INCLUDE_DIR} ${GLM_INCLUDE_DIR})
-target_link_libraries(Main ${GLFW3_LIBRARY} OpenGL::GL)
+
+if(WIN32)
+  target_link_libraries(Main ${GLFW3_LIBRARY} OpenGL::GL)
+else()
+  # clang on Linux needs libstd++ and libmath
+  target_link_libraries(Main ${GLFW3_LIBRARY} OpenGL::GL stdc++ m)
+endif()

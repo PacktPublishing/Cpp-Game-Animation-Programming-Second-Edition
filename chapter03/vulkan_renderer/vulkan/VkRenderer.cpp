@@ -191,6 +191,14 @@ bool VkRenderer::createSwapchain(VkRenderData &renderData) {
 }
 
 bool VkRenderer::recreateSwapchain(VkRenderData &renderData) {
+  /* handle minimize */
+  int width = 0, height = 0;
+  glfwGetFramebufferSize(mWindow, &width, &height);
+  while (width == 0 || height == 0) {
+    glfwGetFramebufferSize(mWindow, &width, &height);
+    glfwWaitEvents();
+  }
+
   vkDeviceWaitIdle(renderData.rdVkbDevice.device);
 
   /* cleanup */

@@ -201,6 +201,14 @@ bool VkRenderer::createSwapchain(VkRenderData &renderData) {
 }
 
 bool VkRenderer::recreateSwapchain(VkRenderData &renderData) {
+  /* handle minimize */
+  int width = 0, height = 0;
+  glfwGetFramebufferSize(mWindow, &width, &height);
+  while (width == 0 || height == 0) {
+    glfwGetFramebufferSize(mWindow, &width, &height);
+    glfwWaitEvents();
+  }
+
   vkDeviceWaitIdle(renderData.rdVkbDevice.device);
 
   /* cleanup */
@@ -501,15 +509,15 @@ bool VkRenderer::draw() {
   pushMatrices.pkProjectionMatrix = glm::perspective(glm::radians(90.0f), static_cast<float>(mRenderData.rdVkbSwapchain.extent.width) / static_cast<float>(mRenderData.rdVkbSwapchain.extent.height), 0.1f, 100.f);
 
   float t = glfwGetTime();
-  glm::mat4 view;
+  glm::mat4 model;
 
   //upload the matrix to the GPU via push constants
   if (!mUseChangedShader) {
-    glm::mat4 view = glm::rotate(glm::mat4(1.0f), -t, glm::vec3(0.0f, 0.0f, 1.0f));
-    pushMatrices.pkViewMatrix = glm::lookAt(cameraPosition, cameraLookAtPosition, cameraUpVector) * view;
+    glm::mat4 model = glm::rotate(glm::mat4(1.0f), -t, glm::vec3(0.0f, 0.0f, 1.0f));
+    pushMatrices.pkViewMatrix = glm::lookAt(cameraPosition, cameraLookAtPosition, cameraUpVector) * model;
   } else {
-    glm::mat4 view = glm::rotate(glm::mat4(1.0f), t, glm::vec3(0.0f, 0.0f, 1.0f));
-    pushMatrices.pkViewMatrix = glm::lookAt(cameraPosition, cameraLookAtPosition, cameraUpVector) * view;
+    glm::mat4 model = glm::rotate(glm::mat4(1.0f), t, glm::vec3(0.0f, 0.0f, 1.0f));
+    pushMatrices.pkViewMatrix = glm::lookAt(cameraPosition, cameraLookAtPosition, cameraUpVector) * model;
   }
 
   vkCmdPushConstants(mRenderData.rdCommandBuffer, mRenderData.rdPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(VkPushConstants), &pushMatrices);

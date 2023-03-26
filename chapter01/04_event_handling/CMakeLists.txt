@@ -26,4 +26,11 @@ if(UNIX)
 endif()
 
 include_directories(${GLFW3_INCLUDE_DIR} window tools)
-target_link_libraries(Main ${GLFW3_LIBRARY})
+
+if(WIN32)
+  target_link_libraries(Main ${GLFW3_LIBRARY})
+else()
+  # clang on Linux needs libstd++
+  target_link_libraries(Main ${GLFW3_LIBRARY} stdc++)
+endif()
+

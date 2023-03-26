@@ -44,6 +44,11 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
 }
 
 void OGLRenderer::setSize(unsigned int width, unsigned int height) {
+  /* handle minimize */
+  if (width == 0 || height == 0) {
+    return;
+  }
+
   mFramebuffer.resize(width, height);
   glViewport(0, 0, width, height);
 

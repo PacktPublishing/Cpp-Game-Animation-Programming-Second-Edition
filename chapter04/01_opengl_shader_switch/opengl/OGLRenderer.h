@@ -31,9 +31,9 @@ class OGLRenderer {
     Texture mTex{};
     VertexBuffer mVertexBuffer{};
 
-    GLFWwindow* mWindow;
+    GLFWwindow* mWindow = nullptr;
     int mTriangleCount = 0;
     bool mUseChangedShader = false;
-    unsigned int mWidth;
-    unsigned int mHeight;
+    int mWidth = 0;
+    int mHeight = 0;
 };

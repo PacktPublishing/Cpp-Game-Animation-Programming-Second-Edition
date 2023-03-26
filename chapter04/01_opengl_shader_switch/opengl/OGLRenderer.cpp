@@ -55,11 +55,20 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   }
   Logger::log(1, "%s: shaders succesfully loaded\n", __FUNCTION__);
 
+  /* add backface culling and depth test already here */
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_TEST);
+
   return true;
 }
 
 
 void OGLRenderer::setSize(unsigned int width, unsigned int height) {
+  /* handle minimize */
+  if (width == 0 || height == 0) {
+    return;
+  }
+
   mWidth = width;
   mHeight = height;
 
@@ -81,14 +90,18 @@ void OGLRenderer::handleKeyEvents(int key, int scancode, int action, int mods) {
 }
 
 void OGLRenderer::draw() {
+  /* handle minimize */
+  while (mWidth == 0 || mHeight == 0) {
+    glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
+    glfwWaitEvents();
+  }
+
   /* draw to framebuffer */
   mFramebuffer.bind();
 
   glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
   glClearDepth(1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glEnable(GL_CULL_FACE);
-  glEnable(GL_DEPTH_TEST);
 
   if (mUseChangedShader) {
     mChangedShader.use();

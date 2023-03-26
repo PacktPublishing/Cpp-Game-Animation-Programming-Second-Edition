@@ -34,11 +34,11 @@ class OGLRenderer {
     VertexBuffer mVertexBuffer{};
     UniformBuffer mUniformBuffer{};
 
-    GLFWwindow* mWindow;
+    GLFWwindow* mWindow = nullptr;
     int mTriangleCount = 0;
     bool mUseChangedShader = false;
-    unsigned int mWidth;
-    unsigned int mHeight;
+    int mWidth = 0;
+    int mHeight = 0;
 
     /* create identity matrix by default */
     glm::mat4 mViewMatrix = glm::mat4(1.0f);
