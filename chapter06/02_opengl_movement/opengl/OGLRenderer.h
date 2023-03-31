@@ -56,9 +56,6 @@ class OGLRenderer {
     double lastTickTime = 0.0;
 
     void handleMovementKeys();
-    int mCameraForward = 0;
-    int mCameraStrafe = 0;
-    int mCameraUpDown = 0;
 
     /* create identity matrix by default */
     glm::mat4 mViewMatrix = glm::mat4(1.0f);

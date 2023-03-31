@@ -43,8 +43,8 @@ struct VkRenderData {
   float rdUIGenerateTime = 0.0f;
   float rdUIDrawTime = 0.0f;
 
-  float rdCameraOrientation = 0.0f;
-  float rdCameraHeadAngle = 0.0f;
+  float rdViewAzimuth = 320.0f;
+  float rdViewElevation = 15.0f;
 
   VmaAllocator rdAllocator = nullptr;
 

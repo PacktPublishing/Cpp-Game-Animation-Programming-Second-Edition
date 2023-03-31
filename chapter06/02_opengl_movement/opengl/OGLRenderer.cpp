@@ -1,6 +1,5 @@
 #include <imgui_impl_glfw.h>
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
 #include "OGLRenderer.h"
@@ -64,9 +63,6 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   mUserInterface.init(mRenderData);
   Logger::log(1, "%s: user interface initialized\n", __FUNCTION__);
 
-  mCamera.init();
-  Logger::log(1, "%s: camera initialized\n", __FUNCTION__);
-
   /* add backface culling and depth test already here */
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
@@ -104,6 +100,7 @@ void OGLRenderer::handleKeyEvents(int key, int scancode, int action, int mods) {
     return;
   }
 
+  /* trigger only on keyboard event */
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_SPACE) == GLFW_PRESS) {
     toggleShader();
   }
@@ -116,13 +113,23 @@ void OGLRenderer::handleMouseButtonEvents(int button, int action, int mods) {
     io.AddMouseButtonEvent(button, action == GLFW_PRESS);
   }
 
-  /* hide from application */
+  /* hide from application if above ImGui window */
   if (io.WantCaptureMouse) {
     return;
   }
 
   if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
     mRightMouseButtoPressed = !mRightMouseButtoPressed;
+
+    if (mRightMouseButtoPressed) {
+      glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+      /* enable raw mode if possible */
+      if (glfwRawMouseMotionSupported()) {
+        glfwSetInputMode(mRenderData.rdWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+      }
+    } else {
+      glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
   }
 }
 
@@ -131,7 +138,7 @@ void OGLRenderer::handleMousePositionEvents(double xPos, double yPos){
   ImGuiIO& io = ImGui::GetIO();
   io.AddMousePosEvent((float)xPos, (float)yPos);
 
-  /* hide from application */
+  /* hide from application if above ImGui window */
   if (io.WantCaptureMouse) {
     return;
   }
@@ -141,20 +148,23 @@ void OGLRenderer::handleMousePositionEvents(double xPos, double yPos){
   int mouseMoveRelY = static_cast<int>(yPos) - mMouseYPos;
 
   if (mRightMouseButtoPressed) {
-    glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    /* enable raw mode if possible */
-    if (glfwRawMouseMotionSupported()) {
-      glfwSetInputMode(mRenderData.rdWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    mRenderData.rdViewAzimuth += mouseMoveRelX / 10.0;
+    /* keep between 0 and 360 degree */
+    if (mRenderData.rdViewAzimuth < 0.0) {
+      mRenderData.rdViewAzimuth += 360.0;
+    }
+    if (mRenderData.rdViewAzimuth >= 360.0) {
+      mRenderData.rdViewAzimuth -= 360.0;
     }
 
-    mCamera.moveOrientation(mouseMoveRelX / 10.0);
-    mCamera.moveHeadViewAngle(mouseMoveRelY / 10.0);
-
-    mRenderData.rdCameraOrientation = mCamera.getOrientation();
-    mRenderData.rdCameraHeadAngle = mCamera.getHeadViewAngle();
-
-  } else {
-    glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    mRenderData.rdViewElevation -= mouseMoveRelY / 10.0;
+    /* keep between -89 and +89 degree */
+    if (mRenderData.rdViewElevation > 89.0) {
+      mRenderData.rdViewElevation = 89.0;
+    }
+    if (mRenderData.rdViewElevation < -89.0) {
+      mRenderData.rdViewElevation = -89.0;
+    }
   }
 
   /* save old values*/
@@ -173,28 +183,28 @@ void OGLRenderer::handleMovementKeys() {
     return;
   }
 
-  mCameraForward = 0;
+  mRenderData.rdMoveForward = 0;
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_W) == GLFW_PRESS) {
-    mCameraForward += 1;
+    mRenderData.rdMoveForward += 1;
   }
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_S) == GLFW_PRESS) {
-    mCameraForward -= 1;
+    mRenderData.rdMoveForward -= 1;
   }
 
-  mCameraStrafe = 0;
+  mRenderData.rdMoveStrafe = 0;
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_A) == GLFW_PRESS) {
-    mCameraStrafe -= 1;
+    mRenderData.rdMoveStrafe -= 1;
   }
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_D) == GLFW_PRESS) {
-    mCameraStrafe += 1;
+    mRenderData.rdMoveStrafe += 1;
   }
 
-  mCameraUpDown = 0;
+  mRenderData.rdMoveUpDown = 0;
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_Q) == GLFW_PRESS) {
-    mCameraUpDown -= 1;
+    mRenderData.rdMoveUpDown -= 1;
   }
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_E) == GLFW_PRESS) {
-    mCameraUpDown += 1;
+    mRenderData.rdMoveUpDown += 1;
   }
 }
 
@@ -205,12 +215,12 @@ void OGLRenderer::draw() {
     glfwWaitEvents();
   }
 
-  /* get time difference for camera view and movement */
+  /* get time difference for movement */
   double tickTime = glfwGetTime();
-  double tickTimeDiff = tickTime - lastTickTime;
+  mRenderData.rdTickDiff = tickTime - lastTickTime;
 
   /* return if tick is too small */
-  if (tickTimeDiff < 0.00001) {
+  if (mRenderData.rdTickDiff < 0.00001) {
     return;
   }
 
@@ -224,11 +234,9 @@ void OGLRenderer::draw() {
   glClearDepth(1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  glEnable(GL_CULL_FACE);
-  glEnable(GL_DEPTH_TEST);
+  handleMovementKeys();
 
   mMatrixGenerateTimer.start();
-
   mProjectionMatrix = glm::perspective(glm::radians(static_cast<float>(mRenderData.rdFieldOfView)), static_cast<float>(mRenderData.rdWidth) / static_cast<float>(mRenderData.rdHeight), 0.01f, 50.0f);
 
   float t = glfwGetTime();
@@ -243,17 +251,7 @@ void OGLRenderer::draw() {
     model = glm::rotate(glm::mat4(1.0f), -t, glm::vec3(0.0f, 0.0f, 1.0f));
   }
 
-  handleMovementKeys();
-  mCamera.setPosition(mCamera.getPosition()
-    + glm::vec3(mCameraForward * tickTimeDiff) * mCamera.getViewDirection()
-    + glm::vec3(mCameraStrafe * tickTimeDiff) * mCamera.getStrafeDirection()
-    + glm::vec3(mCameraUpDown * tickTimeDiff) * mCamera.getUpDirection());
-
-  mRenderData.rdCameraWorldPosition = mCamera.getPosition();
-
-  mViewMatrix = glm::lookAt(mCamera.getPosition(),
-    mCamera.getPosition() + mCamera.getViewDirection(),
-    mCamera.getUpDirection()) * model;
+  mViewMatrix = mCamera.getViewMatrix(mRenderData) * model;
   mRenderData.rdMatrixGenerateTime = mMatrixGenerateTimer.stop();
 
   mUploadToUBOTimer.start();
@@ -274,7 +272,7 @@ void OGLRenderer::draw() {
 
   mUIGenerateTimer.start();
   mUserInterface.createFrame(mRenderData);
-  mRenderData.rdUIGenerateTime = mUIGenerateTimer.stop();
+mRenderData.rdUIGenerateTime = mUIGenerateTimer.stop();
 
   mUIDrawTimer.start();
   mUserInterface.render();
@@ -290,5 +288,5 @@ void OGLRenderer::cleanup() {
   mTex.cleanup();
   mVertexBuffer.cleanup();
   mUniformBuffer.cleanup();
-  mFramebuffer.cleanup();
+mFramebuffer.cleanup();
 }

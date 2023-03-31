@@ -53,8 +53,6 @@ class OGLRenderer {
     int mMouseXPos = 0;
     int mMouseYPos = 0;
 
-    double lastTickTime = 0.0;
-
     /* create identity matrix by default */
     glm::mat4 mViewMatrix = glm::mat4(1.0f);
     glm::mat4 mProjectionMatrix = glm::mat4(1.0f);

@@ -8,7 +8,7 @@ void Timer::start() {
   }
 
   mRunning = true;
-  mStartTime = std::chrono::high_resolution_clock::now();
+  mStartTime = std::chrono::steady_clock::now();
 }
 
 float Timer::stop() {
@@ -18,7 +18,7 @@ float Timer::stop() {
   }
   mRunning = false;
 
-  auto stopTime = std::chrono::high_resolution_clock::now();
+  auto stopTime = std::chrono::steady_clock::now();
   float timerMilliSeconds = std::chrono::duration_cast<std::chrono::microseconds>(stopTime - mStartTime).count() / 1000.0f;
 
   return timerMilliSeconds;

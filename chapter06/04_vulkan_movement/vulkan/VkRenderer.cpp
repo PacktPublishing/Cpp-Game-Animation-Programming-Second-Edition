@@ -92,8 +92,6 @@ bool VkRenderer::init(unsigned int width, unsigned int height) {
     return false;
   }
 
-  mCamera.init();
-
   mFrameTimer.start();
 
   Logger::log(1, "%s: Vulkan renderer initialized to %ix%i\n", __FUNCTION__, width, height);
@@ -461,6 +459,15 @@ void VkRenderer::handleMouseButtonEvents(int button, int action, int mods) {
 
   if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
     mRightMouseButtoPressed = !mRightMouseButtoPressed;
+    if (mRightMouseButtoPressed) {
+      glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+      /* enable raw mode if possible */
+      if (glfwRawMouseMotionSupported()) {
+        glfwSetInputMode(mRenderData.rdWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+      }
+    } else {
+      glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
   }
 }
 
@@ -479,21 +486,23 @@ void VkRenderer::handleMousePositionEvents(double xPos, double yPos){
   int mouseMoveRelY = static_cast<int>(yPos) - mMouseYPos;
 
   if (mRightMouseButtoPressed) {
-    glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    /* enable raw mode if possible */
-    if (glfwRawMouseMotionSupported()) {
-      glfwSetInputMode(mRenderData.rdWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    mRenderData.rdViewAzimuth += mouseMoveRelX / 10.0;
+    /* keep between 0 and 360 degree */
+    if (mRenderData.rdViewAzimuth < 0.0) {
+      mRenderData.rdViewAzimuth += 360.0;
+    }
+    if (mRenderData.rdViewAzimuth >= 360.0) {
+      mRenderData.rdViewAzimuth -= 360.0;
     }
 
-    mCamera.moveOrientation(mouseMoveRelX / 10.0);
-    /* Vulkan coord system */
-    mCamera.moveHeadViewAngle(-mouseMoveRelY / 10.0);
-
-    mRenderData.rdCameraOrientation = mCamera.getOrientation();
-    mRenderData.rdCameraHeadAngle = mCamera.getHeadViewAngle();
-
-  } else {
-    glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    mRenderData.rdViewElevation -= mouseMoveRelY / 10.0;
+    /* keep between -89 and +89 degree */
+    if (mRenderData.rdViewElevation > 89.0) {
+      mRenderData.rdViewElevation = 89.0;
+    }
+    if (mRenderData.rdViewElevation < -89.0) {
+      mRenderData.rdViewElevation = -89.0;
+    }
   }
 
   /* save old values*/
@@ -512,38 +521,38 @@ void VkRenderer::handleMovementKeys() {
     return;
   }
 
-  mCameraForward = 0;
+  mRenderData.rdMoveForward = 0;
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_W) == GLFW_PRESS) {
-    mCameraForward += 1;
+    mRenderData.rdMoveForward += 1;
   }
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_S) == GLFW_PRESS) {
-    mCameraForward -= 1;
+    mRenderData.rdMoveForward -= 1;
   }
 
-  mCameraStrafe = 0;
+  mRenderData.rdMoveStrafe = 0;
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_A) == GLFW_PRESS) {
-    mCameraStrafe -= 1;
+    mRenderData.rdMoveStrafe -= 1;
   }
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_D) == GLFW_PRESS) {
-    mCameraStrafe += 1;
+    mRenderData.rdMoveStrafe += 1;
   }
 
   /* swapped Y compared top OpenGL */
-  mCameraUpDown = 0;
+  mRenderData.rdMoveUpDown = 0;
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_Q) == GLFW_PRESS) {
-    mCameraUpDown += 1;
+    mRenderData.rdMoveUpDown += 1;
   }
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_E) == GLFW_PRESS) {
-    mCameraUpDown -= 1;
+    mRenderData.rdMoveUpDown -= 1;
   }
 }
 
 bool VkRenderer::draw() {
   double tickTime = glfwGetTime();
-  double tickTimeDiff = tickTime - lastTickTime;
+  mRenderData.rdTickDiff = tickTime - lastTickTime;
 
   /* return if tick is too small */
-  if (tickTimeDiff < 0.00001) {
+  if (mRenderData.rdTickDiff < 0.00001) {
     return true;
   }
 
@@ -625,8 +634,9 @@ bool VkRenderer::draw() {
   scissor.offset = { 0, 0 };
   scissor.extent = mRenderData.rdVkbSwapchain.extent;
 
-  mMatrixGenerateTimer.start();
+  handleMovementKeys();
 
+  mMatrixGenerateTimer.start();
   mMatrices.projectionMatrix = glm::perspective(glm::radians(static_cast<float>(mRenderData.rdFieldOfView)), static_cast<float>(mRenderData.rdVkbSwapchain.extent.width) / static_cast<float>(mRenderData.rdVkbSwapchain.extent.height), 0.01f, 50.0f);
 
   float t = glfwGetTime();
@@ -638,18 +648,7 @@ bool VkRenderer::draw() {
     model = glm::rotate(glm::mat4(1.0f), t, glm::vec3(0.0f, 0.0f, 1.0f));
   }
 
-  handleMovementKeys();
-  mCamera.setPosition(mCamera.getPosition()
-    + glm::vec3(mCameraForward * tickTimeDiff) * mCamera.getViewDirection()
-    + glm::vec3(mCameraStrafe * tickTimeDiff) * mCamera.getStrafeDirection()
-    + glm::vec3(mCameraUpDown * tickTimeDiff) * mCamera.getUpDirection());
-
-  mRenderData.rdCameraWorldPosition = mCamera.getPosition();
-
-  mMatrices.viewMatrix = glm::lookAt(mCamera.getPosition(),
-    mCamera.getPosition() + mCamera.getViewDirection(),
-    mCamera.getUpDirection()) * model;
-
+  mMatrices.viewMatrix = mCamera.getViewMatrix(mRenderData) * model;
   mRenderData.rdMatrixGenerateTime = mMatrixGenerateTimer.stop();
 
   vkCmdBeginRenderPass(mRenderData.rdCommandBuffer, &rpInfo, VK_SUBPASS_CONTENTS_INLINE);

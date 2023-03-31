@@ -64,9 +64,6 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   mUserInterface.init(mRenderData);
   Logger::log(1, "%s: user interface initalized\n", __FUNCTION__);
 
-  mCamera.init();
-  Logger::log(1, "%s: camera initialized\n", __FUNCTION__);
-
   /* add backface culling and depth test already here */
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
@@ -123,6 +120,16 @@ void OGLRenderer::handleMouseButtonEvents(int button, int action, int mods) {
 
   if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
     mRightMouseButtoPressed = !mRightMouseButtoPressed;
+
+    if (mRightMouseButtoPressed) {
+      glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+      /* enable raw mode if possible */
+      if (glfwRawMouseMotionSupported()) {
+        glfwSetInputMode(mRenderData.rdWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+      }
+    } else {
+      glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
   }
 }
 
@@ -141,20 +148,23 @@ void OGLRenderer::handleMousePositionEvents(double xPos, double yPos){
   int mouseMoveRelY = static_cast<int>(yPos) - mMouseYPos;
 
   if (mRightMouseButtoPressed) {
-    glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    /* enable raw mode if possible */
-    if (glfwRawMouseMotionSupported()) {
-      glfwSetInputMode(mRenderData.rdWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    mRenderData.rdViewAzimuth += mouseMoveRelX / 10.0;
+    /* keep between 0 and 360 degree */
+    if (mRenderData.rdViewAzimuth < 0.0) {
+      mRenderData.rdViewAzimuth += 360.0;
+    }
+    if (mRenderData.rdViewAzimuth >= 360.0) {
+      mRenderData.rdViewAzimuth -= 360.0;
     }
 
-    mCamera.moveOrientation(mouseMoveRelX / 10.0);
-    mCamera.moveHeadViewAngle(mouseMoveRelY / 10.0);
-
-    mRenderData.rdCameraOrientation = mCamera.getOrientation();
-    mRenderData.rdCameraHeadAngle = mCamera.getHeadViewAngle();
-
-  } else {
-    glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    mRenderData.rdViewElevation -= mouseMoveRelY / 10.0;
+    /* keep between -89 and +89 degree */
+    if (mRenderData.rdViewElevation > 89.0) {
+      mRenderData.rdViewElevation = 89.0;
+    }
+    if (mRenderData.rdViewElevation < -89.0) {
+      mRenderData.rdViewElevation = -89.0;
+    }
   }
 
   /* save old values*/
@@ -173,15 +183,6 @@ void OGLRenderer::draw() {
     glfwWaitEvents();
   }
 
-  /* get time difference for camera view */
-  double tickTime = glfwGetTime();
-  double tickTimeDiff = tickTime - lastTickTime;
-
-  /* return if tick is too small */
-  if (tickTimeDiff < 0.00001) {
-    return;
-  }
-
   mRenderData.rdFrameTime = mFrameTimer.stop();
   mFrameTimer.start();
 
@@ -193,9 +194,6 @@ void OGLRenderer::draw() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   mMatrixGenerateTimer.start();
-  glm::vec3 cameraPosition = glm::vec3(0.4f, 0.3f, 1.0f);
-  glm::vec3 cameraUpVector = glm::vec3(0.0f, 1.0f, 0.0f);
-
   mProjectionMatrix = glm::perspective(glm::radians(static_cast<float>(mRenderData.rdFieldOfView)), static_cast<float>(mRenderData.rdWidth) / static_cast<float>(mRenderData.rdHeight), 0.01f, 50.0f);
 
   float t = glfwGetTime();
@@ -210,7 +208,7 @@ void OGLRenderer::draw() {
     model = glm::rotate(glm::mat4(1.0f), -t, glm::vec3(0.0f, 0.0f, 1.0f));
   }
 
-  mViewMatrix = glm::lookAt(cameraPosition, cameraPosition + mCamera.getViewDirection(), cameraUpVector) * model;
+  mViewMatrix = mCamera.getViewMatrix(mRenderData) * model;
   mRenderData.rdMatrixGenerateTime = mMatrixGenerateTimer.stop();
 
   mUploadToUBOTimer.start();
@@ -236,8 +234,6 @@ void OGLRenderer::draw() {
   mUIDrawTimer.start();
   mUserInterface.render();
   mRenderData.rdUIDrawTime = mUIDrawTimer.stop();
-
-  lastTickTime =  tickTime;
 }
 
 void OGLRenderer::cleanup() {

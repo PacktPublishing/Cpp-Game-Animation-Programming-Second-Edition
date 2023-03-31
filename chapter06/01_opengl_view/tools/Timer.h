@@ -11,5 +11,5 @@ class Timer {
 
   private:
     bool mRunning = false;
-    std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime{};
+    std::chrono::time_point<std::chrono::steady_clock> mStartTime{};
 };

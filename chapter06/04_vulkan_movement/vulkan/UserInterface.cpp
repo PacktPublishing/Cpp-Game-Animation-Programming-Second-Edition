@@ -193,13 +193,13 @@ void UserInterface::createFrame(VkRenderData& renderData) {
   ImGui::SameLine();
   ImGui::Text("%s", glm::to_string(renderData.rdCameraWorldPosition).c_str());
 
-  ImGui::Text("Camera Orientation:");
+  ImGui::Text("View Azimuth:");
   ImGui::SameLine();
-  ImGui::Text("%s", std::to_string(renderData.rdCameraOrientation).c_str());
+  ImGui::Text("%s", std::to_string(renderData.rdViewAzimuth).c_str());
 
-  ImGui::Text("Camera Head Angle:");
+  ImGui::Text("View Elevation:");
   ImGui::SameLine();
-  ImGui::Text("%s", std::to_string(renderData.rdCameraHeadAngle).c_str());
+  ImGui::Text("%s", std::to_string(renderData.rdViewElevation).c_str());
 
   ImGui::Separator();
 
@@ -229,7 +229,7 @@ void UserInterface::createFrame(VkRenderData& renderData) {
     ImGui::PopStyleColor();
   }
 
-  if (ImGui::Button("Toggle Shader") ){
+  if (ImGui::Button("Toggle Shader")) {
     renderData.rdUseChangedShader = !renderData.rdUseChangedShader;
   }
   ImGui::SameLine();

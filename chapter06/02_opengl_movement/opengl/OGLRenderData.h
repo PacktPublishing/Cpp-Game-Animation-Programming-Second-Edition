@@ -35,7 +35,15 @@ struct OGLRenderData {
   float rdUIGenerateTime = 0.0f;
   float rdUIDrawTime = 0.0f;
 
-  float rdCameraOrientation = 0.0f;
-  float rdCameraHeadAngle = 0.0f;
+  int rdMoveForward = 0;
+  int rdMoveStrafe = 0;
+  int rdMoveUpDown = 0;
+
+  float rdTickDiff = 0.0f;
+
+  float rdViewAzimuth = 320.0f;
+  float rdViewElevation = -15.0f;
+
+  /* for the UI */
   glm::vec3 rdCameraWorldPosition = glm::vec3(0.0f);
 };
