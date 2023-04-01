@@ -458,8 +458,8 @@ void VkRenderer::handleMouseButtonEvents(int button, int action, int mods) {
   }
 
   if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-    mRightMouseButtoPressed = !mRightMouseButtoPressed;
-    if (mRightMouseButtoPressed) {
+    mMouseLock = !mMouseLock;
+    if (mMouseLock) {
       glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
       /* enable raw mode if possible */
       if (glfwRawMouseMotionSupported()) {
@@ -485,7 +485,7 @@ void VkRenderer::handleMousePositionEvents(double xPos, double yPos){
   int mouseMoveRelX = static_cast<int>(xPos) - mMouseXPos;
   int mouseMoveRelY = static_cast<int>(yPos) - mMouseYPos;
 
-  if (mRightMouseButtoPressed) {
+  if (mMouseLock) {
     mRenderData.rdViewAzimuth += mouseMoveRelX / 10.0;
     /* keep between 0 and 360 degree */
     if (mRenderData.rdViewAzimuth < 0.0) {

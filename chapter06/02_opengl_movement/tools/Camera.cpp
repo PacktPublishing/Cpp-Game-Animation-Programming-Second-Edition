@@ -7,11 +7,17 @@
 #include "Logger.h"
 
 glm::mat4 Camera::getViewMatrix(OGLRenderData &renderData) {
+  float azimRad = glm::radians(renderData.rdViewAzimuth);
+  float elevRad = glm::radians(renderData.rdViewElevation);
+
+  float sinAzim = glm::sin(azimRad);
+  float cosAzim = glm::cos(azimRad);
+  float sinElev = glm::sin(elevRad);
+  float cosElev = glm::cos(elevRad);
+
   /* update view direction */
-  mViewDirection = glm::normalize(glm::vec3(
-     sin(renderData.rdViewAzimuth/180.0*M_PI) * cos(renderData.rdViewElevation/180.0*M_PI),
-     sin(renderData.rdViewElevation/180.0*M_PI),
-    -cos(renderData.rdViewAzimuth/180.0*M_PI) * cos(renderData.rdViewElevation/180.0*M_PI)));
+   mViewDirection = glm::normalize(glm::vec3(
+     sinAzim * cosElev, sinElev, -cosAzim * cosElev));
 
   /* calculate strafe direction */
   mViewRightVector = glm::normalize(glm::cross(mWorldUpVector, mViewDirection));

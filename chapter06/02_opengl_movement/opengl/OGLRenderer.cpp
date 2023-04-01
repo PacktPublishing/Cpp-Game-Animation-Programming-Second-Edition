@@ -1,6 +1,6 @@
 #include <imgui_impl_glfw.h>
 
-#include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "OGLRenderer.h"
 #include "Logger.h"
@@ -72,7 +72,6 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   return true;
 }
 
-
 void OGLRenderer::setSize(unsigned int width, unsigned int height) {
   /* handle minimize */
   if (width == 0 || height == 0) {
@@ -94,13 +93,6 @@ void OGLRenderer::uploadData(OGLMesh vertexData) {
 }
 
 void OGLRenderer::handleKeyEvents(int key, int scancode, int action, int mods) {
-  /* hide from application */
-  ImGuiIO& io = ImGui::GetIO();
-  if (io.WantCaptureKeyboard) {
-    return;
-  }
-
-  /* trigger only on keyboard event */
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_SPACE) == GLFW_PRESS) {
     toggleShader();
   }
@@ -119,9 +111,9 @@ void OGLRenderer::handleMouseButtonEvents(int button, int action, int mods) {
   }
 
   if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-    mRightMouseButtoPressed = !mRightMouseButtoPressed;
+    mMouseLock = !mMouseLock;
 
-    if (mRightMouseButtoPressed) {
+    if (mMouseLock) {
       glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
       /* enable raw mode if possible */
       if (glfwRawMouseMotionSupported()) {
@@ -147,7 +139,7 @@ void OGLRenderer::handleMousePositionEvents(double xPos, double yPos){
   int mouseMoveRelX = static_cast<int>(xPos) - mMouseXPos;
   int mouseMoveRelY = static_cast<int>(yPos) - mMouseYPos;
 
-  if (mRightMouseButtoPressed) {
+  if (mMouseLock) {
     mRenderData.rdViewAzimuth += mouseMoveRelX / 10.0;
     /* keep between 0 and 360 degree */
     if (mRenderData.rdViewAzimuth < 0.0) {
@@ -177,12 +169,6 @@ void OGLRenderer::toggleShader() {
 }
 
 void OGLRenderer::handleMovementKeys() {
-  /* hide from application */
-  ImGuiIO& io = ImGui::GetIO();
-  if (io.WantCaptureKeyboard) {
-    return;
-  }
-
   mRenderData.rdMoveForward = 0;
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_W) == GLFW_PRESS) {
     mRenderData.rdMoveForward += 1;
@@ -272,7 +258,7 @@ void OGLRenderer::draw() {
 
   mUIGenerateTimer.start();
   mUserInterface.createFrame(mRenderData);
-mRenderData.rdUIGenerateTime = mUIGenerateTimer.stop();
+  mRenderData.rdUIGenerateTime = mUIGenerateTimer.stop();
 
   mUIDrawTimer.start();
   mUserInterface.render();
@@ -288,5 +274,5 @@ void OGLRenderer::cleanup() {
   mTex.cleanup();
   mVertexBuffer.cleanup();
   mUniformBuffer.cleanup();
-mFramebuffer.cleanup();
+  mFramebuffer.cleanup();
 }

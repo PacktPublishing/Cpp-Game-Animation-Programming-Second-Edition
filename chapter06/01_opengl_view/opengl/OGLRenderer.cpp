@@ -1,7 +1,6 @@
 #include <imgui_impl_glfw.h>
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/string_cast.hpp>
 
 #include "OGLRenderer.h"
 #include "Logger.h"
@@ -62,7 +61,7 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   Logger::log(1, "%s: shaders succesfully loaded\n", __FUNCTION__);
 
   mUserInterface.init(mRenderData);
-  Logger::log(1, "%s: user interface initalized\n", __FUNCTION__);
+  Logger::log(1, "%s: user interface initialized\n", __FUNCTION__);
 
   /* add backface culling and depth test already here */
   glEnable(GL_CULL_FACE);
@@ -95,12 +94,6 @@ void OGLRenderer::uploadData(OGLMesh vertexData) {
 }
 
 void OGLRenderer::handleKeyEvents(int key, int scancode, int action, int mods) {
-  /* hide from application */
-  ImGuiIO& io = ImGui::GetIO();
-  if (io.WantCaptureKeyboard) {
-    return;
-  }
-
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_SPACE) == GLFW_PRESS) {
     toggleShader();
   }
@@ -119,9 +112,9 @@ void OGLRenderer::handleMouseButtonEvents(int button, int action, int mods) {
   }
 
   if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-    mRightMouseButtoPressed = !mRightMouseButtoPressed;
+    mMouseLock = !mMouseLock;
 
-    if (mRightMouseButtoPressed) {
+    if (mMouseLock) {
       glfwSetInputMode(mRenderData.rdWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
       /* enable raw mode if possible */
       if (glfwRawMouseMotionSupported()) {
@@ -147,7 +140,7 @@ void OGLRenderer::handleMousePositionEvents(double xPos, double yPos){
   int mouseMoveRelX = static_cast<int>(xPos) - mMouseXPos;
   int mouseMoveRelY = static_cast<int>(yPos) - mMouseYPos;
 
-  if (mRightMouseButtoPressed) {
+  if (mMouseLock) {
     mRenderData.rdViewAzimuth += mouseMoveRelX / 10.0;
     /* keep between 0 and 360 degree */
     if (mRenderData.rdViewAzimuth < 0.0) {

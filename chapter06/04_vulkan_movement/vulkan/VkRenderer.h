@@ -45,7 +45,7 @@ class VkRenderer {
     UserInterface mUserInterface{};
     Camera mCamera{};
 
-    bool mRightMouseButtoPressed = false;
+    bool mMouseLock = false;
     int mMouseXPos = 0;
     int mMouseYPos = 0;
 
