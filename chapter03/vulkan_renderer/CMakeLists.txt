@@ -78,9 +78,9 @@ endif()
 
 include_directories(${GLFW3_INCLUDE_DIR})
 
-if(WIN32)
+if(MSVC)
   target_link_libraries(Main ${GLFW3_LIBRARY} Vulkan::Vulkan)
 else()
-  # clang on Linux needs libstd++ and libmath
+  # Clang and GCC may need libstd++ and libmath
   target_link_libraries(Main ${GLFW3_LIBRARY} Vulkan::Vulkan stdc++ m)
 endif()

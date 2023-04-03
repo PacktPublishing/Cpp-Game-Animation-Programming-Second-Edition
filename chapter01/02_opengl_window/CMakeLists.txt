@@ -30,9 +30,9 @@ endif()
 
 include_directories(${GLFW3_INCLUDE_DIR} window tools)
 
-if(WIN32)
+if(MSVC)
   target_link_libraries(Main ${GLFW3_LIBRARY} OpenGL::GL)
 else()
-  # clang on Linux needs libstd++
+  # Clang and GCC may need libstd++
   target_link_libraries(Main ${GLFW3_LIBRARY} OpenGL::GL stdc++)
 endif()

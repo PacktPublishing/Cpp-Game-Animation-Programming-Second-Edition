@@ -177,20 +177,20 @@ void OGLRenderer::handleMovementKeys() {
     mRenderData.rdMoveForward -= 1;
   }
 
-  mRenderData.rdMoveStrafe = 0;
+  mRenderData.rdMoveRight = 0;
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_A) == GLFW_PRESS) {
-    mRenderData.rdMoveStrafe -= 1;
+    mRenderData.rdMoveRight -= 1;
   }
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_D) == GLFW_PRESS) {
-    mRenderData.rdMoveStrafe += 1;
+    mRenderData.rdMoveRight += 1;
   }
 
-  mRenderData.rdMoveUpDown = 0;
-  if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_Q) == GLFW_PRESS) {
-    mRenderData.rdMoveUpDown -= 1;
-  }
+  mRenderData.rdMoveUp = 0;
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_E) == GLFW_PRESS) {
-    mRenderData.rdMoveUpDown += 1;
+    mRenderData.rdMoveUp += 1;
+  }
+  if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_Q) == GLFW_PRESS) {
+    mRenderData.rdMoveUp -= 1;
   }
 }
 
@@ -205,13 +205,10 @@ void OGLRenderer::draw() {
   double tickTime = glfwGetTime();
   mRenderData.rdTickDiff = tickTime - lastTickTime;
 
-  /* return if tick is too small */
-  if (mRenderData.rdTickDiff < 0.00001) {
-    return;
-  }
-
   mRenderData.rdFrameTime = mFrameTimer.stop();
   mFrameTimer.start();
+
+  handleMovementKeys();
 
   /* draw to framebuffer */
   mFramebuffer.bind();
@@ -219,8 +216,6 @@ void OGLRenderer::draw() {
   glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
   glClearDepth(1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  handleMovementKeys();
 
   mMatrixGenerateTimer.start();
   mProjectionMatrix = glm::perspective(glm::radians(static_cast<float>(mRenderData.rdFieldOfView)), static_cast<float>(mRenderData.rdWidth) / static_cast<float>(mRenderData.rdHeight), 0.01f, 50.0f);
@@ -264,7 +259,7 @@ void OGLRenderer::draw() {
   mUserInterface.render();
   mRenderData.rdUIDrawTime = mUIDrawTimer.stop();
 
-  lastTickTime =  tickTime;
+  lastTickTime = tickTime;
 }
 
 void OGLRenderer::cleanup() {

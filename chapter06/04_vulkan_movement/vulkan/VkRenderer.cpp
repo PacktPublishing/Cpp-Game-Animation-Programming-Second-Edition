@@ -529,21 +529,21 @@ void VkRenderer::handleMovementKeys() {
     mRenderData.rdMoveForward -= 1;
   }
 
-  mRenderData.rdMoveStrafe = 0;
+  mRenderData.rdMoveRight = 0;
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_A) == GLFW_PRESS) {
-    mRenderData.rdMoveStrafe -= 1;
+    mRenderData.rdMoveRight -= 1;
   }
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_D) == GLFW_PRESS) {
-    mRenderData.rdMoveStrafe += 1;
+    mRenderData.rdMoveRight += 1;
   }
 
   /* swapped Y compared top OpenGL */
-  mRenderData.rdMoveUpDown = 0;
-  if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_Q) == GLFW_PRESS) {
-    mRenderData.rdMoveUpDown += 1;
-  }
+  mRenderData.rdMoveUp = 0;
   if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_E) == GLFW_PRESS) {
-    mRenderData.rdMoveUpDown -= 1;
+    mRenderData.rdMoveUp -= 1;
+  }
+  if (glfwGetKey(mRenderData.rdWindow, GLFW_KEY_Q) == GLFW_PRESS) {
+    mRenderData.rdMoveUp += 1;
   }
 }
 
@@ -551,13 +551,10 @@ bool VkRenderer::draw() {
   double tickTime = glfwGetTime();
   mRenderData.rdTickDiff = tickTime - lastTickTime;
 
-  /* return if tick is too small */
-  if (mRenderData.rdTickDiff < 0.00001) {
-    return true;
-  }
-
   mRenderData.rdFrameTime = mFrameTimer.stop();
   mFrameTimer.start();
+
+  handleMovementKeys();
 
   if (vkWaitForFences(mRenderData.rdVkbDevice.device, 1, &mRenderData.rdRenderFence, VK_TRUE, UINT64_MAX) != VK_SUCCESS) {
     Logger::log(1, "%s error: waiting for fence failed", __FUNCTION__);
@@ -633,8 +630,6 @@ bool VkRenderer::draw() {
   VkRect2D scissor{};
   scissor.offset = { 0, 0 };
   scissor.extent = mRenderData.rdVkbSwapchain.extent;
-
-  handleMovementKeys();
 
   mMatrixGenerateTimer.start();
   mMatrices.projectionMatrix = glm::perspective(glm::radians(static_cast<float>(mRenderData.rdFieldOfView)), static_cast<float>(mRenderData.rdVkbSwapchain.extent.width) / static_cast<float>(mRenderData.rdVkbSwapchain.extent.height), 0.01f, 50.0f);
@@ -738,7 +733,7 @@ bool VkRenderer::draw() {
       return false;
     }
   }
-  lastTickTime =  tickTime;
+  lastTickTime = tickTime;
 
   return true;
 }

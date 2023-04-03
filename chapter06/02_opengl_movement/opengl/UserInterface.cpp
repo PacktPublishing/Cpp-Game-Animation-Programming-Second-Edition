@@ -7,7 +7,6 @@
 #include <imgui_impl_opengl3.h>
 
 #include "UserInterface.h"
-#include "Logger.h"
 
 void UserInterface::init(OGLRenderData &renderData) {
   IMGUI_CHECKVERSION();

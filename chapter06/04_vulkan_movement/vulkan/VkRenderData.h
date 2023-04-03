@@ -44,8 +44,8 @@ struct VkRenderData {
   float rdUIDrawTime = 0.0f;
 
   int rdMoveForward = 0;
-  int rdMoveStrafe = 0;
-  int rdMoveUpDown = 0;
+  int rdMoveRight = 0;
+  int rdMoveUp = 0;
 
   float rdTickDiff = 0.0f;
 
