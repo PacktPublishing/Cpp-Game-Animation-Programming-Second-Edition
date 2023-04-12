@@ -59,6 +59,7 @@ struct VkRenderData {
   int rdRotYAngle = 0;
   int rdRotZAngle = 0;
 
+  /* camera pos for UI */
   glm::vec3 rdCameraWorldPosition = glm::vec3(0.0f);
 
   VmaAllocator rdAllocator = nullptr;

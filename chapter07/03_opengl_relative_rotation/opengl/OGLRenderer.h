@@ -82,7 +82,6 @@ class OGLRenderer {
     int mRotZAngle = 0;
 
     glm::mat3 mEulerRotMatrix = glm::mat3(1.0f);
-    glm::mat3 mQuatRotMatrix = glm::mat3(1.0f);
     glm::quat mQuatModelOrientation = glm::quat();
     glm::quat mQuatModelOrientConjugate = glm::quat();
 

@@ -53,8 +53,6 @@ struct OGLRenderData {
   std::vector<int> rdRotZAngle = { 0, 0 };
   float rdInterpValue = 0.0f;
 
-  std::vector<glm::quat> rdQuatModelOrientation = { glm::quat(), glm::quat() };
-
   /* for the UI */
   glm::vec3 rdCameraWorldPosition = glm::vec3(0.0f);
 };

@@ -65,10 +65,10 @@ class OGLRenderer {
     std::unique_ptr<OGLMesh> mAllMeshes = nullptr;
     unsigned int mLineIndexCount = 0;
 
-    glm::vec3 mSplineStartVertex = glm::vec3(-4.0f, 1.0f, -2.0f);
-    glm::vec3 mSplineStartTangent = glm::vec3(-10.0f, -8.0f, 8.0f);
-    glm::vec3 mSplineEndVertex = glm::vec3(4.0f, 2.0f, -2.0f);
-    glm::vec3 mSplineEndTangent = glm::vec3(-6.0f, 5.0f, -6.0f);
+    glm::vec3 mSplineStartVertex = glm::vec3(0.0f);
+    glm::vec3 mSplineStartTangent = glm::vec3(0.0f);
+    glm::vec3 mSplineEndVertex = glm::vec3(0.0f);
+    glm::vec3 mSplineEndTangent = glm::vec3(0.0f);
 
     bool mMouseLock = false;
     int mMouseXPos = 0;

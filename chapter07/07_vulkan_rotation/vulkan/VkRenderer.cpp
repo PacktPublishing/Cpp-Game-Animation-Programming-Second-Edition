@@ -1,7 +1,6 @@
 #include <imgui_impl_glfw.h>
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/string_cast.hpp>
 
 #define VMA_IMPLEMENTATION
 #include <vk_mem_alloc.h>
@@ -654,7 +653,9 @@ bool VkRenderer::draw() {
   if (mRenderData.rdDrawWorldCoordArrows) {
     mCoordArrowsMesh = mCoordArrowsModel.getVertexData();
     std::for_each(mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end(),
-      [=](auto &n){ n.color /= 2.0f; });
+      [=](auto &n){
+        n.color /= 2.0f;
+    });
     mAllMeshes->vertices.insert(mAllMeshes->vertices.end(),
       mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end());
   }

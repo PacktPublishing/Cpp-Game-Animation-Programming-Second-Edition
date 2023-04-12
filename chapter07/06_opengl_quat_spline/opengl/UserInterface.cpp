@@ -129,7 +129,7 @@ void UserInterface::createFrame(OGLRenderData &renderData) {
 
     ImGui::Text("Interpolate");
     ImGui::SameLine();
-    ImGui::SliderFloat("##ROTZ", &renderData.rdInterpValue, 0.0f, 1.0f);
+    ImGui::SliderFloat("##Interp", &renderData.rdInterpValue, 0.0f, 1.0f);
 
     if (ImGui::CollapsingHeader("SLERP")) {
       ImGui::Checkbox("Draw World Coordinate Arrows", &renderData.rdDrawWorldCoordArrows);

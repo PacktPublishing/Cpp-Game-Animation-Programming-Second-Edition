@@ -277,7 +277,9 @@ void OGLRenderer::draw() {
   if (mRenderData.rdDrawWorldCoordArrows) {
     mCoordArrowsMesh = mCoordArrowsModel.getVertexData();
     std::for_each(mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end(),
-      [=](auto &n){ n.color /= 2.0f; });
+      [=](auto &n){
+        n.color /= 2.0f;
+    });
     mAllMeshes->vertices.insert(mAllMeshes->vertices.end(),
       mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end());
   }

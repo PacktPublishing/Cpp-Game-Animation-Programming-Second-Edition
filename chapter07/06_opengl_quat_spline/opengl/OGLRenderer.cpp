@@ -279,7 +279,8 @@ void OGLRenderer::draw() {
 
   /* position cube on current spline position */
   glm::vec3 interpolatedPosition = glm::hermite(
-    mRenderData.rdSplineStartVertex, mRenderData.rdSplineStartTangent, mRenderData.rdSplineEndVertex, mRenderData.rdSplineEndTangent,
+    mRenderData.rdSplineStartVertex, mRenderData.rdSplineStartTangent,
+    mRenderData.rdSplineEndVertex, mRenderData.rdSplineEndTangent,
     mRenderData.rdInterpValue);
 
   /* draw a static coordinate system */
@@ -287,8 +288,9 @@ void OGLRenderer::draw() {
   if (mRenderData.rdDrawWorldCoordArrows) {
     mCoordArrowsMesh = mCoordArrowsModel.getVertexData();
     std::for_each(mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end(),
-      [=](auto &n){ n.color /= 2.0f; });
-
+      [=](auto &n){
+        n.color /= 2.0f;
+    });
     mAllMeshes->vertices.insert(mAllMeshes->vertices.end(),
       mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end());
   }
@@ -348,7 +350,9 @@ void OGLRenderer::draw() {
   /* draw spline */
   mSplineMesh.vertices.clear();
   if (mRenderData.rdDrawSplineLines) {
-    mSplineMesh = mSplineModel.createVertexData(25, mRenderData.rdSplineStartVertex, mRenderData.rdSplineStartTangent, mRenderData.rdSplineEndVertex, mRenderData.rdSplineEndTangent);
+    mSplineMesh = mSplineModel.createVertexData(25,
+      mRenderData.rdSplineStartVertex, mRenderData.rdSplineStartTangent,
+      mRenderData.rdSplineEndVertex, mRenderData.rdSplineEndTangent);
     mAllMeshes->vertices.insert(mAllMeshes->vertices.end(),
     mSplineMesh.vertices.begin(), mSplineMesh.vertices.end());
   }

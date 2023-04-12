@@ -3,7 +3,6 @@
 #include <imgui_impl_glfw.h>
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 #include "OGLRenderer.h"
 #include "Logger.h"
@@ -255,18 +254,17 @@ void OGLRenderer::draw() {
     mRenderData.rdRotYAngle = 0;
     mRenderData.rdRotZAngle = 0;
 
-    mEulerRotMatrix = glm::mat4(1.0f);
-    mQuatRotMatrix = glm::mat3(1.0f);
+    mEulerRotMatrix = glm::mat3(1.0f);
     mQuatModelOrientation = glm::quat();
   }
 
   /* euler rotation order Y-Z-X */
   mRotYMat = glm::rotate(glm::mat4(1.0f),
-     glm::radians(static_cast<float>(mRenderData.rdRotYAngle - mRotYAngle)), mRotYAxis);
+    glm::radians(static_cast<float>(mRenderData.rdRotYAngle - mRotYAngle)), mRotYAxis);
   mRotZMat = glm::rotate(mRotYMat,
-     glm::radians(static_cast<float>(mRenderData.rdRotZAngle - mRotZAngle)), mRotZAxis);
+    glm::radians(static_cast<float>(mRenderData.rdRotZAngle - mRotZAngle)), mRotZAxis);
   glm::mat3 newEulerRotMatrix = glm::rotate(mRotZMat,
-     glm::radians(static_cast<float>(mRenderData.rdRotXAngle - mRotXAngle)), mRotXAxis);
+    glm::radians(static_cast<float>(mRenderData.rdRotXAngle - mRotXAngle)), mRotXAxis);
 
   mEulerRotMatrix = mEulerRotMatrix * newEulerRotMatrix;
 
@@ -292,7 +290,9 @@ void OGLRenderer::draw() {
   if (mRenderData.rdDrawWorldCoordArrows) {
     mCoordArrowsMesh = mCoordArrowsModel.getVertexData();
     std::for_each(mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end(),
-      [=](auto &n){ n.color /= 2.0f; });
+      [=](auto &n){
+        n.color /= 2.0f;
+    });
     mAllMeshes->vertices.insert(mAllMeshes->vertices.end(),
       mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end());
   }

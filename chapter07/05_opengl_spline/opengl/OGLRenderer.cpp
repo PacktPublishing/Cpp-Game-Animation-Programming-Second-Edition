@@ -262,7 +262,9 @@ void OGLRenderer::draw() {
   if (mRenderData.rdDrawWorldCoordArrows) {
     mCoordArrowsMesh = mCoordArrowsModel.getVertexData();
     std::for_each(mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end(),
-      [=](auto &n){ n.color /= 2.0f; });
+      [=](auto &n){
+        n.color /= 2.0f;
+    });
     mAllMeshes->vertices.insert(mAllMeshes->vertices.end(),
       mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end());
   }
@@ -286,7 +288,9 @@ void OGLRenderer::draw() {
   *mModelMesh = mModel->getVertexData();
   mRenderData.rdTriangleCount = mModelMesh->vertices.size() / 3;
   std::for_each(mModelMesh->vertices.begin(), mModelMesh->vertices.end(),
-    [=](auto &n){ n.position += n.position + interpolatedPosition; });
+    [=](auto &n){
+      n.position += n.position + interpolatedPosition;
+  });
   mAllMeshes->vertices.insert(mAllMeshes->vertices.end(),
     mModelMesh->vertices.begin(), mModelMesh->vertices.end());
 
@@ -304,6 +308,7 @@ void OGLRenderer::draw() {
     mVertexBuffer.bindAndDraw(GL_LINES, 0, mLineIndexCount);
   }
 
+  /* draw model last */
   mBasicShader.use();
   mTex.bind();
   mVertexBuffer.bindAndDraw(GL_TRIANGLES, mLineIndexCount, mRenderData.rdTriangleCount * 3);

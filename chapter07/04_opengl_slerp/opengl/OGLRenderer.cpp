@@ -272,7 +272,9 @@ void OGLRenderer::draw() {
   if (mRenderData.rdDrawWorldCoordArrows) {
     mCoordArrowsMesh = mCoordArrowsModel.getVertexData();
     std::for_each(mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end(),
-      [=](auto &n){ n.color /= 2.0f; });
+      [=](auto &n){
+        n.color /= 2.0f;
+    });
     mAllMeshes->vertices.insert(mAllMeshes->vertices.end(),
       mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end());
   }
@@ -360,6 +362,7 @@ void OGLRenderer::draw() {
   mTex.bind();
   mVertexBuffer.bindAndDraw(GL_TRIANGLES, mLineIndexCount, mRenderData.rdTriangleCount * 3);
   mTex.unbind();
+
   mFramebuffer.unbind();
 
   /* blit color buffer to screen */
