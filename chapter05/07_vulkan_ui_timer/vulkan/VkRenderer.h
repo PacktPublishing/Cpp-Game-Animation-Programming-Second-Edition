@@ -54,7 +54,6 @@ class VkRenderer {
 
     VkUploadMatrices mMatrices{};
 
-    int fieldOfView = 90;
     bool mUseChangedShader = false;
 
     bool deviceInit(VkRenderData &renderData);

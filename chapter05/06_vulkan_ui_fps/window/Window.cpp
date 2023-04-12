@@ -1,4 +1,3 @@
-#include <vector>
 #include "Window.h"
 #include "Logger.h"
 
@@ -27,11 +26,6 @@ bool Window::init(unsigned int width, unsigned int height, std::string title) {
   }
 
   mRenderer = std::make_unique<VkRenderer>(mWindow);
-  if (!mRenderer->init(width, height)) {
-    glfwTerminate();
-    Logger::log(1, "%s error: Could not init Vulkan\n", __FUNCTION__);
-    return false;
-  }
 
   glfwSetWindowUserPointer(mWindow, mRenderer.get());
   glfwSetWindowSizeCallback(mWindow, [](GLFWwindow *win, int width, int height) {
@@ -45,6 +39,12 @@ bool Window::init(unsigned int width, unsigned int height, std::string title) {
       renderer->handleKeyEvents(key, scancode, action, mods);
       }
   );
+
+  if (!mRenderer->init(width, height)) {
+    glfwTerminate();
+    Logger::log(1, "%s error: Could not init Vulkan\n", __FUNCTION__);
+    return false;
+  }
 
   mModel = std::make_unique<Model>();
   mModel->init();

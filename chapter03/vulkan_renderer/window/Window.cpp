@@ -1,4 +1,3 @@
-#include <vector>
 #include "Window.h"
 #include "Logger.h"
 

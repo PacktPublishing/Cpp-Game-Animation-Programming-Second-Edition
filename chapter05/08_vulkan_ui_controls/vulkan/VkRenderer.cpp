@@ -205,7 +205,7 @@ bool VkRenderer::createDepthBuffer(VkRenderData &renderData) {
 }
 
 bool VkRenderer::createSwapchain(VkRenderData &renderData) {
-   vkb::SwapchainBuilder swapChainBuild{renderData.rdVkbDevice};
+  vkb::SwapchainBuilder swapChainBuild{renderData.rdVkbDevice};
 
   /* VK_PRESENT_MODE_FIFO_KHR enables vsync */
   auto  swapChainBuildRet = swapChainBuild.set_old_swapchain(renderData.rdVkbSwapchain).set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR).build();

@@ -41,11 +41,11 @@ void UserInterface::createFrame(OGLRenderData &renderData) {
     newFps = 1.0f / renderData.rdFrameTime * 1000.f;
   }
   /* make an averge value to avoid jumps */
-  framesPerSecond = (averagingAlpha * framesPerSecond) + (1.0f - averagingAlpha) * newFps;
+  mFramesPerSecond = (mAveragingAlpha * mFramesPerSecond) + (1.0f - mAveragingAlpha) * newFps;
 
   ImGui::Text("FPS:");
   ImGui::SameLine();
-  ImGui::Text("%s", std::to_string(framesPerSecond).c_str());
+  ImGui::Text("%s", std::to_string(mFramesPerSecond).c_str());
 
   ImGui::Separator();
 

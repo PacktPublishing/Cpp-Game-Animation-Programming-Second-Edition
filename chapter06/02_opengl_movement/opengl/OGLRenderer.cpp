@@ -203,7 +203,7 @@ void OGLRenderer::draw() {
 
   /* get time difference for movement */
   double tickTime = glfwGetTime();
-  mRenderData.rdTickDiff = tickTime - lastTickTime;
+  mRenderData.rdTickDiff = tickTime - mLastTickTime;
 
   mRenderData.rdFrameTime = mFrameTimer.stop();
   mFrameTimer.start();
@@ -259,7 +259,7 @@ void OGLRenderer::draw() {
   mUserInterface.render();
   mRenderData.rdUIDrawTime = mUIDrawTimer.stop();
 
-  lastTickTime = tickTime;
+  mLastTickTime = tickTime;
 }
 
 void OGLRenderer::cleanup() {

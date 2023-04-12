@@ -11,7 +11,7 @@ class UserInterface {
     void cleanup(VkRenderData& renderData);
 
   private:
-    float framesPerSecond = 0.0f;
+    float mFramesPerSecond = 0.0f;
     /* averaging speed */
-    float averagingAlpha = 0.96f;
+    float mAveragingAlpha = 0.96f;
 };

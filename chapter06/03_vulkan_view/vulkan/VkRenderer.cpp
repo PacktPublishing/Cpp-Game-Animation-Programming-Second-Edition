@@ -207,7 +207,7 @@ bool VkRenderer::createDepthBuffer(VkRenderData &renderData) {
 }
 
 bool VkRenderer::createSwapchain(VkRenderData &renderData) {
-   vkb::SwapchainBuilder swapChainBuild{renderData.rdVkbDevice};
+  vkb::SwapchainBuilder swapChainBuild{renderData.rdVkbDevice};
 
   /* VK_PRESENT_MODE_FIFO_KHR enables vsync */
   auto  swapChainBuildRet = swapChainBuild.set_old_swapchain(renderData.rdVkbSwapchain).set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR).build();
@@ -517,14 +517,6 @@ void VkRenderer::toggleShader() {
 }
 
 bool VkRenderer::draw() {
-  double tickTime = glfwGetTime();
-  double tickTimeDiff = tickTime - lastTickTime;
-
-  /* return if tick is too small */
-  if (tickTimeDiff < 0.00001) {
-    return true;
-  }
-
   mRenderData.rdFrameTime = mFrameTimer.stop();
   mFrameTimer.start();
 
@@ -705,7 +697,6 @@ bool VkRenderer::draw() {
       return false;
     }
   }
-  lastTickTime =  tickTime;
 
   return true;
 }

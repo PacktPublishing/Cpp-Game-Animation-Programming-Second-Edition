@@ -203,7 +203,7 @@ bool VkRenderer::createDepthBuffer(VkRenderData &renderData) {
 }
 
 bool VkRenderer::createSwapchain(VkRenderData &renderData) {
-   vkb::SwapchainBuilder swapChainBuild{renderData.rdVkbDevice};
+  vkb::SwapchainBuilder swapChainBuild{renderData.rdVkbDevice};
 
   /* VK_PRESENT_MODE_FIFO_KHR enables vsync */
   auto swapChainBuildRet = swapChainBuild.set_old_swapchain(renderData.rdVkbSwapchain).set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR).build();
@@ -528,7 +528,7 @@ bool VkRenderer::draw() {
   glm::vec3 cameraLookAtPosition = glm::vec3(0.0f, 0.0f, 0.0f);
   glm::vec3 cameraUpVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
-  mMatrices.projectionMatrix = glm::perspective(glm::radians(static_cast<float>(fieldOfView)), static_cast<float>(mRenderData.rdVkbSwapchain.extent.width) / static_cast<float>(mRenderData.rdVkbSwapchain.extent.height), 0.1f, 10.0f);
+  mMatrices.projectionMatrix = glm::perspective(glm::radians(static_cast<float>(90)), static_cast<float>(mRenderData.rdVkbSwapchain.extent.width) / static_cast<float>(mRenderData.rdVkbSwapchain.extent.height), 0.1f, 10.0f);
 
   float t = glfwGetTime();
   glm::mat4 model = glm::mat4(1.0f);

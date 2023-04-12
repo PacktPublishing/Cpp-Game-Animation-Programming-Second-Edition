@@ -49,7 +49,7 @@ class VkRenderer {
     int mMouseXPos = 0;
     int mMouseYPos = 0;
 
-    double lastTickTime = 0.0;
+    double mLastTickTime = 0.0;
 
     void handleMovementKeys();
     int mCameraForward = 0;

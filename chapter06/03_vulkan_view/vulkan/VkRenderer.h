@@ -49,8 +49,6 @@ class VkRenderer {
     int mMouseXPos = 0;
     int mMouseYPos = 0;
 
-    double lastTickTime = 0.0;
-
     Timer mFrameTimer{};
     Timer mMatrixGenerateTimer{};
     Timer mUploadToUBOTimer{};
