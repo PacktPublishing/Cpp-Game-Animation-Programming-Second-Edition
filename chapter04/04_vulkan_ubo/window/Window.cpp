@@ -13,11 +13,9 @@ bool Window::init(unsigned int width, unsigned int height, std::string title) {
     return false;
   }
 
-  mApplicationName = title;
-
   /* Vulkan needs no context */
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  mWindow = glfwCreateWindow(width, height, mApplicationName.c_str(), nullptr, nullptr);
+  mWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 
   if (!mWindow) {
     glfwTerminate();

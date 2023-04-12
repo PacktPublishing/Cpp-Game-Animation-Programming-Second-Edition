@@ -12,10 +12,7 @@ bool Window::init(unsigned int width, unsigned int height, std::string title) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  mApplicationName = title;
-  mScreenWidth = width;
-  mScreenHeight = height;
-  mWindow = glfwCreateWindow(mScreenWidth, mScreenHeight, mApplicationName.c_str(), nullptr, nullptr);
+  mWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 
   if (!mWindow) {
     glfwTerminate();
@@ -26,7 +23,7 @@ bool Window::init(unsigned int width, unsigned int height, std::string title) {
   glfwMakeContextCurrent(mWindow);
 
   mRenderer = std::make_unique<OGLRenderer>();
-  if (!mRenderer->init(mScreenWidth, mScreenHeight)) {
+  if (!mRenderer->init(width, height)) {
     glfwTerminate();
     Logger::log(1, "%s error: Could not init OpenGL\n", __FUNCTION__);
     return false;

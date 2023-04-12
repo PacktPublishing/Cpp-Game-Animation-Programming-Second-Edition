@@ -15,7 +15,5 @@ class Window {
   private:
     GLFWwindow *mWindow = nullptr;
 
-    std::string mApplicationName;
-
     std::unique_ptr<VkRenderer> mRenderer;
 };

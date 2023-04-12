@@ -15,10 +15,5 @@ class Window {
   private:
     GLFWwindow *mWindow = nullptr;
 
-    std::string mApplicationName;
-
     std::unique_ptr<OGLRenderer> mRenderer;
-
-    unsigned int mScreenWidth = 640;
-    unsigned int mScreenHeight = 480;
 };
