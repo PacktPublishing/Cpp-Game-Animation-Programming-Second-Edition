@@ -293,6 +293,7 @@ void OGLRenderer::draw() {
         n.position.x = newPosition.x;
         n.position.y = newPosition.y;
         n.position.z = newPosition.z;
+        n.position += mQuatModelDist;
         n.color = glm::vec3(0.0f, 0.8f, 0.8f);
     });
     mAllMeshes->vertices.insert(mAllMeshes->vertices.end(),
@@ -308,6 +309,7 @@ void OGLRenderer::draw() {
         n.position.x = newPosition.x;
         n.position.y = newPosition.y;
         n.position.z = newPosition.z;
+        n.position += mQuatModelDist;
         n.color = glm::vec3(0.8f, 0.8f, 0.0f);
     });
     mAllMeshes->vertices.insert(mAllMeshes->vertices.end(),
@@ -323,6 +325,7 @@ void OGLRenderer::draw() {
         n.position.x = newPosition.x;
         n.position.y = newPosition.y;
         n.position.z = newPosition.z;
+        n.position += mQuatModelDist;
     });
     mAllMeshes->vertices.insert(mAllMeshes->vertices.end(),
       mQuatPosArrowMesh.vertices.begin(), mQuatPosArrowMesh.vertices.end());
@@ -338,6 +341,7 @@ void OGLRenderer::draw() {
       n.position.x = newPosition.x;
       n.position.y = newPosition.y;
       n.position.z = newPosition.z;
+      n.position += mQuatModelDist;
   });
   mAllMeshes->vertices.insert(mAllMeshes->vertices.end(),
     mModelMesh->vertices.begin(), mModelMesh->vertices.end());

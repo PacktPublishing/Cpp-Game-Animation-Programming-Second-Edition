@@ -10,7 +10,7 @@ class Camera {
     glm::mat4 getViewMatrix(OGLRenderData &renderData);
 
   private:
-    glm::vec3 mWorldPos = glm::vec3(-0.25f, 1.75f, 2.5f);
+    glm::vec3 mWorldPos = glm::vec3(-1.25f, 2.00f, 2.5f);
 
     glm::vec3 mViewDirection = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 mRightDirection = glm::vec3(0.0f, 0.0f, 0.0f);

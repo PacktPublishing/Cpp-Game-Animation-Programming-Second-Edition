@@ -72,6 +72,8 @@ class OGLRenderer {
     glm::quat mQuatMix = glm::quat();
     glm::quat mQuatMixConjugate = glm::quat();
 
+    glm::vec3 mQuatModelDist = glm::vec3(-2.5f, 0.0f, 0.0f);
+
     bool mMouseLock = false;
     int mMouseXPos = 0;
     int mMouseYPos = 0;

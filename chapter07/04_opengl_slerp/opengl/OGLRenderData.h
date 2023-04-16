@@ -42,7 +42,7 @@ struct OGLRenderData {
   float rdTickDiff = 0.0f;
 
   float rdViewAzimuth = 0.0f;
-  float rdViewElevation = -35.0f;
+  float rdViewElevation = -30.0f;
 
   bool rdDrawWorldCoordArrows = true;
   bool rdDrawModelCoordArrows = true;
