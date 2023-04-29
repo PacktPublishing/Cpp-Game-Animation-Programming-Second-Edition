@@ -23,12 +23,11 @@ glm::mat4 Camera::getViewMatrix(VkRenderData &renderData) {
   mUpDirection = glm::normalize(glm::cross(mRightDirection, mViewDirection));
 
   /* update camera position depending on desired movement */
-  mWorldPos += renderData.rdMoveForward * renderData.rdTickDiff * mViewDirection
-            +  renderData.rdMoveRight * renderData.rdTickDiff * mRightDirection
-            +  renderData.rdMoveUp * renderData.rdTickDiff * mUpDirection;
+  renderData.rdCameraWorldPosition +=
+    renderData.rdMoveForward * renderData.rdTickDiff * mViewDirection
+    + renderData.rdMoveRight * renderData.rdTickDiff * mRightDirection
+    + renderData.rdMoveUp * renderData.rdTickDiff * mUpDirection;
 
-  /* update in render data for UI */
-  renderData.rdCameraWorldPosition = mWorldPos;
-
-  return glm::lookAt(mWorldPos, mWorldPos + mViewDirection, mUpDirection);
+  return glm::lookAt(renderData.rdCameraWorldPosition,
+    renderData.rdCameraWorldPosition + mViewDirection, mUpDirection);
 }

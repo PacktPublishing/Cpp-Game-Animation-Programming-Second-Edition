@@ -44,6 +44,5 @@ struct OGLRenderData {
   float rdViewAzimuth = 320.0f;
   float rdViewElevation = -15.0f;
 
-  /* for the UI */
-  glm::vec3 rdCameraWorldPosition = glm::vec3(0.0f);
+  glm::vec3 rdCameraWorldPosition = glm::vec3(0.5f, 0.25f, 1.0f);
 };

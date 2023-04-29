@@ -43,6 +43,7 @@ struct OGLRenderData {
 
   float rdViewAzimuth = 0.0f;
   float rdViewElevation = -15.0f;
+  glm::vec3 rdCameraWorldPosition = glm::vec3(-0.5f, 3.0f, 6.0f);
 
   bool rdDrawWorldCoordArrows = true;
   bool rdDrawModelCoordArrows = true;
@@ -59,7 +60,4 @@ struct OGLRenderData {
   glm::vec3 rdSplineEndTangent = glm::vec3(0.0f);
 
   float rdInterpValue = 0.0f;
-
-  /* for the UI */
-  glm::vec3 rdCameraWorldPosition = glm::vec3(0.0f);
 };

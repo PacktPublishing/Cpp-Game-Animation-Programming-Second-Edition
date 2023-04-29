@@ -50,6 +50,7 @@ struct VkRenderData {
 
   float rdViewAzimuth = 0.0f;
   float rdViewElevation = -15.0f;
+  glm::vec3 rdCameraWorldPosition = glm::vec3(-0.15f, 2.25f, 4.5f);
 
   bool rdDrawWorldCoordArrows = true;
   bool rdDrawModelCoordArrows = true;
@@ -58,9 +59,6 @@ struct VkRenderData {
   int rdRotXAngle = 0;
   int rdRotYAngle = 0;
   int rdRotZAngle = 0;
-
-  /* camera pos for UI */
-  glm::vec3 rdCameraWorldPosition = glm::vec3(0.0f);
 
   VmaAllocator rdAllocator = nullptr;
 

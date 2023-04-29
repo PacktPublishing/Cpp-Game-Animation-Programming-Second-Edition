@@ -50,6 +50,7 @@ struct VkRenderData {
 
   float rdViewAzimuth = 0.0f;
   float rdViewElevation = -15.0f;
+  glm::vec3 rdCameraWorldPosition = glm::vec3(-0.5f, 3.0f, 6.0f);
 
   bool rdDrawWorldCoordArrows = true;
   bool rdDrawSplineLines = true;
@@ -60,9 +61,6 @@ struct VkRenderData {
   glm::vec3 rdSplineEndVertex = glm::vec3(0.0f);
   glm::vec3 rdSplineEndTangent = glm::vec3(0.0f);
   float rdInterpValue = 0.0f;
-
-  /* camera pos for UI */
-  glm::vec3 rdCameraWorldPosition = glm::vec3(0.0f);
 
   VmaAllocator rdAllocator = nullptr;
 

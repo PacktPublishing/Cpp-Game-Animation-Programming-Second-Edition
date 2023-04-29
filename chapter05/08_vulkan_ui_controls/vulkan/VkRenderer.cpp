@@ -295,7 +295,7 @@ bool VkRenderer::createBasicPipeline(VkRenderData &renderData) {
   std::string vertexShaderFile = "shader/basic.vert.spv";
   std::string fragmentShaderFile = "shader/basic.frag.spv";
   if (!Pipeline::init(renderData, renderData.rdPipelineLayout, renderData.rdBasicPipeline, vertexShaderFile, fragmentShaderFile)) {
-    Logger::log(1, "%s error: could not init basci shader pipeline\n", __FUNCTION__);
+    Logger::log(1, "%s error: could not init basic shader pipeline\n", __FUNCTION__);
     return false;
   }
   return true;

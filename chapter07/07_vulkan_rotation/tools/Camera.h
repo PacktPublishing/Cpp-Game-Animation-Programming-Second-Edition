@@ -10,8 +10,6 @@ class Camera {
     glm::mat4 getViewMatrix(VkRenderData &renderData);
 
   private:
-    glm::vec3 mWorldPos = glm::vec3(-1.5f, 2.0f, 3.0f);
-
     glm::vec3 mViewDirection = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 mRightDirection = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 mUpDirection = glm::vec3(0.0f, 0.0f, 0.0f);
