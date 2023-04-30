@@ -38,9 +38,9 @@ bool VertexBuffer::init(VkRenderData &renderData) {
 }
 
 bool VertexBuffer::uploadData(VkRenderData &renderData, VkMesh vertexData) {
-  /* buffer too small, resize */
   unsigned int vertexDataSize = vertexData.vertices.size() * sizeof(VkVertex);
 
+  /* buffer too small, resize */
   if (renderData.rdVertexBufferSize < vertexDataSize) {
     renderData.rdVertexBufferSize = vertexDataSize;
     cleanup(renderData);

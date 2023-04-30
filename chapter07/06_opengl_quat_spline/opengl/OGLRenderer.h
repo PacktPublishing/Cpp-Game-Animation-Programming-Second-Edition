@@ -28,7 +28,6 @@ class OGLRenderer {
 
     bool init(unsigned int width, unsigned int height);
     void setSize(unsigned int width, unsigned int height);
-    void uploadData(OGLMesh vertexData);
     void draw();
     void handleKeyEvents(int key, int scancode, int action, int mods);
     void handleMouseButtonEvents(int button, int action, int mods);

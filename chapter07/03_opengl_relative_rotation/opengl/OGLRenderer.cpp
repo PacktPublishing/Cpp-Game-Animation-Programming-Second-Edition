@@ -97,10 +97,6 @@ void OGLRenderer::setSize(unsigned int width, unsigned int height) {
   Logger::log(1, "%s: resized window to %dx%d\n", __FUNCTION__, width, height);
 }
 
-void OGLRenderer::uploadData(OGLMesh vertexData) {
-  mVertexBuffer.uploadData(vertexData);
-}
-
 void OGLRenderer::handleKeyEvents(int key, int scancode, int action, int mods) {
 }
 
@@ -354,7 +350,7 @@ void OGLRenderer::draw() {
 
   /* upload vertex data */
   mUploadToVBOTimer.start();
-  uploadData(*mAllMeshes);
+  mVertexBuffer.uploadData(*mAllMeshes);
   mRenderData.rdUploadToVBOTime = mUploadToVBOTimer.stop();
 
   mLineIndexCount =

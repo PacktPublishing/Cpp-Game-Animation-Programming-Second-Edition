@@ -37,7 +37,6 @@ class VkRenderer {
 
     bool init(unsigned int width, unsigned int height);
     void setSize(unsigned int width, unsigned int height);
-    bool uploadData(VkMesh vertexData);
     bool draw();
     void handleKeyEvents(int key, int scancode, int action, int mods);
     void handleMouseButtonEvents(int button, int action, int mods);
