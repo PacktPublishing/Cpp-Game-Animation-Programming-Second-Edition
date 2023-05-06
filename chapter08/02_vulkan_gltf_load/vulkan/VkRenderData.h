@@ -78,7 +78,7 @@ struct VkRenderData {
 
   float rdViewAzimuth = 230.0f;
   float rdViewElevation = -15.0f;
-  glm::vec3 rdCameraWorldPosition = glm::vec3(6.0f, 4.0f, -4.f);
+  glm::vec3 rdCameraWorldPosition = glm::vec3(6.0f, 4.0f, -4.0f);
 
   bool rdDrawWorldCoordArrows = true;
   bool rdDrawModelCoordArrows = true;
