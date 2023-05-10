@@ -1,12 +1,14 @@
 #include "GltfModel.h"
 #include "Logger.h"
 
-bool GltfModel::loadModel(OGLRenderData &renderData, std::string modelFilename, std::string textureFilename) {
+bool GltfModel::loadModel(OGLRenderData &renderData,
+    std::string modelFilename, std::string textureFilename) {
   if (!mTex.loadTexture(textureFilename, false)) {
     Logger::log(1, "%s: texture loading failed\n", __FUNCTION__);
     return false;
   }
-  Logger::log(1, "%s: glTF model texture '%s' successfully loaded\n", __FUNCTION__, modelFilename.c_str());
+  Logger::log(1, "%s: glTF model texture '%s' successfully loaded\n", __FUNCTION__,
+    modelFilename.c_str());
 
   mModel = std::make_shared<tinygltf::Model>();
 
@@ -15,24 +17,29 @@ bool GltfModel::loadModel(OGLRenderData &renderData, std::string modelFilename, 
   std::string loaderWarnings;
   bool result = false;
 
-  result = gltfLoader.LoadASCIIFromFile(mModel.get(), &loaderErrors, &loaderWarnings, modelFilename);
+  result = gltfLoader.LoadASCIIFromFile(mModel.get(), &loaderErrors, &loaderWarnings,
+    modelFilename);
 
   if (!loaderWarnings.empty()) {
-    Logger::log(1, "%s: warnings while loading glTF model:\n%s\n", __FUNCTION__, loaderWarnings.c_str());
+    Logger::log(1, "%s: warnings while loading glTF model:\n%s\n", __FUNCTION__,
+      loaderWarnings.c_str());
   }
 
   if (!loaderErrors.empty()) {
-    Logger::log(1, "%s: errors while loading glTF model:\n%s\n", __FUNCTION__, loaderErrors.c_str());
+    Logger::log(1, "%s: errors while loading glTF model:\n%s\n", __FUNCTION__,
+      loaderErrors.c_str());
   }
 
   if (!result) {
-    Logger::log(1, "%s error: could not load file '%s'\n", __FUNCTION__, modelFilename.c_str());
+    Logger::log(1, "%s error: could not load file '%s'\n", __FUNCTION__,
+      modelFilename.c_str());
     return false;
   }
 
   glGenVertexArrays(1, &mVAO);
   glBindVertexArray(mVAO);
 
+  /* extract position, normal, texture coords, and indices */
   createVertexBuffers();
   createIndexBuffer();
 
@@ -52,8 +59,8 @@ void GltfModel::createVertexBuffers() {
     const int accessorNum = attrib.second;
 
     const tinygltf::Accessor &accessor = mModel->accessors.at(accessorNum);
-    const tinygltf::BufferView &bufferView = mModel->bufferViews[accessor.bufferView];
-    const tinygltf::Buffer &buffer = mModel->buffers[bufferView.buffer];
+    const tinygltf::BufferView &bufferView = mModel->bufferViews.at(accessor.bufferView);
+    const tinygltf::Buffer &buffer = mModel->buffers.at(bufferView.buffer);
 
     if ((attribType.compare("POSITION") != 0) && (attribType.compare("NORMAL") != 0)
         && (attribType.compare("TEXCOORD_0") != 0)) {
@@ -76,7 +83,8 @@ void GltfModel::createVertexBuffers() {
         dataSize = 4;
         break;
       default:
-        Logger::log(1, "%s error: accessor %i uses data size %i\n", __FUNCTION__, accessorNum, dataSize);
+        Logger::log(1, "%s error: accessor %i uses data size %i\n", __FUNCTION__,
+          accessorNum, accessor.type);
         break;
     }
 
@@ -86,17 +94,18 @@ void GltfModel::createVertexBuffers() {
         dataType = GL_FLOAT;
         break;
       default:
-        Logger::log(1, "%s error: accessor %i uses unknown data type %i\n", __FUNCTION__, accessorNum, dataType);
+        Logger::log(1, "%s error: accessor %i uses unknown data type %i\n", __FUNCTION__,
+          accessorNum, accessor.componentType);
         break;
     }
 
     /* buffers for position, normal and tex coordinates */
-    glGenBuffers(1, &mVertexVBO[attributes[attribType]]);
-    glBindBuffer(GL_ARRAY_BUFFER, mVertexVBO[attributes[attribType]]);
+    glGenBuffers(1, &mVertexVBO.at(attributes.at(attribType)));
+    glBindBuffer(GL_ARRAY_BUFFER, mVertexVBO.at(attributes.at(attribType)));
 
-    glVertexAttribPointer(attributes[attribType], dataSize, dataType, GL_FALSE,
+    glVertexAttribPointer(attributes.at(attribType), dataSize, dataType, GL_FALSE,
       0, (void*) 0);
-    glEnableVertexAttribArray(attributes[attribType]);
+    glEnableVertexAttribArray(attributes.at(attribType));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
   }
@@ -113,10 +122,10 @@ void GltfModel::createIndexBuffer() {
 void GltfModel::uploadVertexBuffers() {
   for (int i = 0; i < 3; ++i) {
     const tinygltf::Accessor& accessor = mModel->accessors.at(i);
-    const tinygltf::BufferView& bufferView = mModel->bufferViews[accessor.bufferView];
-    const tinygltf::Buffer& buffer = mModel->buffers[bufferView.buffer];
+    const tinygltf::BufferView& bufferView = mModel->bufferViews.at(accessor.bufferView);
+    const tinygltf::Buffer& buffer = mModel->buffers.at(bufferView.buffer);
 
-    glBindBuffer(GL_ARRAY_BUFFER, mVertexVBO[i]);
+    glBindBuffer(GL_ARRAY_BUFFER, mVertexVBO.at(i));
     glBufferData(GL_ARRAY_BUFFER, bufferView.byteLength,
      &buffer.data.at(0) + bufferView.byteOffset, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -127,8 +136,8 @@ void GltfModel::uploadIndexBuffer() {
   /* buffer for vertex indices */
   const tinygltf::Primitive& primitives = mModel->meshes.at(0).primitives.at(0);
   const tinygltf::Accessor& indexAccessor = mModel->accessors.at(primitives.indices);
-  const tinygltf::BufferView& indexBufferView = mModel->bufferViews[indexAccessor.bufferView];
-  const tinygltf::Buffer& indexBuffer = mModel->buffers[indexBufferView.buffer];
+  const tinygltf::BufferView& indexBufferView = mModel->bufferViews.at(indexAccessor.bufferView);
+  const tinygltf::Buffer& indexBuffer = mModel->buffers.at(indexBufferView.buffer);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexVBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferView.byteLength,
@@ -151,7 +160,7 @@ void GltfModel::draw() {
       drawMode = GL_TRIANGLES;
       break;
     default:
-      Logger::log(1, "%s error: unknown draw mode %i\n", __FUNCTION__, drawMode);
+      Logger::log(1, "%s error: unknown draw mode %i\n", __FUNCTION__, primitives.mode);
       break;
   }
 

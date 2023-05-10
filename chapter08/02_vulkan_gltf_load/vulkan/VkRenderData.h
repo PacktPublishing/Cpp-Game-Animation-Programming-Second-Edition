@@ -137,7 +137,7 @@ struct VkRenderData {
 };
 
 struct VkGltfRenderData {
-  VkVertexBufferData rdGltfVertexBufferData[3]{};
+  std::vector<VkVertexBufferData> rdGltfVertexBufferData{};
   VkIndexBufferData rdGltfIndexBufferData{};
 	VkTextureData rdGltfModelTexture{};
 };

@@ -11,7 +11,7 @@ bool UniformBuffer::init(VkRenderData& renderData) {
   vmaAllocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
 
   if (vmaCreateBuffer(renderData.rdAllocator, &bufferInfo, &vmaAllocInfo, &renderData.rdUboBuffer, &renderData.rdUboBufferAlloc, nullptr) != VK_SUCCESS) {
-    Logger::log(1, "%s error: could not allocate vertex buffer via VMA\n", __FUNCTION__);
+    Logger::log(1, "%s error: could not allocate uniform buffer via VMA\n", __FUNCTION__);
     return false;
   }
 

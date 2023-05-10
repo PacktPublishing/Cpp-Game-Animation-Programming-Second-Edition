@@ -3,12 +3,14 @@
 #include "GltfModel.h"
 #include "Logger.h"
 
-bool GltfModel::loadModel(VkRenderData &renderData, VkGltfRenderData &gltfRenderData, std::string modelFilename, std::string textureFilename) {
+bool GltfModel::loadModel(VkRenderData &renderData, VkGltfRenderData &gltfRenderData,
+    std::string modelFilename, std::string textureFilename) {
   if (!Texture::loadTexture(renderData, gltfRenderData.rdGltfModelTexture, textureFilename)) {
     Logger::log(1, "%s: texture loading failed\n", __FUNCTION__);
     return false;
   }
-  Logger::log(1, "%s: glTF model texture '%s' successfully loaded\n", __FUNCTION__, modelFilename.c_str());
+  Logger::log(1, "%s: glTF model texture '%s' successfully loaded\n", __FUNCTION__,
+    modelFilename.c_str());
 
   mModel = std::make_shared<tinygltf::Model>();
 
@@ -17,23 +19,29 @@ bool GltfModel::loadModel(VkRenderData &renderData, VkGltfRenderData &gltfRender
   std::string loaderWarnings;
   bool result = false;
 
-  result = gltfLoader.LoadASCIIFromFile(mModel.get(), &loaderErrors, &loaderWarnings, modelFilename);
+  result = gltfLoader.LoadASCIIFromFile(mModel.get(), &loaderErrors, &loaderWarnings,
+    modelFilename);
 
   if (!loaderWarnings.empty()) {
-    Logger::log(1, "%s: warnings while loading glTF model:\n%s\n", __FUNCTION__, loaderWarnings.c_str());
+    Logger::log(1, "%s: warnings while loading glTF model:\n%s\n", __FUNCTION__,
+      loaderWarnings.c_str());
   }
 
   if (!loaderErrors.empty()) {
-    Logger::log(1, "%s: errors while loading glTF model:\n%s\n", __FUNCTION__, loaderErrors.c_str());
+    Logger::log(1, "%s: errors while loading glTF model:\n%s\n", __FUNCTION__,
+      loaderErrors.c_str());
   }
 
   if (!result) {
-    Logger::log(1, "%s error: could not load file '%s'\n", __FUNCTION__, modelFilename.c_str());
+    Logger::log(1, "%s error: could not load file '%s'\n", __FUNCTION__,
+      modelFilename.c_str());
     return false;
   }
 
+  /* extract position, normal, texture coords, and indices */
   createVertexBuffers(renderData, gltfRenderData);
   createIndexBuffer(renderData, gltfRenderData);
+
   renderData.rdGltfTriangleCount = getTriangleCount();;
 
   return true;
@@ -41,14 +49,15 @@ bool GltfModel::loadModel(VkRenderData &renderData, VkGltfRenderData &gltfRender
 
 void GltfModel::createVertexBuffers(VkRenderData &renderData, VkGltfRenderData &gltfRenderData) {
   const tinygltf::Primitive &primitives = mModel->meshes.at(0).primitives.at(0);
+  gltfRenderData.rdGltfVertexBufferData.resize(primitives.attributes.size());
 
   for (const auto& attrib : primitives.attributes) {
     const std::string attribType = attrib.first;
     const int accessorNum = attrib.second;
 
     const tinygltf::Accessor &accessor = mModel->accessors.at(accessorNum);
-    const tinygltf::BufferView &bufferView = mModel->bufferViews[accessor.bufferView];
-    const tinygltf::Buffer &buffer = mModel->buffers[bufferView.buffer];
+    const tinygltf::BufferView &bufferView = mModel->bufferViews.at(accessor.bufferView);
+    const tinygltf::Buffer &buffer = mModel->buffers.at(bufferView.buffer);
 
     if ((attribType.compare("POSITION") != 0) && (attribType.compare("NORMAL") != 0)
         && (attribType.compare("TEXCOORD_0") != 0)) {
@@ -58,7 +67,7 @@ void GltfModel::createVertexBuffers(VkRenderData &renderData, VkGltfRenderData &
 
     /* buffers for position, normal and tex coordinates */
     VertexBuffer::init(renderData,
-      gltfRenderData.rdGltfVertexBufferData[attributes[attribType]], bufferView.byteLength);
+      gltfRenderData.rdGltfVertexBufferData.at(attributes.at(attribType)), bufferView.byteLength);
   }
 }
 
@@ -66,8 +75,8 @@ void GltfModel::createIndexBuffer(VkRenderData &renderData, VkGltfRenderData &gl
   /* buffer for vertex indices */
   const tinygltf::Primitive &primitives = mModel->meshes.at(0).primitives.at(0);
   const tinygltf::Accessor &indexAccessor = mModel->accessors.at(primitives.indices);
-  const tinygltf::BufferView &indexBufferView = mModel->bufferViews[indexAccessor.bufferView];
-  const tinygltf::Buffer &indexBuffer = mModel->buffers[indexBufferView.buffer];
+  const tinygltf::BufferView &indexBufferView = mModel->bufferViews.at(indexAccessor.bufferView);
+  const tinygltf::Buffer &indexBuffer = mModel->buffers.at(indexBufferView.buffer);
 
   IndexBuffer::init(renderData, gltfRenderData.rdGltfIndexBufferData, indexBufferView.byteLength);
 }
@@ -75,11 +84,11 @@ void GltfModel::createIndexBuffer(VkRenderData &renderData, VkGltfRenderData &gl
 void GltfModel::uploadVertexBuffers(VkRenderData& renderData, VkGltfRenderData& gltfRenderData) {
   for (int i = 0; i < 3; ++i) {
     const tinygltf::Accessor& accessor = mModel->accessors.at(i);
-    const tinygltf::BufferView& bufferView = mModel->bufferViews[accessor.bufferView];
-    const tinygltf::Buffer& buffer = mModel->buffers[bufferView.buffer];
+    const tinygltf::BufferView& bufferView = mModel->bufferViews.at(accessor.bufferView);
+    const tinygltf::Buffer& buffer = mModel->buffers.at(bufferView.buffer);
 
     VertexBuffer::uploadData(renderData,
-      gltfRenderData.rdGltfVertexBufferData[i], buffer, bufferView);
+      gltfRenderData.rdGltfVertexBufferData.at(i), buffer, bufferView);
   }
 }
 
@@ -87,8 +96,8 @@ void GltfModel::uploadIndexBuffer(VkRenderData& renderData, VkGltfRenderData& gl
   /* buffer for vertex indices */
   const tinygltf::Primitive& primitives = mModel->meshes.at(0).primitives.at(0);
   const tinygltf::Accessor& indexAccessor = mModel->accessors.at(primitives.indices);
-  const tinygltf::BufferView& indexBufferView = mModel->bufferViews[indexAccessor.bufferView];
-  const tinygltf::Buffer& indexBuffer = mModel->buffers[indexBufferView.buffer];
+  const tinygltf::BufferView& indexBufferView = mModel->bufferViews.at(indexAccessor.bufferView);
+  const tinygltf::Buffer& indexBuffer = mModel->buffers.at(indexBufferView.buffer);
 
   IndexBuffer::uploadData(renderData, gltfRenderData.rdGltfIndexBufferData,
     indexBuffer, indexBufferView);
@@ -113,7 +122,7 @@ void GltfModel::draw(VkRenderData &renderData, VkGltfRenderData& gltfRenderData)
   VkDeviceSize offset = 0;
   for (int i = 0; i < 3; ++i) {
     vkCmdBindVertexBuffers(renderData.rdCommandBuffer, i, 1,
-      &gltfRenderData.rdGltfVertexBufferData[i].rdVertexBuffer, &offset);
+      &gltfRenderData.rdGltfVertexBufferData.at(i).rdVertexBuffer, &offset);
   }
 
   /* index buffer */
@@ -128,7 +137,7 @@ void GltfModel::draw(VkRenderData &renderData, VkGltfRenderData& gltfRenderData)
 
 void GltfModel::cleanup(VkRenderData &renderData, VkGltfRenderData &gltfRenderData) {
   for (int i = 0; i < 3; ++i) {
-    VertexBuffer::cleanup(renderData, gltfRenderData.rdGltfVertexBufferData[i]);
+    VertexBuffer::cleanup(renderData, gltfRenderData.rdGltfVertexBufferData.at(i));
   }
 
   IndexBuffer::cleanup(renderData, gltfRenderData.rdGltfIndexBufferData);

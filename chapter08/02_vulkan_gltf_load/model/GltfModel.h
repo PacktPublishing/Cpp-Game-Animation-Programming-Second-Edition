@@ -12,7 +12,8 @@
 
 class GltfModel {
   public:
-    bool loadModel(VkRenderData &renderData, VkGltfRenderData& gltfRenderData, std::string modelFilename, std::string textureFilename);
+    bool loadModel(VkRenderData &renderData, VkGltfRenderData& gltfRenderData,
+      std::string modelFilename, std::string textureFilename);
     void draw(VkRenderData &renderData, VkGltfRenderData& gltfRenderData);
     void cleanup(VkRenderData &remderData, VkGltfRenderData& gltfRenderData);
 
@@ -26,5 +27,6 @@ private:
 
     std::shared_ptr<tinygltf::Model> mModel = nullptr;
 
-    std::map<std::string, GLint> attributes = {{"POSITION", 0}, {"NORMAL", 1}, {"TEXCOORD_0", 2}};
+    std::map<std::string, GLint> attributes =
+      {{"POSITION", 0}, {"NORMAL", 1}, {"TEXCOORD_0", 2}};
 };

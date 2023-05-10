@@ -12,7 +12,8 @@
 
 class GltfModel {
   public:
-    bool loadModel(OGLRenderData &renderData, std::string modelFilename, std::string textureFilename);
+    bool loadModel(OGLRenderData &renderData, std::string modelFilename,
+      std::string textureFilename);
     void draw();
     void cleanup();
     void uploadVertexBuffers();
@@ -28,7 +29,8 @@ class GltfModel {
     GLuint mVAO = 0;
     std::vector<GLuint> mVertexVBO{};
     GLuint mIndexVBO = 0;
-    std::map<std::string, GLint> attributes = {{"POSITION", 0}, {"NORMAL", 1}, {"TEXCOORD_0", 2}};
+    std::map<std::string, GLint> attributes =
+      {{"POSITION", 0}, {"NORMAL", 1}, {"TEXCOORD_0", 2}};
 
     Texture mTex{};
 };
