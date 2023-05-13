@@ -44,13 +44,11 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   Logger::log(1, "%s: vertex buffer successfully created\n", __FUNCTION__);
 
   if (!mBasicShader.loadShaders("shader/basic.vert", "shader/basic.frag")) {
-    Logger::log(1, "%s: shader loading failed\n", __FUNCTION__);
+    Logger::log(1, "%s: basic shader loading failed\n", __FUNCTION__);
     return false;
   }
-  Logger::log(1, "%s: shaders succesfully loaded\n", __FUNCTION__);
-
   if (!mChangedShader.loadShaders("shader/changed.vert", "shader/changed.frag")) {
-    Logger::log(1, "%s: shader loading failed\n", __FUNCTION__);
+    Logger::log(1, "%s: changed shader loading failed\n", __FUNCTION__);
     return false;
   }
   Logger::log(1, "%s: shaders succesfully loaded\n", __FUNCTION__);

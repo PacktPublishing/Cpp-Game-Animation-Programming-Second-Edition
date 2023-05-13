@@ -51,11 +51,11 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   Logger::log(1, "%s: uniform buffer successfully created\n", __FUNCTION__);
 
   if (!mBasicShader.loadShaders("shader/basic.vert", "shader/basic.frag")) {
-    Logger::log(1, "%s: shader loading failed\n", __FUNCTION__);
+    Logger::log(1, "%s: basic shader loading failed\n", __FUNCTION__);
     return false;
   }
   if (!mLineShader.loadShaders("shader/line.vert", "shader/line.frag")) {
-    Logger::log(1, "%s: shader loading failed\n", __FUNCTION__);
+    Logger::log(1, "%s: line shader loading failed\n", __FUNCTION__);
     return false;
   }
   Logger::log(1, "%s: shaders succesfully loaded\n", __FUNCTION__);

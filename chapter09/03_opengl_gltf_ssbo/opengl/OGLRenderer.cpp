@@ -52,19 +52,19 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   Logger::log(1, "%s: matrix uniform buffer (size %i bytes) successfully created\n", __FUNCTION__, uniformMatrixBufferSize);
 
   if (!mBasicShader.loadShaders("shader/basic.vert", "shader/basic.frag")) {
-    Logger::log(1, "%s: shader loading failed\n", __FUNCTION__);
+    Logger::log(1, "%s: basic shader loading failed\n", __FUNCTION__);
     return false;
   }
   if (!mLineShader.loadShaders("shader/line.vert", "shader/line.frag")) {
-    Logger::log(1, "%s: shader loading failed\n", __FUNCTION__);
+    Logger::log(1, "%s: line shader loading failed\n", __FUNCTION__);
     return false;
   }
   if (!mGltfShader.loadShaders("shader/gltf.vert", "shader/gltf.frag")) {
-    Logger::log(1, "%s: shader loading failed\n", __FUNCTION__);
+    Logger::log(1, "%s: glTF model shader loading failed\n", __FUNCTION__);
     return false;
   }
   if (!mGltfGPUShader.loadShaders("shader/gltf_gpu.vert", "shader/gltf_gpu.frag")) {
-    Logger::log(1, "%s: shader loading failed\n", __FUNCTION__);
+    Logger::log(1, "%s: glTF GPU shader loading failed\n", __FUNCTION__);
     return false;
   }
   Logger::log(1, "%s: shaders succesfully loaded\n", __FUNCTION__);
@@ -94,8 +94,8 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   Logger::log(1, "%s: glTF model '%s' succesfully loaded\n", __FUNCTION__, modelFilename.c_str());
 
   size_t modelJointMatrixBufferSize = mGltfModel->getJointMatrixSize() * sizeof(glm::mat4);
-  mGltfUniformBuffer.init(modelJointMatrixBufferSize);
-  Logger::log(1, "%s: glTF joint matrix uniform buffer (size %i bytes) successfully created\n", __FUNCTION__, modelJointMatrixBufferSize);
+  mGltfShaderStorageBuffer.init(modelJointMatrixBufferSize);
+  Logger::log(1, "%s: glTF joint matrix shader storage buffer (size %i bytes) successfully created\n", __FUNCTION__, modelJointMatrixBufferSize);
 
   /* valid, but emtpy */
   mSkeletonMesh = std::make_shared<OGLMesh>();
@@ -277,7 +277,7 @@ void OGLRenderer::draw() {
   mUniformBuffer.uploadUboData(matrixData, 0);
 
   if (mRenderData.rdGPUVertexSkinning) {
-    mGltfUniformBuffer.uploadSsboData(mGltfModel->getJointMatrices(), 1);
+    mGltfShaderStorageBuffer.uploadSsboData(mGltfModel->getJointMatrices(), 1);
   }
   mRenderData.rdUploadToUBOTime = mUploadToUBOTimer.stop();
 
@@ -474,7 +474,7 @@ void OGLRenderer::cleanup() {
   mBasicShader.cleanup();
   mTex.cleanup();
   mVertexBuffer.cleanup();
-  mGltfUniformBuffer.cleanup();
+  mGltfShaderStorageBuffer.cleanup();
   mUniformBuffer.cleanup();
   mFramebuffer.cleanup();
 }

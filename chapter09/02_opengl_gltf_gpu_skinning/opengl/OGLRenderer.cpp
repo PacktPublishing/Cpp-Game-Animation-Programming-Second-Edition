@@ -52,19 +52,19 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   Logger::log(1, "%s: matrix uniform buffer (size %i bytes) successfully created\n", __FUNCTION__, uniformMatrixBufferSize);
 
   if (!mBasicShader.loadShaders("shader/basic.vert", "shader/basic.frag")) {
-    Logger::log(1, "%s: shader loading failed\n", __FUNCTION__);
+    Logger::log(1, "%s: basic shader loading failed\n", __FUNCTION__);
     return false;
   }
   if (!mLineShader.loadShaders("shader/line.vert", "shader/line.frag")) {
-    Logger::log(1, "%s: shader loading failed\n", __FUNCTION__);
+    Logger::log(1, "%s: line shader loading failed\n", __FUNCTION__);
     return false;
   }
   if (!mGltfShader.loadShaders("shader/gltf.vert", "shader/gltf.frag")) {
-    Logger::log(1, "%s: shader loading failed\n", __FUNCTION__);
+    Logger::log(1, "%s: glTF model shader loading failed\n", __FUNCTION__);
     return false;
   }
   if (!mGltfGPUShader.loadShaders("shader/gltf_gpu.vert", "shader/gltf_gpu.frag")) {
-    Logger::log(1, "%s: shader loading failed\n", __FUNCTION__);
+    Logger::log(1, "%s: glTF GPU shader loading failed\n", __FUNCTION__);
     return false;
   }
   Logger::log(1, "%s: shaders succesfully loaded\n", __FUNCTION__);

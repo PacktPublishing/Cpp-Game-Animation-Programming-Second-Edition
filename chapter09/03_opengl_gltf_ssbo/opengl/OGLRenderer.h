@@ -56,7 +56,7 @@ class OGLRenderer {
     Texture mTex{};
     VertexBuffer mVertexBuffer{};
     UniformBuffer mUniformBuffer{};
-    ShaderStorageBuffer mGltfUniformBuffer{};
+    ShaderStorageBuffer mGltfShaderStorageBuffer{};
     UserInterface mUserInterface{};
     Camera mCamera{};
 
