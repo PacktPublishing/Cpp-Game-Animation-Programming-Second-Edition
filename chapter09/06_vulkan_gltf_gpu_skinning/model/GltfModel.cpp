@@ -55,14 +55,13 @@ bool GltfModel::loadModel(VkRenderData &renderData, VkGltfRenderData &gltfRender
   Logger::log(1, "%s: model has %i nodes, root node is %i\n", __FUNCTION__, nodeCount, rootNode);
 
   mRootNode = GltfNode::createRoot(rootNode);
-  const tinygltf::Node &node = mModel->nodes.at(rootNode);
-  getNodeData(mRootNode);
+  getNodeData(mRootNode, glm::mat4(1.0f));
   getNodes(mRootNode);
 
   /* get Skeleton data */
   mSkeletonMesh = std::make_shared<VkMesh>();
 
-  //mRootNode->printTree();
+  mRootNode->printTree();
 
   renderData.rdGltfTriangleCount = getTriangleCount();;
 
@@ -179,33 +178,31 @@ void GltfModel::getNodes(std::shared_ptr<GltfNode> treeNode) {
   childNodes.erase(removeIt, childNodes.end());
 
   treeNode->addChilds(childNodes);
+  glm::mat4 treeNodeMatrix = treeNode->getNodeMatrix();
 
-  for (const auto &childNode : treeNode->getChilds()) {
-    getNodeData(childNode);
+  for (auto &childNode : treeNode->getChilds()) {
+    getNodeData(childNode, treeNodeMatrix);
     getNodes(childNode);
   }
 }
 
-void GltfModel::getNodeData(std::shared_ptr<GltfNode> treeNode) {
+void GltfModel::getNodeData(std::shared_ptr<GltfNode> treeNode, glm::mat4 parentNodeMatrix) {
   int nodeNum = treeNode->getNodeNum();
   const tinygltf::Node &node = mModel->nodes.at(nodeNum);
   treeNode->setNodeName(node.name);
 
-  if (node.matrix.size()) {
-    treeNode->setMatrix(glm::make_mat4(node.matrix.data()));
-  } else {
-    if (node.translation.size()) {
-      treeNode->setTranslation(glm::make_vec3(node.translation.data()));
-    }
-    if (node.rotation.size()) {
-      treeNode->setRotation(glm::make_quat(node.rotation.data()));
-    }
-    if (node.scale.size()) {
-      treeNode->setScale(glm::make_vec3(node.scale.data()));
-    }
+  if (node.translation.size()) {
+    treeNode->setTranslation(glm::make_vec3(node.translation.data()));
+  }
+  if (node.rotation.size()) {
+    treeNode->setRotation(glm::make_quat(node.rotation.data()));
+  }
+  if (node.scale.size()) {
+    treeNode->setScale(glm::make_vec3(node.scale.data()));
   }
 
   treeNode->calculateLocalTRSMatrix();
+  treeNode->calculateNodeMatrix(parentNodeMatrix);
 
   mJointMatrices.at(mNodeToJoint.at(nodeNum)) =
     treeNode->getNodeMatrix() * mInverseBindMatrices.at(mNodeToJoint.at(nodeNum));
@@ -279,13 +276,13 @@ void GltfModel::applyVertexSkinning(VkRenderData &renderData, VkGltfRenderData& 
     bufferView.byteLength);
 
   for (int i = 0; i < mJointVec.size(); ++i) {
-    glm::ivec4 joindIndex = glm::make_vec4(mJointVec.at(i));
+    glm::ivec4 jointIndex = glm::make_vec4(mJointVec.at(i));
     glm::vec4 weightIndex = glm::make_vec4(mWeightVec.at(i));
     glm::mat4 skinMat =
-      weightIndex.x * mJointMatrices.at(joindIndex.x) +
-      weightIndex.y * mJointMatrices.at(joindIndex.y) +
-      weightIndex.z * mJointMatrices.at(joindIndex.z) +
-      weightIndex.w * mJointMatrices.at(joindIndex.w);
+      weightIndex.x * mJointMatrices.at(jointIndex.x) +
+      weightIndex.y * mJointMatrices.at(jointIndex.y) +
+      weightIndex.z * mJointMatrices.at(jointIndex.z) +
+      weightIndex.w * mJointMatrices.at(jointIndex.w);
     mAlteredPositions.at(i) = skinMat * glm::vec4(mAlteredPositions.at(i), 1.0f);
   }
 

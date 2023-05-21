@@ -12,7 +12,6 @@ std::shared_ptr<GltfNode> GltfNode::createRoot(int rootNodeNum) {
 void GltfNode::addChilds(std::vector<int> childNodes) {
   for (const int childNode : childNodes) {
     std::shared_ptr<GltfNode> child = std::make_shared<GltfNode>();
-    child->mParentNode = shared_from_this();
     child->mNodeNum = childNode;
 
     mChildNodes.push_back(child);
@@ -43,44 +42,40 @@ void GltfNode::setRotation(glm::quat rotation) {
   mRotation = rotation;
 }
 
-void GltfNode::setMatrix(glm::mat4 matrix) {
-  mMatrix = matrix;
-}
-
 void GltfNode::calculateLocalTRSMatrix() {
   glm::mat4 sMatrix = glm::scale(glm::mat4(1.0f), mScale);
   glm::mat4 rMatrix = glm::mat4_cast(mRotation);
   glm::mat4 tMatrix = glm::translate(glm::mat4(1.0f), mTranslation);
-  mLocalTRSMatrix = tMatrix * rMatrix * sMatrix * mMatrix;
+  mLocalTRSMatrix = tMatrix * rMatrix * sMatrix;
+}
+
+void GltfNode::calculateNodeMatrix(glm::mat4 parentNodeMatrix) {
+  mNodeMatrix = parentNodeMatrix * mLocalTRSMatrix;
 }
 
 glm::mat4 GltfNode::getNodeMatrix() {
-  calculateLocalTRSMatrix();
-  mNodeMatrix = mLocalTRSMatrix;
-  std::shared_ptr<GltfNode> pNode = mParentNode.lock();
-  if (pNode) {
-    mNodeMatrix = pNode->getNodeMatrix() * mLocalTRSMatrix;
-  }
   return mNodeMatrix;
 }
 
 void GltfNode::printTree() {
   Logger::log(1, "%s: ---- tree ----\n", __FUNCTION__);
   Logger::log(1, "%s: parent : %i (%s)\n", __FUNCTION__, mNodeNum, mNodeName.c_str());
-  printNodes(shared_from_this(), 1);
+  for (const auto& childNode : mChildNodes) {
+    GltfNode::printNodes(childNode, 1);
+  }
   Logger::log(1, "%s: -- end tree --\n", __FUNCTION__);
 }
 
-void GltfNode::printNodes(std::shared_ptr<GltfNode> rootNode, int indent) {
+void GltfNode::printNodes(std::shared_ptr<GltfNode> node, int indent) {
   std::string indendString = "";
   for (int i = 0; i < indent; ++i) {
     indendString += " ";
   }
   indendString += "-";
+  Logger::log(1, "%s: %s child : %i (%s)\n", __FUNCTION__,
+   indendString.c_str(), node->mNodeNum, node->mNodeName.c_str());
 
-  for (const auto& childNode : rootNode->mChildNodes) {
-    Logger::log(1, "%s: %s child : %i (%s)\n", __FUNCTION__,
-      indendString.c_str(), childNode->mNodeNum, childNode->mNodeName.c_str());
+  for (const auto& childNode : node->mChildNodes) {
     GltfNode::printNodes(childNode, indent + 1);
   }
 }

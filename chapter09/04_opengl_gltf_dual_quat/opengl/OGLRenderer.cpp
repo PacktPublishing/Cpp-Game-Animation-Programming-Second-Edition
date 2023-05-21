@@ -89,8 +89,8 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   Logger::log(1, "%s: model mesh storage initialized\n", __FUNCTION__);
 
   mGltfModel = std::make_shared<GltfModel>();
-  std::string modelFilename = "assets/Woman.gltf";
-  std::string modelTexFilename = "textures/Woman.png";
+  std::string modelFilename = "assets/dq.gltf";
+  std::string modelTexFilename = "textures/dq.png";
   if (!mGltfModel->loadModel(mRenderData, modelFilename, modelTexFilename)) {
     Logger::log(1, "%s: loading glTF model '%s' failed\n", __FUNCTION__, modelFilename.c_str());
     return false;
@@ -432,16 +432,20 @@ void OGLRenderer::draw() {
   }
 
   /* draw the lines first */
+  /*
   if (mLineIndexCount > 0) {
     mLineShader.use();
     mVertexBuffer.bindAndDraw(GL_LINES, 0, mLineIndexCount);
   }
+  */
 
   /* draw the box models */
+  /*
   mBasicShader.use();
   mTex.bind();
   mVertexBuffer.bindAndDraw(GL_TRIANGLES, mLineIndexCount + mSkeletonLineIndexCount, mRenderData.rdTriangleCount * 3);
   mTex.unbind();
+  */
 
   /* draw the glTF model */
   if (mRenderData.rdDrawGltfModel) {

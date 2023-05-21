@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-class GltfNode : public std::enable_shared_from_this<GltfNode> {
+class GltfNode {
   public:
     static std::shared_ptr<GltfNode> createRoot(int rootNodeNum);
     void addChilds(std::vector<int> childNodes);
@@ -20,6 +20,7 @@ class GltfNode : public std::enable_shared_from_this<GltfNode> {
     void setMatrix(glm::mat4 matrix);
 
     void calculateLocalTRSMatrix();
+    void calculateNodeMatrix(glm::mat4 parentNodeMatrix);
     glm::mat4 getNodeMatrix();
 
     void printTree();
@@ -30,14 +31,11 @@ class GltfNode : public std::enable_shared_from_this<GltfNode> {
     int mNodeNum = 0;
     std::string mNodeName;
 
-    /* std::weak_ptr to break circular depenency between parent and child nodes */
-    std::weak_ptr<GltfNode> mParentNode;
     std::vector<std::shared_ptr<GltfNode>> mChildNodes{};
 
     glm::vec3 mScale = glm::vec3(1.0f);
     glm::vec3 mTranslation = glm::vec3(0.0f);
     glm::quat mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-    glm::mat4 mMatrix = glm::mat4(1.0f);
 
     glm::mat4 mLocalTRSMatrix = glm::mat4(1.0f);
     glm::mat4 mNodeMatrix = glm::mat4(1.0f);

@@ -506,8 +506,8 @@ bool VkRenderer::initUserInterface(VkRenderData& renderData) {
 
 bool VkRenderer::loadGltfModel(VkRenderData &renderData, VkGltfRenderData &gltfRenderData) {
   mGltfModel = std::make_shared<GltfModel>();
-  std::string modelFilename = "assets/Woman.gltf";
-  std::string modelTexFilename = "textures/Woman.png";
+  std::string modelFilename = "assets/dq.gltf";
+  std::string modelTexFilename = "textures/dq.png";
   if (!mGltfModel->loadModel(mRenderData, gltfRenderData, modelFilename, modelTexFilename)) {
     Logger::log(1, "%s: loading glTF model '%s' failed\n", __FUNCTION__, modelFilename.c_str());
     return false;
@@ -939,18 +939,22 @@ bool VkRenderer::draw() {
     &mRenderData.rdVertexBufferData.rdVertexBuffer, &offset);
 
   /* draw lines first */
+  /*
   if (mLineIndexCount > 0) {
     vkCmdBindPipeline(mRenderData.rdCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
       mRenderData.rdLinePipeline);
     vkCmdSetLineWidth(mRenderData.rdCommandBuffer, 3.0f);
     vkCmdDraw(mRenderData.rdCommandBuffer, mLineIndexCount, 1, 0, 0);
   }
+  */
 
   /* draw box model */
+  /*
   vkCmdBindPipeline(mRenderData.rdCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
     mRenderData.rdBasicPipeline);
   vkCmdDraw(mRenderData.rdCommandBuffer, mRenderData.rdTriangleCount * 3, 1,
     mLineIndexCount + mSkeletonLineIndexCount, 0);
+  */
 
   /* draw glTF model */
   if (mRenderData.rdDrawGltfModel) {

@@ -37,7 +37,7 @@ class GltfModel {
     void getWeightData();
     void getInvBindMatrices();
     void getNodes(std::shared_ptr<GltfNode> treeNode);
-    void getNodeData(std::shared_ptr<GltfNode> treeNode);
+    void getNodeData(std::shared_ptr<GltfNode> treeNode, glm::mat4 parentNodeMatrix);
 
     std::vector<glm::tvec4<uint16_t>> mJointVec{};
     std::vector<glm::vec4> mWeightVec{};

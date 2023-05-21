@@ -41,9 +41,9 @@ struct OGLRenderData {
 
   float rdTickDiff = 0.0f;
 
-  float rdViewAzimuth = 0.0f;
-  float rdViewElevation = 0.0f;
-  glm::vec3 rdCameraWorldPosition = glm::vec3(-0.5f, 2.5f, 6.0f);
+  float rdViewAzimuth = 26.0f;
+  float rdViewElevation = -27.0f;
+  glm::vec3 rdCameraWorldPosition = glm::vec3(-3.5f, 4.5f, 5.5f);
 
   bool rdDrawWorldCoordArrows = true;
   bool rdDrawModelCoordArrows = true;
@@ -54,7 +54,7 @@ struct OGLRenderData {
   int rdRotZAngle = 0;
 
   bool rdDrawGltfModel = true;
-  bool rdDrawSkeleton = true;
+  bool rdDrawSkeleton = false;
   bool rdGPUVertexSkinning = true;
   bool rdGPUDualQuatVertexSkinning = false;
 };
