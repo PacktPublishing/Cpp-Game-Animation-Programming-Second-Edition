@@ -37,7 +37,7 @@ mat2x4 getJointTransform(uvec4 joints, vec4 weights) {
       weights.z * dq2 +
       weights.w * dq3;
 
-  // normalize rotation quaternion
+  // normalize the dual quaternion
   float norm = length(result[0]);
   return result / norm;
 }
