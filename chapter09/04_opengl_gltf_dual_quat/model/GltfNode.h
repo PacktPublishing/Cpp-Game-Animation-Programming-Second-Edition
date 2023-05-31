@@ -17,7 +17,6 @@ class GltfNode {
     void setScale(glm::vec3 scale);
     void setTranslation(glm::vec3 translation);
     void setRotation(glm::quat rotation);
-    void setMatrix(glm::mat4 matrix);
 
     void calculateLocalTRSMatrix();
     void calculateNodeMatrix(glm::mat4 parentNodeMatrix);

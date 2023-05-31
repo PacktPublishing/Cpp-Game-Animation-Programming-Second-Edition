@@ -366,6 +366,7 @@ bool VkRenderer::createGltfPipelineLayout(VkRenderData &renderData, VkGltfRender
   }
   return true;
 }
+
 bool VkRenderer::createGltfPipeline(VkRenderData& renderData) {
   std::string vertexShaderFile = "shader/gltf.vert.spv";
   std::string fragmentShaderFile = "shader/gltf.frag.spv";
