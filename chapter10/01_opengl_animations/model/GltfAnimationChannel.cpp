@@ -1,5 +1,4 @@
 #include "GltfAnimationChannel.h"
-#include "Logger.h"
 
 void GltfAnimationChannel::loadChannelData(std::shared_ptr<tinygltf::Model> model, tinygltf::Animation anim, tinygltf::AnimationChannel channel) {
   mTargetNode = channel.target_node;
@@ -139,9 +138,6 @@ glm::vec3 GltfAnimationChannel::getScaling(float time) {
           (interpolatedTimeCub - interpolatedTimeSq) * nextTangent;
       }
       break;
-    default:
-      Logger::log(1, "%s error: should never be reached\n", __FUNCTION__);
-      break;
   }
 
   return finalScale;
@@ -213,9 +209,6 @@ glm::vec3 GltfAnimationChannel::getTranslation(float time) {
           (interpolatedTimeCub - interpolatedTimeSq) * nextTangent;
       }
       break;
-    default:
-      Logger::log(1, "%s error: should never be reached\n", __FUNCTION__);
-      break;
   }
 
   return finalTranslate;
@@ -284,9 +277,6 @@ glm::quat GltfAnimationChannel::getRotation(float time) {
           (-2 * interpolatedTimeCub + 3 * interpolatedTimeSq) * nextPoint +
           (interpolatedTimeCub - interpolatedTimeSq) * nextTangent;
       }
-      break;
-    default:
-      Logger::log(1, "%s error: should never be reached\n", __FUNCTION__);
       break;
   }
 

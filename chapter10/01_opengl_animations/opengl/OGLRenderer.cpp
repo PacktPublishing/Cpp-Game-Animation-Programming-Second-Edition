@@ -279,7 +279,7 @@ void OGLRenderer::draw() {
 
   /* upload vertex data */
   mUploadToVBOTimer.start();
- 
+
   if (mRenderData.rdDrawSkeleton) {
     uploadData(*mSkeletonMesh);
   }

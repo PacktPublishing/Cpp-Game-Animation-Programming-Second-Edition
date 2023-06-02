@@ -50,11 +50,11 @@ struct OGLRenderData {
   bool rdDrawSkeleton = true;
   bool rdGPUDualQuatVertexSkinning = false;
 
+  bool rdPlayAnimation = true;
+  std::string rdClipName = "None";
   int rdAnimClip = 0;
   int rdAnimClipSize = 0;
-  std::string rdClipName = "None";
   float rdAnimSpeed = 1.0f;
   float rdAnimTimePosition = 0.0f;
   float rdAnimEndTime = 0.0f;
-  bool rdPlayAnimation = true;
 };

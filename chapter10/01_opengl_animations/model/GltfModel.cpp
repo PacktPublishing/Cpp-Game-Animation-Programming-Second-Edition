@@ -158,8 +158,8 @@ void GltfModel::getAnimations() {
 }
 
 void GltfModel::playAnimation(int animNum, float speedDivider) {
-  auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-  setAnimationFrame(animNum, std::fmod(currentTime / 1000.0f * speedDivider, mAnimClips.at(animNum).getClipEndTime()));
+  double currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+  setAnimationFrame(animNum, std::fmod(currentTime / 1000.0 * speedDivider, mAnimClips.at(animNum).getClipEndTime()));
 }
 
 void GltfModel::setAnimationFrame(int animNum, float time) {
