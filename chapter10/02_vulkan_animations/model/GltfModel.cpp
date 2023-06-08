@@ -145,30 +145,30 @@ void GltfModel::getInvBindMatrices() {
 void GltfModel::getAnimations() {
   for (const auto& anim : mModel->animations) {
     Logger::log(1, "%s: loading animation '%s' with %i channels\n", __FUNCTION__, anim.name.c_str(), anim.channels.size());
-    GltfAnimationClip clip(anim.name);
+    std::shared_ptr<GltfAnimationClip> clip = std::make_shared<GltfAnimationClip>(anim.name);
     for (const auto& channel : anim.channels) {
-      clip.addChannel(mModel, anim, channel);
+      clip->addChannel(mModel, anim, channel);
     }
     mAnimClips.push_back(clip);
   }
 }
-  
+
 void GltfModel::playAnimation(int animNum, float speedDivider) {
   double currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-  setAnimationFrame(animNum, std::fmod(currentTime / 1000.0 * speedDivider, mAnimClips.at(animNum).getClipEndTime()));
+  setAnimationFrame(animNum, std::fmod(currentTime / 1000.0 * speedDivider, mAnimClips.at(animNum)->getClipEndTime()));
 }
 
 void GltfModel::setAnimationFrame(int animNum, float time) {
-  mAnimClips.at(animNum).setAnimationFrame(mNodeList, time);
+  mAnimClips.at(animNum)->setAnimationFrame(mNodeList, time);
   updateNodesMatrices(mRootNode, glm::mat4(1.0f));
 }
 
 float GltfModel::getAnimationEndTime(int animNum) {
-  return mAnimClips.at(animNum).getClipEndTime();
+  return mAnimClips.at(animNum)->getClipEndTime();
 }
 
 std::string GltfModel::getClipName(int animNum) {
-  return mAnimClips.at(animNum).getClipName();
+  return mAnimClips.at(animNum)->getClipName();
 }
 
 std::shared_ptr<VkMesh> GltfModel::getSkeleton(bool enableSkinning) {

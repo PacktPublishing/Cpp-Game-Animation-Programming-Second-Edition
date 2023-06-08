@@ -2,13 +2,15 @@
 
 GltfAnimationClip::GltfAnimationClip(std::string name) : mClipName(name) {}
 
-void GltfAnimationClip::addChannel(std::shared_ptr<tinygltf::Model> model, tinygltf::Animation anim, tinygltf::AnimationChannel channel) {
+void GltfAnimationClip::addChannel(std::shared_ptr<tinygltf::Model> model,
+    tinygltf::Animation anim, tinygltf::AnimationChannel channel) {
   std::shared_ptr<GltfAnimationChannel> chan = std::make_shared<GltfAnimationChannel>();
   chan->loadChannelData(model, anim, channel);
   mAnimationChannels.push_back(chan);
 }
 
-void GltfAnimationClip::setAnimationFrame(std::vector<std::shared_ptr<GltfNode>> nodes, float time) {
+void GltfAnimationClip::setAnimationFrame(std::vector<std::shared_ptr<GltfNode>> nodes,
+    float time) {
   for (auto &channel : mAnimationChannels) {
     int targetNode = channel->getTargetNode();
     switch(channel->getTargetPath()) {
@@ -22,7 +24,12 @@ void GltfAnimationClip::setAnimationFrame(std::vector<std::shared_ptr<GltfNode>>
         nodes.at(targetNode)->setScale(channel->getScaling(time));
         break;
     }
-    nodes.at(targetNode)->calculateLocalTRSMatrix();
+  }
+  /* update all nodes in a single run */
+  for (auto &node : nodes) {
+    if (node) {
+      node->calculateLocalTRSMatrix();
+    }
   }
 }
 

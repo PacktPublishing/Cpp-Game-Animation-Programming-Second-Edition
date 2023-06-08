@@ -67,7 +67,7 @@ class GltfModel {
 
     std::vector<std::shared_ptr<GltfNode>> mNodeList;
 
-    std::vector<GltfAnimationClip> mAnimClips{};
+    std::vector<std::shared_ptr<GltfAnimationClip>> mAnimClips{};
 
     std::map<std::string, GLint> attributes =
       {{"POSITION", 0}, {"NORMAL", 1}, {"TEXCOORD_0", 2}, {"JOINTS_0", 3}, {"WEIGHTS_0", 4}};

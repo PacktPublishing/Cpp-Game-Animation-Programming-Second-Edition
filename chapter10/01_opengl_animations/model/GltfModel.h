@@ -66,7 +66,7 @@ class GltfModel {
 
     std::vector<std::shared_ptr<GltfNode>> mNodeList;
 
-    std::vector<GltfAnimationClip> mAnimClips{};
+    std::vector<std::shared_ptr<GltfAnimationClip>> mAnimClips{};
 
     GLuint mVAO = 0;
     std::vector<GLuint> mVertexVBO{};
