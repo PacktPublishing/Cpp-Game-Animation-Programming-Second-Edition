@@ -34,8 +34,6 @@ class GltfModel {
       float blendFactor, bool playBackwards);
 
     void blendAnimationFrame(int animNumber, float time, float blendFactor);
-    void blendAnimationFrame(int sourceAnimNumber, int destAnimNumber, float time,
-      float blendFactor);
     void crossBlendAnimationFrame(int sourceAnimNumber, int destAnimNumber, float time,
       float blendFactor);
 

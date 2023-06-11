@@ -211,7 +211,7 @@ void UserInterface::createFrame(OGLRenderData &renderData) {
 
     ImGui::Text("Cross Blend ");
     ImGui::SameLine();
-    ImGui::SliderFloat("##CroosBlendFactor", &renderData.rdAnimCrossBlendFactor, 0.0f, 1.0f,
+    ImGui::SliderFloat("##CrossBlendFactor", &renderData.rdAnimCrossBlendFactor, 0.0f, 1.0f,
       "%.3f", flags);
 
     if (!renderData.rdCrossBlending) {

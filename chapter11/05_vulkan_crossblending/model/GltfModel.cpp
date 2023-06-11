@@ -190,13 +190,11 @@ void GltfModel::blendAnimationFrame(int animNum, float time, float blendFactor) 
 void GltfModel::crossBlendAnimationFrame(int sourceAnimNumber, int destAnimNumber, float time,
     float blendFactor) {
 
-  mAnimClips.at(sourceAnimNumber)->setAnimationFrame(mNodeList, time);
-
   float sourceAnimDuration = mAnimClips.at(sourceAnimNumber)->getClipEndTime();
   float destAnimDuration = mAnimClips.at(destAnimNumber)->getClipEndTime();
-
   float scaledTime = time * (destAnimDuration / sourceAnimDuration);
 
+  mAnimClips.at(sourceAnimNumber)->setAnimationFrame(mNodeList, time);
   mAnimClips.at(destAnimNumber)->blendAnimationFrame(mNodeList, scaledTime, blendFactor);
   updateNodesMatrices(mRootNode, glm::mat4(1.0f));
 }

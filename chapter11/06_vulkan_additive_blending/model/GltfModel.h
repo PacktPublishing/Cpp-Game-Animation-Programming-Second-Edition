@@ -34,8 +34,6 @@ class GltfModel {
       float blendFactor, bool playBackwards);
 
     void blendAnimationFrame(int animNumber, float time, float blendFactor);
-    void blendAnimationFrame(int sourceAnimNumber, int destAnimNumber, float time,
-      float blendFactor);
     void crossBlendAnimationFrame(int sourceAnimNumber, int destAnimNumber, float time,
       float blendFactor);
 
@@ -62,7 +60,7 @@ class GltfModel {
     void getNodeData(std::shared_ptr<GltfNode> treeNode, glm::mat4 parentNodeMatrix);
     void updateNodesMatrices(std::shared_ptr<GltfNode> treeNode, glm::mat4 parentNodeMatrix);
     void updateJointMatricesAndQuats(std::shared_ptr<GltfNode> treeNode);
-    void updateAdditiveMask(std::shared_ptr<GltfNode> treeNode, int splitNdeNum);
+    void updateAdditiveMask(std::shared_ptr<GltfNode> treeNode, int splitNodeNum);
 
     std::vector<glm::tvec4<uint16_t>> mJointVec{};
     std::vector<glm::vec4> mWeightVec{};

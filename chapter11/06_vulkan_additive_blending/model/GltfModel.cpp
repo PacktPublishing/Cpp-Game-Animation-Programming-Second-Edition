@@ -465,7 +465,7 @@ void GltfModel::setSkeletonSplitNode(int nodeNum) {
 }
 
 std::string GltfModel::getNodeName(int nodeNum) {
-  if (nodeNum >= 0 && nodeNum < (mNodeList.size() - 1) && mNodeList.at(nodeNum)) {
+  if (nodeNum >= 0 && nodeNum < (mNodeList.size()) && mNodeList.at(nodeNum)) {
     return mNodeList.at(nodeNum)->getNodeName();
   }
   return "(Invalid)";

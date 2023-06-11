@@ -253,6 +253,15 @@ void UserInterface::createFrame(VkRenderData& renderData) {
 
     ImGui::Checkbox("Play Animation", &renderData.rdPlayAnimation);
 
+    ImGui::Checkbox("Animation Direction:", &renderData.rdPlayAnimationBackward);
+    ImGui::SameLine();
+    if (!renderData.rdPlayAnimationBackward) {
+      ImGui::Text("Forward");
+    }
+    else {
+      ImGui::Text("Backward");
+    }
+
     if (!renderData.rdPlayAnimation) {
       ImGui::BeginDisabled();
     }
