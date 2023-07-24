@@ -498,7 +498,7 @@ void OGLRenderer::draw() {
 }
 
 void OGLRenderer::cleanup() {
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 0; i < mGltfModels.size(); ++i) {
     mGltfModels.at(i)->cleanup();
     mGltfModels.at(i).reset();
   }

@@ -60,7 +60,6 @@ bool GltfModel::loadModel(OGLRenderData &renderData,
   getWeightData();
   getInvBindMatrices();
 
-  /* build model tree */
   mNodeCount = mModel->nodes.size();
 
   /* extract animation data */
@@ -246,8 +245,8 @@ void GltfModel::createVertexBuffers() {
     const tinygltf::Buffer &buffer = mModel->buffers.at(bufferView.buffer);
 
     if ((attribType.compare("POSITION") != 0) && (attribType.compare("NORMAL") != 0)
-        && (attribType.compare("TEXCOORD_0") != 0) && (attribType.compare("JOINTS_0") != 0
-        && (attribType.compare("WEIGHTS_0") != 0))) {
+        && (attribType.compare("TEXCOORD_0") != 0) && (attribType.compare("JOINTS_0") != 0)
+        && (attribType.compare("WEIGHTS_0") != 0)) {
       Logger::log(1, "%s: skipping attribute type %s\n", __FUNCTION__, attribType.c_str());
       continue;
     }
