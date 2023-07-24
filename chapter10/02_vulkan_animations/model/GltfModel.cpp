@@ -311,7 +311,6 @@ void GltfModel::createVertexBuffers(VkRenderData &renderData, VkGltfRenderData &
       accessorNum);
     if (attribType.compare("POSITION") == 0) {
       int numPositionEntries = accessor.count;
-      mAlteredPositions.resize(numPositionEntries);
       Logger::log(1, "%s: loaded %i vertices from glTF file\n", __FUNCTION__,
         numPositionEntries);
     }
@@ -360,7 +359,17 @@ void GltfModel::uploadIndexBuffer(VkRenderData& renderData, VkGltfRenderData& gl
 int GltfModel::getTriangleCount() {
   const tinygltf::Primitive &primitives = mModel->meshes.at(0).primitives.at(0);
   const tinygltf::Accessor &indexAccessor = mModel->accessors.at(primitives.indices);
-  return indexAccessor.count;
+
+  unsigned int triangles = 0;
+  switch (primitives.mode) {
+    case TINYGLTF_MODE_TRIANGLES:
+      triangles =  indexAccessor.count / 3;
+      break;
+    default:
+      Logger::log(1, "%s error: unknown draw mode %i\n", __FUNCTION__, primitives.mode);
+      break;
+  }
+  return triangles;
 }
 
 int GltfModel::getJointMatrixSize() {

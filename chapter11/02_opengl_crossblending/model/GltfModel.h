@@ -66,8 +66,6 @@ class GltfModel {
     std::vector<int> mAttribAccessors{};
     std::vector<int> mNodeToJoint{};
 
-    std::vector<glm::vec3> mAlteredPositions{};
-    std::vector<glm::vec3> mAlteredNormals{};
 
     std::shared_ptr<GltfNode> mRootNode = nullptr;
     std::shared_ptr<tinygltf::Model> mModel = nullptr;

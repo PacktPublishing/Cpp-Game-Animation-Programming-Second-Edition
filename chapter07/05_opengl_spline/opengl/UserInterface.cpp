@@ -155,7 +155,7 @@ void UserInterface::createFrame(OGLRenderData &renderData) {
     ImGui::PopStyleColor();
     ImGui::SameLine();
     ImGui::SliderFloat3("##ENDTANG", glm::value_ptr(renderData.rdSplineEndTangent), -10.0f, 10.0f);
-}
+  }
 
   ImGui::End();
 }

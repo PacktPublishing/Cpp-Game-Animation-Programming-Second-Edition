@@ -50,5 +50,4 @@ class GltfNode {
 
     glm::mat4 mLocalTRSMatrix = glm::mat4(1.0f);
     glm::mat4 mNodeMatrix = glm::mat4(1.0f);
-    glm::mat4 mInverseBindMatrix = glm::mat4(1.0f);
 };

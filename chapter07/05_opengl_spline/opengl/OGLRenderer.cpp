@@ -3,7 +3,6 @@
 #include <imgui_impl_glfw.h>
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/spline.hpp>
 
 #include "OGLRenderer.h"
 #include "Logger.h"
