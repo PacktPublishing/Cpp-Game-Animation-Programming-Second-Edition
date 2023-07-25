@@ -328,13 +328,8 @@ bool VkRenderer::createUBO(VkRenderData &renderData, VkUniformBufferData &UBODat
 }
 
 bool VkRenderer::createMatrixTBO(VkRenderData &renderData, VkTexelBufferData &TBOData) {
-  size_t modelJointMatrixBufferSize = 0;
-  int jointMatrixSize = 0;
-
-  for (const auto &instance : mGltfInstances) {
-    jointMatrixSize += instance->getJointMatrixSize();
-    modelJointMatrixBufferSize += instance->getJointMatrixSize() * sizeof(glm::mat4);
-  }
+  size_t modelJointMatrixBufferSize = mRenderData.rdNumberOfInstances * mGltfInstances.at(0)->getJointMatrixSize() *
+    sizeof(glm::mat4);
 
   if (!TexelBuffer::init(renderData, TBOData, modelJointMatrixBufferSize)) {
     Logger::log(1, "%s error: could not create shader storage buffers\n", __FUNCTION__);
@@ -344,15 +339,8 @@ bool VkRenderer::createMatrixTBO(VkRenderData &renderData, VkTexelBufferData &TB
 }
 
 bool VkRenderer::createDQSSBO(VkRenderData &renderData, VkShaderStorageBufferData &SSBOData) {
-
-  size_t modelJointDualQuatBufferSize = 0;
-  int jointQuatSize = 0;
-
-  for (const auto &instance : mGltfInstances) {
-    jointQuatSize += instance->getJointDualQuatsSize();
-    modelJointDualQuatBufferSize += instance->getJointDualQuatsSize() *
-      sizeof(glm::mat2x4);
-  }
+  size_t modelJointDualQuatBufferSize = mRenderData.rdNumberOfInstances * mGltfInstances.at(0)->getJointDualQuatsSize() *
+    sizeof(glm::mat2x4);
 
   if (!ShaderStorageBuffer::init(renderData, SSBOData, modelJointDualQuatBufferSize)) {
     Logger::log(1, "%s error: could not create shader storage buffers\n", __FUNCTION__);

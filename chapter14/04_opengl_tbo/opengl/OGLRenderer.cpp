@@ -114,19 +114,10 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
 
   mRenderData.rdNumberOfInstances = mGltfInstances.size();
 
-  size_t modelJointMatrixBufferSize = 0;
-  size_t modelJointDualQuatBufferSize = 0;
-  int jointMatrixSize = 0;
-  int jointQuatSize = 0;
-
-  for (const auto &instance : mGltfInstances) {
-    jointMatrixSize += instance->getJointMatrixSize();
-    modelJointMatrixBufferSize += instance->getJointMatrixSize() * sizeof(glm::mat4);
-
-    jointQuatSize += instance->getJointDualQuatsSize();
-    modelJointDualQuatBufferSize += instance->getJointDualQuatsSize() *
-      sizeof(glm::mat2x4);
-  }
+  size_t modelJointMatrixBufferSize = mRenderData.rdNumberOfInstances * mGltfInstances.at(0)->getJointMatrixSize() *
+    sizeof(glm::mat4);
+  size_t modelJointDualQuatBufferSize = mRenderData.rdNumberOfInstances * mGltfInstances.at(0)->getJointDualQuatsSize() *
+     sizeof(glm::mat2x4);
 
   mGltfTextureBuffer.init(modelJointMatrixBufferSize);
   Logger::log(1, "%s: glTF joint matrix texture buffer (size %i bytes) successfully created\n", __FUNCTION__, modelJointMatrixBufferSize);
