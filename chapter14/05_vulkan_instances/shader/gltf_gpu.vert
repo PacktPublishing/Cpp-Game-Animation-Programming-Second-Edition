@@ -24,10 +24,10 @@ layout (std430, set = 2, binding = 0) readonly buffer JointMatrices {
 
 void main() {
   mat4 skinMat =
-		aJointWeight.x * jointMat[aJointNum.x + aModelStride] +
-		aJointWeight.y * jointMat[aJointNum.y + aModelStride] +
-		aJointWeight.z * jointMat[aJointNum.z + aModelStride] +
-		aJointWeight.w * jointMat[aJointNum.w + aModelStride];
+    aJointWeight.x * jointMat[aJointNum.x + aModelStride] +
+    aJointWeight.y * jointMat[aJointNum.y + aModelStride] +
+    aJointWeight.z * jointMat[aJointNum.z + aModelStride] +
+    aJointWeight.w * jointMat[aJointNum.w + aModelStride];
   gl_Position = projection * view * skinMat * vec4(aPos, 1.0);
   normal = vec3(transpose(inverse(skinMat)) * vec4(aNormal, 1.0));
   texCoord = aTexCoord;

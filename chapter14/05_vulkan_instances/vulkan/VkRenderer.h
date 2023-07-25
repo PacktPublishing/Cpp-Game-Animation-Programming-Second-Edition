@@ -35,7 +35,6 @@
 #include "GltfInstance.h"
 
 #include "VkRenderData.h"
-#include "ModelSettings.h"
 
 class VkRenderer {
   public:
@@ -88,8 +87,6 @@ class VkRenderer {
     Timer mUploadToUBOTimer{};
     Timer mUIGenerateTimer{};
     Timer mUIDrawTimer{};
-
-    ModelSettings mModelSettings{};
 
     VkSurfaceKHR mSurface = VK_NULL_HANDLE;
 

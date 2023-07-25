@@ -1,6 +1,7 @@
 /* glTF model instance */
 #pragma once
-
+#include <string>
+#include <vector>
 #include <memory>
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -14,8 +15,7 @@
 
 class GltfInstance {
   public:
-    GltfInstance(OGLRenderData &renderData, std::shared_ptr<GltfModel> model,
-      glm::vec2 worldPos, bool randomAmin = false);
+    GltfInstance(std::shared_ptr<GltfModel> model, glm::vec2 worldPos, bool randomize = false);
     ~GltfInstance();
 
     void resetNodeData();
@@ -30,6 +30,16 @@ class GltfInstance {
     std::vector<glm::mat4> getJointMatrices();
     std::vector<glm::mat2x4> getJointDualQuats();
 
+    void updateAnimation();
+
+    void setInstanceSettings(ModelSettings settings);
+    ModelSettings getInstanceSettings();
+    void checkForUpdates();
+
+    glm::vec2 getWorldPosition();
+    glm::quat getWorldRotation();
+
+  private:
     void playAnimation(int animNum, float speedDivider, float blendFactor,
       replayDirection direction);
     void playAnimation(int sourceAnimNum, int destAnimNum, float speedDivider,
@@ -40,16 +50,7 @@ class GltfInstance {
       float blendFactor);
 
     float getAnimationEndTime(int animNum);
-    std::string getClipName(int animNum);
 
-    void setInstanceSettings(ModelSettings settings);
-    ModelSettings getInstanceSettings();
-    void checkForUpdates();
-
-    glm::vec2 getWorldPosition();
-    glm::quat getWorldRotation();
-
-  private:
     void getSkeletonPerNode(std::shared_ptr<GltfNode> treeNode);
     void updateNodeMatrices(std::shared_ptr<GltfNode> treeNode);
     void updateJointMatrices(std::shared_ptr<GltfNode> treeNode);

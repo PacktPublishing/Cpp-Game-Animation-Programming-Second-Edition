@@ -22,7 +22,6 @@
 #include "GltfInstance.h"
 
 #include "OGLRenderData.h"
-#include "ModelSettings.h"
 
 class OGLRenderer {
   public:

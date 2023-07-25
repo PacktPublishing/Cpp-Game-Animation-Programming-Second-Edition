@@ -9,6 +9,7 @@
 #include <vk_mem_alloc.h>
 
 #include "VkRenderer.h"
+#include "ModelSettings.h"
 #include "Logger.h"
 
 VkRenderer::VkRenderer(GLFWwindow *window) {
@@ -755,36 +756,7 @@ bool VkRenderer::draw() {
 
   /* animate */
   for (auto &instance : mGltfInstances) {
-    ModelSettings settings = instance->getInstanceSettings();
-    if (!settings.msDrawModel) {
-      continue;
-    }
-
-    if (settings.msPlayAnimation) {
-      if (settings.msBlendingMode == blendMode::crossfade ||
-          settings.msBlendingMode == blendMode::additive) {
-        instance->playAnimation(settings.msAnimClip,
-          settings.msCrossBlendDestAnimClip, settings.msAnimSpeed,
-          settings.msAnimCrossBlendFactor,
-          settings.msAnimationPlayDirection);
-    } else {
-        instance->playAnimation(settings.msAnimClip, settings.msAnimSpeed,
-          settings.msAnimBlendFactor,
-          settings.msAnimationPlayDirection);
-    }
-    } else {
-      settings.msAnimEndTime = instance->getAnimationEndTime(settings.msAnimClip);
-      if (settings.msBlendingMode == blendMode::crossfade ||
-          settings.msBlendingMode == blendMode::additive) {
-        instance->crossBlendAnimationFrame(settings.msAnimClip,
-          settings.msCrossBlendDestAnimClip, settings.msAnimTimePosition,
-          settings.msAnimCrossBlendFactor);
-      } else {
-        instance->blendAnimationFrame(settings.msAnimClip, settings.msAnimTimePosition,
-          settings.msAnimBlendFactor);
-      }
-    }
-    instance->setInstanceSettings(settings);
+    instance->updateAnimation();
   }
 
   /* save value to avoid changes during later calls */

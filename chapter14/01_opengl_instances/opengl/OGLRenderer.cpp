@@ -8,6 +8,7 @@
 #include <cstdlib>
 
 #include "OGLRenderer.h"
+#include "ModelSettings.h"
 #include "Logger.h"
 
 OGLRenderer::OGLRenderer(GLFWwindow *window) {
@@ -104,8 +105,8 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   for (int i = 0; i < 200; ++i) {
     int xPos = std::rand() % 40 - 20;
     int zPos = std::rand() % 40 - 20;
-    mGltfInstances.emplace_back(std::make_shared<GltfInstance>(mRenderData, mGltfModel,
-      glm::vec2(static_cast<float>(xPos), static_cast<float>(zPos)), true));
+    mGltfInstances.emplace_back(std::make_shared<GltfInstance>(mGltfModel, glm::vec2(static_cast<float>(xPos),
+      static_cast<float>(zPos)), true));
     numTriangles += mGltfModel->getTriangleCount();
   }
 
@@ -113,19 +114,10 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
 
   mRenderData.rdNumberOfInstances = mGltfInstances.size();
 
-  size_t modelJointMatrixBufferSize = 0;
-  size_t modelJointDualQuatBufferSize = 0;
-  int jointMatrixSize = 0;
-  int jointQuatSize = 0;
-
-  for (const auto &instance : mGltfInstances) {
-    jointMatrixSize += instance->getJointMatrixSize();
-    modelJointMatrixBufferSize += instance->getJointMatrixSize() * sizeof(glm::mat4);
-
-    jointQuatSize += instance->getJointDualQuatsSize();
-    modelJointDualQuatBufferSize += instance->getJointDualQuatsSize() *
-      sizeof(glm::mat2x4);
-  }
+  size_t modelJointMatrixBufferSize = mRenderData.rdNumberOfInstances * mGltfInstances.at(0)->getJointMatrixSize() *
+    sizeof(glm::mat4);
+  size_t modelJointDualQuatBufferSize = mRenderData.rdNumberOfInstances * mGltfInstances.at(0)->getJointDualQuatsSize() *
+    sizeof(glm::mat2x4);
 
   mGltfShaderStorageBuffer.init(modelJointMatrixBufferSize);
   Logger::log(1, "%s: glTF joint matrix shader storage buffer (size %i bytes) successfully created\n", __FUNCTION__, modelJointMatrixBufferSize);
@@ -297,36 +289,7 @@ void OGLRenderer::draw() {
 
   /* animate */
   for (auto &instance : mGltfInstances) {
-    ModelSettings settings = instance->getInstanceSettings();
-    if (!settings.msDrawModel) {
-      continue;
-    }
-
-    if (settings.msPlayAnimation) {
-      if (settings.msBlendingMode == blendMode::crossfade ||
-          settings.msBlendingMode == blendMode::additive) {
-        instance->playAnimation(settings.msAnimClip,
-          settings.msCrossBlendDestAnimClip, settings.msAnimSpeed,
-          settings.msAnimCrossBlendFactor,
-          settings.msAnimationPlayDirection);
-      } else {
-        instance->playAnimation(settings.msAnimClip, settings.msAnimSpeed,
-          settings.msAnimBlendFactor,
-          settings.msAnimationPlayDirection);
-      }
-    } else {
-      settings.msAnimEndTime = instance->getAnimationEndTime(settings.msAnimClip);
-      if (settings.msBlendingMode == blendMode::crossfade ||
-          settings.msBlendingMode == blendMode::additive) {
-        instance->crossBlendAnimationFrame(settings.msAnimClip,
-          settings.msCrossBlendDestAnimClip, settings.msAnimTimePosition,
-          settings.msAnimCrossBlendFactor);
-      } else {
-        instance->blendAnimationFrame(settings.msAnimClip, settings.msAnimTimePosition,
-          settings.msAnimBlendFactor);
-      }
-    }
-    instance->setInstanceSettings(settings);
+    instance->updateAnimation();
   }
 
   mLineMesh->vertices.clear();

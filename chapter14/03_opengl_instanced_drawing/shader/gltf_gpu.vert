@@ -23,7 +23,7 @@ void main() {
   mat4 skinMat =
     aJointWeight.x * jointMat[int(aJointNum.x) + gl_InstanceID * aModelStride] +
     aJointWeight.y * jointMat[int(aJointNum.y) + gl_InstanceID * aModelStride] +
-	  aJointWeight.z * jointMat[int(aJointNum.z) + gl_InstanceID * aModelStride] +
+    aJointWeight.z * jointMat[int(aJointNum.z) + gl_InstanceID * aModelStride] +
     aJointWeight.w * jointMat[int(aJointNum.w) + gl_InstanceID * aModelStride];
 
   gl_Position = projection * view * skinMat * vec4(aPos, 1.0);

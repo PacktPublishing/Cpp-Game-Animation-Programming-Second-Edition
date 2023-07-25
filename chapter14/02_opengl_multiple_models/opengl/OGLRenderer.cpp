@@ -8,6 +8,7 @@
 #include <cstdlib>
 
 #include "OGLRenderer.h"
+#include "ModelSettings.h"
 #include "Logger.h"
 
 OGLRenderer::OGLRenderer(GLFWwindow *window) {
@@ -126,18 +127,16 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
     int xPos = std::rand() % 40 - 20;
     int zPos = std::rand() % 40 - 20;
     int modelNo = std::rand() % 2;
-    mGltfInstances.emplace_back(std::make_shared<GltfInstance>(mRenderData,
-      mGltfModels.at(modelNo), glm::vec2(static_cast<float>(xPos), static_cast<float>(zPos)),
-      true));
+    mGltfInstances.emplace_back(std::make_shared<GltfInstance>(mGltfModels.at(modelNo), glm::vec2(static_cast<float>(xPos),
+      static_cast<float>(zPos)), true));
     numTriangles += mGltfModels.at(modelNo)->getTriangleCount();
   }
 
   for (int i = 0; i < 25; ++i) {
     int xPos = std::rand() % 50 - 25;
     int zPos = std::rand() % 20 - 50;
-    mGltfInstances.emplace_back(std::make_shared<GltfInstance>(mRenderData,
-      mGltfModels.at(2), glm::vec2(static_cast<float>(xPos), static_cast<float>(zPos)),
-      true));
+    mGltfInstances.emplace_back(std::make_shared<GltfInstance>(mGltfModels.at(2), glm::vec2(static_cast<float>(xPos),
+      static_cast<float>(zPos)), true));
     numTriangles += mGltfModels.at(2)->getTriangleCount();
   }
 
@@ -329,36 +328,7 @@ void OGLRenderer::draw() {
 
   /* animate */
   for (auto &instance : mGltfInstances) {
-    ModelSettings settings = instance->getInstanceSettings();
-    if (!settings.msDrawModel) {
-      continue;
-    }
-
-    if (settings.msPlayAnimation) {
-      if (settings.msBlendingMode == blendMode::crossfade ||
-          settings.msBlendingMode == blendMode::additive) {
-        instance->playAnimation(settings.msAnimClip,
-          settings.msCrossBlendDestAnimClip, settings.msAnimSpeed,
-          settings.msAnimCrossBlendFactor,
-          settings.msAnimationPlayDirection);
-      } else {
-        instance->playAnimation(settings.msAnimClip, settings.msAnimSpeed,
-          settings.msAnimBlendFactor,
-          settings.msAnimationPlayDirection);
-      }
-    } else {
-      settings.msAnimEndTime = instance->getAnimationEndTime(settings.msAnimClip);
-      if (settings.msBlendingMode == blendMode::crossfade ||
-          settings.msBlendingMode == blendMode::additive) {
-        instance->crossBlendAnimationFrame(settings.msAnimClip,
-          settings.msCrossBlendDestAnimClip, settings.msAnimTimePosition,
-          settings.msAnimCrossBlendFactor);
-      } else {
-        instance->blendAnimationFrame(settings.msAnimClip, settings.msAnimTimePosition,
-          settings.msAnimBlendFactor);
-      }
-    }
-    instance->setInstanceSettings(settings);
+    instance->updateAnimation();
   }
 
   mLineMesh->vertices.clear();

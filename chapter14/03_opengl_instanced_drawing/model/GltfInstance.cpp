@@ -13,19 +13,18 @@ GltfInstance::~GltfInstance() {
     mGltfModel->getModelFilename().c_str());
 }
 
-GltfInstance::GltfInstance(OGLRenderData &renderData, std::shared_ptr<GltfModel> model,
-    glm::vec2 worldPos, bool randomAnim) {
+GltfInstance::GltfInstance(std::shared_ptr<GltfModel> model, glm::vec2 worldPos, bool randomize) {
   if (!model) {
     Logger::log(1, "%s error: invalid glTF model\n", __FUNCTION__);
     return;
   }
 
-  Logger::log(2, "%s: spaning model from glTF file '%s' on position %s\n", __FUNCTION__,
+  Logger::log(2, "%s: spawning model from glTF file '%s' on position %s\n", __FUNCTION__,
     model->getModelFilename().c_str(), glm::to_string(mModelSettings.msWorldPosition).c_str());
 
   mGltfModel = model;
   mModelSettings.msWorldPosition = worldPos;
-  mNodeCount = model->getNodeCount();
+  mNodeCount = mGltfModel->getNodeCount();
 
   mInverseBindMatrices = mGltfModel->getInverseBindMatrices();
   mNodeToJoint = mGltfModel->getNodeToJoint();
@@ -41,7 +40,7 @@ GltfInstance::GltfInstance(OGLRenderData &renderData, std::shared_ptr<GltfModel>
   mInvertedAdditiveAnimationMask.flip();
 
   GltfNodeData nodeData;
-  nodeData = model->getGltfNodes();
+  nodeData = mGltfModel->getGltfNodes();
   mRootNode = nodeData.rootNode;
   mRootNode->setWorldPosition(glm::vec3(mModelSettings.msWorldPosition.x, 0.0f,
     mModelSettings.msWorldPosition.y));
@@ -64,22 +63,23 @@ GltfInstance::GltfInstance(OGLRenderData &renderData, std::shared_ptr<GltfModel>
 
   // mRootNode->printTree();
 
-  mAnimClips = model->getAnimClips();
+  mAnimClips = mGltfModel->getAnimClips();
   for (const auto &clip : mAnimClips) {
     mModelSettings.msClipNames.push_back(clip->getClipName());
   }
   unsigned int animClipSize = mAnimClips.size();
 
-  /* randomize clip and speed */
-  if (randomAnim) {
+  /* randomize some settings */
+  if (randomize) {
     int animClip = std::rand() % animClipSize;
     float animClipSpeed = (std::rand() % 100) / 100.0f + 0.5f;
-    float initRotation = std::rand() % 360 -180;
+    float initRotation = std::rand() % 360 - 180;
 
     mModelSettings.msAnimClip = animClip;
     mModelSettings.msAnimSpeed = animClipSpeed;
     mModelSettings.msWorldRotation = glm::vec3(0.0f, initRotation, 0.0f);
   }
+
 
   /* update initial clips etc */
   checkForUpdates();
@@ -215,6 +215,33 @@ void GltfInstance::checkForUpdates() {
   }
 }
 
+void GltfInstance::updateAnimation() {
+  if (mModelSettings.msPlayAnimation) {
+    if (mModelSettings.msBlendingMode == blendMode::crossfade ||
+        mModelSettings.msBlendingMode == blendMode::additive) {
+      playAnimation(mModelSettings.msAnimClip,
+        mModelSettings.msCrossBlendDestAnimClip, mModelSettings.msAnimSpeed,
+        mModelSettings.msAnimCrossBlendFactor,
+        mModelSettings.msAnimationPlayDirection);
+    } else {
+      playAnimation(mModelSettings.msAnimClip, mModelSettings.msAnimSpeed,
+        mModelSettings.msAnimBlendFactor,
+        mModelSettings.msAnimationPlayDirection);
+    }
+  } else {
+    mModelSettings.msAnimEndTime = getAnimationEndTime(mModelSettings.msAnimClip);
+    if (mModelSettings.msBlendingMode == blendMode::crossfade ||
+        mModelSettings.msBlendingMode == blendMode::additive) {
+      crossBlendAnimationFrame(mModelSettings.msAnimClip,
+        mModelSettings.msCrossBlendDestAnimClip, mModelSettings.msAnimTimePosition,
+        mModelSettings.msAnimCrossBlendFactor);
+    } else {
+      blendAnimationFrame(mModelSettings.msAnimClip, mModelSettings.msAnimTimePosition,
+        mModelSettings.msAnimBlendFactor);
+    }
+  }
+}
+
 void GltfInstance::playAnimation(int animNum, float speedDivider, float blendFactor,
     replayDirection direction) {
   double currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
@@ -312,12 +339,4 @@ glm::quat GltfInstance::getWorldRotation() {
 
 float GltfInstance::getAnimationEndTime(int animNum) {
   return mAnimClips.at(animNum)->getClipEndTime();
-}
-
-std::string GltfInstance::getClipName(int animNum) {
-  return mAnimClips.at(animNum)->getClipName();
-}
-
-std::shared_ptr<GltfModel> GltfInstance::getModel() {
-  return mGltfModel;
 }
