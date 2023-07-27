@@ -1,4 +1,4 @@
-03_opengl_instance_drawxml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule cmakelistsFolder="" moduleId="de.marw.cmake4eclipse.mbs.settings">
 		<targets>

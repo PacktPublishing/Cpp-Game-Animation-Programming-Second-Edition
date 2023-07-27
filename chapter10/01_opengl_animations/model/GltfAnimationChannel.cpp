@@ -253,7 +253,7 @@ glm::quat GltfAnimationChannel::getRotation(float time) {
         glm::quat prevRotate = mRotations.at(prevTimeIndex);
         glm::quat nextRotate = mRotations.at(nextTimeIndex);
 
-        finalRotate = glm::normalize(glm::slerp(prevRotate, nextRotate, interpolatedTime));
+        finalRotate = glm::slerp(prevRotate, nextRotate, interpolatedTime);
       }
       break;
     case EInterpolationType::CUBICSPLINE:

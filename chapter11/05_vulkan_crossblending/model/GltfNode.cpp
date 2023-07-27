@@ -62,7 +62,7 @@ void GltfNode::blendTranslation(glm::vec3 translation, float blendFactor) {
 
 void GltfNode::blendRotation(glm::quat rotation,  float blendFactor) {
   float factor = std::min(std::max(blendFactor, 0.0f), 1.0f);
-  mBlendRotation = glm::normalize(glm::slerp(mRotation, rotation, factor));
+  mBlendRotation = glm::slerp(mRotation, rotation, factor);
 }
 
 void GltfNode::calculateLocalTRSMatrix() {
