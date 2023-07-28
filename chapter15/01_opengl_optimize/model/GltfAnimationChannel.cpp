@@ -86,14 +86,19 @@ glm::vec3 GltfAnimationChannel::getScaling(float time) {
     return mScaling.at(mScaling.size() - 1);
   }
 
+  /* do a simple binary search in O(log n) instead of a array walk in O(n) */
   int prevTimeIndex = 0;
-  int nextTimeIndex = 0;
-  for (int i = 0; i < mTimings.size(); ++i) {
-    if (mTimings.at(i) > time) {
-      nextTimeIndex = i;
+  int nextTimeIndex = mScaling.size() - 1;
+  int midIndex = 0;
+  while (prevTimeIndex <= nextTimeIndex) {
+    midIndex = (prevTimeIndex + nextTimeIndex) / 2;
+    if (time > mTimings.at(midIndex)) {
+      prevTimeIndex = midIndex + 1;
+    } else if (time < mTimings.at(midIndex)) {
+      nextTimeIndex = midIndex - 1;
+    } else {
       break;
     }
-    prevTimeIndex = i;
   }
 
   if (prevTimeIndex == nextTimeIndex) {
@@ -156,13 +161,17 @@ glm::vec3 GltfAnimationChannel::getTranslation(float time) {
   }
 
   int prevTimeIndex = 0;
-  int nextTimeIndex = 0;
-  for (int i = 0; i < mTimings.size(); ++i) {
-    if (mTimings.at(i) > time) {
-      nextTimeIndex = i;
+  int nextTimeIndex = mTranslations.size() - 1;
+  int midIndex = 0;
+  while (prevTimeIndex <= nextTimeIndex) {
+    midIndex = (prevTimeIndex + nextTimeIndex) / 2;
+    if (time > mTimings.at(midIndex)) {
+      prevTimeIndex = midIndex + 1;
+    } else if (time < mTimings.at(midIndex)) {
+      nextTimeIndex = midIndex - 1;
+    } else {
       break;
     }
-    prevTimeIndex = i;
   }
 
   if (prevTimeIndex == nextTimeIndex) {
@@ -227,13 +236,17 @@ glm::quat GltfAnimationChannel::getRotation(float time) {
   }
 
   int prevTimeIndex = 0;
-  int nextTimeIndex = 0;
-  for (int i = 0; i < mTimings.size(); ++i) {
-    if (mTimings.at(i) > time) {
-      nextTimeIndex = i;
+  int nextTimeIndex = mRotations.size() - 1;
+  int midIndex = 0;
+  while (prevTimeIndex <= nextTimeIndex) {
+    midIndex = (prevTimeIndex + nextTimeIndex) / 2;
+    if (time > mTimings.at(midIndex)) {
+      prevTimeIndex = midIndex + 1;
+    } else if (time < mTimings.at(midIndex)) {
+      nextTimeIndex = midIndex - 1;
+    } else {
       break;
     }
-    prevTimeIndex = i;
   }
 
   if (prevTimeIndex == nextTimeIndex) {

@@ -1,4 +1,0 @@
-# Hashes of file build rules.
-ac81e1e06736a0a7483d69e2b9d7a690 CMakeFiles/Assets
-ac81e1e06736a0a7483d69e2b9d7a690 CMakeFiles/Shaders
-ac81e1e06736a0a7483d69e2b9d7a690 CMakeFiles/Textures

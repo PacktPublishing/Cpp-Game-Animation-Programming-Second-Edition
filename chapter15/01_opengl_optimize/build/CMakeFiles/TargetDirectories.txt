@@ -1,6 +1,0 @@
-/home/michael/crypted/git/michael/game-animations/code/chapter15/01_opengl_optimize/build/CMakeFiles/Main.dir
-/home/michael/crypted/git/michael/game-animations/code/chapter15/01_opengl_optimize/build/CMakeFiles/Shaders.dir
-/home/michael/crypted/git/michael/game-animations/code/chapter15/01_opengl_optimize/build/CMakeFiles/Textures.dir
-/home/michael/crypted/git/michael/game-animations/code/chapter15/01_opengl_optimize/build/CMakeFiles/Assets.dir
-/home/michael/crypted/git/michael/game-animations/code/chapter15/01_opengl_optimize/build/CMakeFiles/edit_cache.dir
-/home/michael/crypted/git/michael/game-animations/code/chapter15/01_opengl_optimize/build/CMakeFiles/rebuild_cache.dir

@@ -102,9 +102,9 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   int numTriangles = 0;
 
   /* create glTF instances from the model */
-  for (int i = 0; i < 200; ++i) {
-    int xPos = std::rand() % 40 - 20;
-    int zPos = std::rand() % 40 - 20;
+  for (int i = 0; i < 600; ++i) {
+    int xPos = std::rand() % 150 - 75;
+    int zPos = std::rand() % 150 - 75;
     mGltfInstances.emplace_back(std::make_shared<GltfInstance>(mGltfModel, glm::vec2(static_cast<float>(xPos),
       static_cast<float>(zPos)), true));
     numTriangles += mGltfModel->getTriangleCount();
