@@ -8,7 +8,7 @@ class TextureBuffer {
     void init(size_t bufferSize);
     void uploadTboData(std::vector<glm::mat4> bufferData, int bindingPoint);
     void bind();
-    void cleanup();
+    oid cleanup();
 
   private:
     size_t mBufferSize = 0;

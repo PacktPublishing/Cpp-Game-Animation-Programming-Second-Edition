@@ -17,10 +17,14 @@ void TextureBuffer::init(size_t bufferSize) {
 }
 
 void TextureBuffer::uploadTboData(std::vector<glm::mat4> bufferData, int bindingPoint) {
+  if (bufferData.size() == 0) {
+    return;
+  }
   mTexNum = bindingPoint;
+  size_t bufferSize = bufferData.size() * sizeof(glm::mat4);
   glBindBuffer(GL_TEXTURE_BUFFER, mTextureBuffer);
-  glBufferSubData(GL_TEXTURE_BUFFER, 0, mBufferSize, bufferData.data());
-  glBindBufferRange(GL_TEXTURE_BUFFER, bindingPoint, mTextureBuffer, 0, mBufferSize);
+  glBufferSubData(GL_TEXTURE_BUFFER, 0, bufferSize, bufferData.data());
+  glBindBufferRange(GL_TEXTURE_BUFFER, bindingPoint, mTextureBuffer, 0, bufferSize);
   glBindBuffer(GL_TEXTURE_BUFFER, 0);
 }
 

@@ -12,9 +12,13 @@ void UniformBuffer::init(size_t bufferSize) {
 }
 
 void UniformBuffer::uploadUboData(std::vector<glm::mat4> bufferData, int bindingPoint) {
+  if (bufferData.size() == 0) {
+    return;
+  }
+  size_t bufferSize = bufferData.size() * sizeof(glm::mat4);
   glBindBuffer(GL_UNIFORM_BUFFER, mUboBuffer);
-  glBufferSubData(GL_UNIFORM_BUFFER, 0, mBufferSize, bufferData.data());
-  glBindBufferRange(GL_UNIFORM_BUFFER, bindingPoint, mUboBuffer, 0, mBufferSize);
+  glBufferSubData(GL_UNIFORM_BUFFER, 0, bufferSize, bufferData.data());
+  glBindBufferRange(GL_UNIFORM_BUFFER, bindingPoint, mUboBuffer, 0, bufferSize);
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
