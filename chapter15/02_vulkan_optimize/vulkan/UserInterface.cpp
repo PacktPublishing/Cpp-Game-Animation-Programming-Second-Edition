@@ -5,19 +5,125 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include <imgui_impl_vulkan.h>
 
 #include "UserInterface.h"
+#include "CommandBuffer.h"
+#include "Logger.h"
 
-void UserInterface::init(OGLRenderData &renderData) {
+bool UserInterface::init(VkRenderData& renderData) {
   IMGUI_CHECKVERSION();
-
   ImGui::CreateContext();
 
-  ImGui_ImplGlfw_InitForOpenGL(renderData.rdWindow, true);
+  VkDescriptorPoolSize imguiPoolSizes[] =
+  {
+    { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
+    { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
+    { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
+    { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
+    { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
+    { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
+    { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
+    { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
+    { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
+    { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
+    { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+  };
 
-  const char *glslVersion = "#version 460 core";
-  ImGui_ImplOpenGL3_Init(glslVersion);
+  VkDescriptorPoolCreateInfo imguiPoolInfo{};
+  imguiPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+  imguiPoolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+  imguiPoolInfo.maxSets = 1000;
+  imguiPoolInfo.poolSizeCount = std::size(imguiPoolSizes);
+  imguiPoolInfo.pPoolSizes = imguiPoolSizes;
+
+  if (vkCreateDescriptorPool(renderData.rdVkbDevice.device, &imguiPoolInfo, nullptr, &renderData.rdImguiDescriptorPool)) {
+    Logger::log(1, "%s error: could not init ImGui descriptor pool \n", __FUNCTION__);
+    return false;
+  }
+
+  ImGui_ImplGlfw_InitForVulkan(renderData.rdWindow, true);
+
+  ImGui_ImplVulkan_InitInfo imguiIinitInfo{};
+  imguiIinitInfo.Instance = renderData.rdVkbInstance.instance;
+  imguiIinitInfo.PhysicalDevice = renderData.rdVkbPhysicalDevice.physical_device;
+  imguiIinitInfo.Device = renderData.rdVkbDevice.device;
+  imguiIinitInfo.Queue = renderData.rdGraphicsQueue;
+  imguiIinitInfo.DescriptorPool = renderData.rdImguiDescriptorPool;
+  imguiIinitInfo.MinImageCount = 2;
+  imguiIinitInfo.ImageCount = renderData.rdSwapchainImages.size();
+  imguiIinitInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+
+  ImGui_ImplVulkan_Init(&imguiIinitInfo, renderData.rdRenderpass);
+
+  VkCommandBuffer imguiCommandBuffer;
+
+  if (!CommandBuffer::init(renderData, imguiCommandBuffer)) {
+    Logger::log(1, "%s error: could not create texture upload command buffers\n", __FUNCTION__);
+    return false;
+  }
+
+  if (vkResetCommandBuffer(imguiCommandBuffer, 0) != VK_SUCCESS) {
+    Logger::log(1, "%s error: failed to reset imgui command buffer\n", __FUNCTION__);
+    return false;
+  }
+
+  VkCommandBufferBeginInfo cmdBeginInfo{};
+  cmdBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  cmdBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+  if(vkBeginCommandBuffer(imguiCommandBuffer, &cmdBeginInfo) != VK_SUCCESS) {
+    Logger::log(1, "%s error: failed to begin imgui command buffer\n", __FUNCTION__);
+    return false;
+  }
+
+  ImGui_ImplVulkan_CreateFontsTexture(imguiCommandBuffer);
+
+  if (vkEndCommandBuffer(imguiCommandBuffer) != VK_SUCCESS) {
+    Logger::log(1, "%s error: failed to end staging command buffer\n", __FUNCTION__);
+    return false;
+  }
+
+  VkSubmitInfo submitInfo{};
+  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  submitInfo.pWaitDstStageMask = nullptr;
+  submitInfo.waitSemaphoreCount = 0;
+  submitInfo.pWaitSemaphores = nullptr;
+  submitInfo.signalSemaphoreCount = 0;
+  submitInfo.pSignalSemaphores = nullptr;
+  submitInfo.commandBufferCount = 1;
+  submitInfo.pCommandBuffers = &imguiCommandBuffer;;
+
+  VkFence imguiBufferFence;
+
+  VkFenceCreateInfo fenceInfo{};
+  fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+  fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+  if (vkCreateFence(renderData.rdVkbDevice.device, &fenceInfo, nullptr, &imguiBufferFence) != VK_SUCCESS) {
+    Logger::log(1, "%s error: failed to imgui buffer fence\n", __FUNCTION__);
+    return false;
+  }
+
+  if (vkResetFences(renderData.rdVkbDevice.device, 1, &imguiBufferFence) != VK_SUCCESS) {
+    Logger::log(1, "%s error: imgui buffer fence reset failed", __FUNCTION__);
+    return false;
+  }
+
+  if (vkQueueSubmit(renderData.rdGraphicsQueue, 1, &submitInfo, imguiBufferFence) != VK_SUCCESS) {
+    Logger::log(1, "%s error: failed to imgui init command buffer\n", __FUNCTION__);
+    return false;
+  }
+
+  if (vkWaitForFences(renderData.rdVkbDevice.device, 1, &imguiBufferFence, VK_TRUE, UINT64_MAX) != VK_SUCCESS) {
+    Logger::log(1, "%s error: waiting for imgui init fence failed", __FUNCTION__);
+    return false;
+  }
+
+  vkDestroyFence(renderData.rdVkbDevice.device, imguiBufferFence, nullptr);
+  CommandBuffer::cleanup(renderData, imguiCommandBuffer);
+
+  ImGui_ImplVulkan_DestroyFontUploadObjects();
 
   ImGui::StyleColorsDark();
 
@@ -29,10 +135,12 @@ void UserInterface::init(OGLRenderData &renderData) {
   mMatrixUploadValues.resize(mNumMatrixUploadValues);
   mUiGenValues.resize(mNumUiGenValues);
   mUiDrawValues.resize(mNumUiDrawValues);
+
+  return true;
 }
 
-void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settings) {
-  ImGui_ImplOpenGL3_NewFrame();
+void UserInterface::createFrame(VkRenderData& renderData,  ModelSettings &settings) {
+  ImGui_ImplVulkan_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 
@@ -58,7 +166,7 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
 
   static double updateTime = 0.0;
 
-  /* avoid literal double compares */
+  /* avoid double compares */
   if (updateTime < 0.000001) {
     updateTime = ImGui::GetTime();
   }
@@ -71,7 +179,7 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
   static int uiGenOffset = 0;
   static int uiDrawOffset = 0;
 
-  while (updateTime < ImGui::GetTime()) {
+  if (updateTime < ImGui::GetTime()) {
     mFPSValues.at(fpsOffset) = mFramesPerSecond;
     fpsOffset = ++fpsOffset % mNumFPSValues;
 
@@ -132,7 +240,6 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
     ImGui::SameLine();
     ImGui::Text("%s", imgWindowPos.c_str());
   }
-
 
   if (ImGui::CollapsingHeader("Timers")) {
     ImGui::BeginGroup();
@@ -338,13 +445,13 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
     ImGui::Text("Vertex Skinning:");
     ImGui::SameLine();
     if (ImGui::RadioButton("Linear",
-      settings.msVertexSkinningMode == skinningMode::linear)) {
-       settings.msVertexSkinningMode = skinningMode::linear;
+        settings.msVertexSkinningMode == skinningMode::linear)) {
+      settings.msVertexSkinningMode = skinningMode::linear;
     }
     ImGui::SameLine();
     if (ImGui::RadioButton("Dual Quaternion",
-      settings.msVertexSkinningMode == skinningMode::dualQuat)) {
-       settings.msVertexSkinningMode = skinningMode::dualQuat;
+        settings.msVertexSkinningMode == skinningMode::dualQuat)) {
+      settings.msVertexSkinningMode = skinningMode::dualQuat;
     }
   }
 
@@ -358,13 +465,13 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
     ImGui::Text("Animation Direction:");
     ImGui::SameLine();
     if (ImGui::RadioButton("Forward",
-      settings.msAnimationPlayDirection == replayDirection::forward)) {
-       settings.msAnimationPlayDirection = replayDirection::forward;
+        settings.msAnimationPlayDirection == replayDirection::forward)) {
+      settings.msAnimationPlayDirection = replayDirection::forward;
     }
     ImGui::SameLine();
     if (ImGui::RadioButton("Backward",
-      settings.msAnimationPlayDirection == replayDirection::backward)) {
-       settings.msAnimationPlayDirection = replayDirection::backward;
+        settings.msAnimationPlayDirection == replayDirection::backward)) {
+      settings.msAnimationPlayDirection = replayDirection::backward;
     }
 
     if (!settings.msPlayAnimation) {
@@ -380,7 +487,6 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
         if (ImGui::Selectable(settings.msClipNames.at(i).c_str(), isSelected)) {
           settings.msAnimClip = i;
         }
-
         if (isSelected) {
           ImGui::SetItemDefaultFocus();
         }
@@ -401,21 +507,21 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
   }
 
   if (ImGui::CollapsingHeader("glTF Animation Blending")) {
-    ImGui::Text("Blending Type:");
+     ImGui::Text("Blending Type:");
     ImGui::SameLine();
     if (ImGui::RadioButton("Fade In/Out",
-      settings.msBlendingMode == blendMode::fadeinout)) {
-       settings.msBlendingMode = blendMode::fadeinout;
+        settings.msBlendingMode == blendMode::fadeinout)) {
+      settings.msBlendingMode = blendMode::fadeinout;
     }
     ImGui::SameLine();
     if (ImGui::RadioButton("Crossfading",
-      settings.msBlendingMode == blendMode::crossfade)) {
-       settings.msBlendingMode = blendMode::crossfade;
+        settings.msBlendingMode == blendMode::crossfade)) {
+      settings.msBlendingMode = blendMode::crossfade;
     }
     ImGui::SameLine();
     if (ImGui::RadioButton("Additive",
-      settings.msBlendingMode == blendMode::additive)) {
-       settings.msBlendingMode = blendMode::additive;
+        settings.msBlendingMode == blendMode::additive)) {
+      settings.msBlendingMode = blendMode::additive;
     }
 
     if (settings.msBlendingMode == blendMode::fadeinout) {
@@ -436,7 +542,6 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
           if (ImGui::Selectable(settings.msClipNames.at(i).c_str(), isSelected)) {
             settings.msCrossBlendDestAnimClip = i;
           }
-
           if (isSelected) {
             ImGui::SetItemDefaultFocus();
           }
@@ -451,8 +556,8 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
     }
 
     if (settings.msBlendingMode == blendMode::additive) {
-      ImGui::Text("Split Node  ");
-      ImGui::SameLine();
+    ImGui::Text("Split Node  ");
+    ImGui::SameLine();
       if (ImGui::BeginCombo("##SplitNodeCombo",
         settings.msSkelSplitNodeNames.at(settings.msSkelSplitNode).c_str())) {
         for (int i = 0; i < settings.msSkelSplitNodeNames.size(); ++i) {
@@ -460,7 +565,6 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
           if (ImGui::Selectable(settings.msSkelSplitNodeNames.at(i).c_str(), isSelected)) {
             settings.msSkelSplitNode = i;
           }
-
           if (isSelected) {
             ImGui::SetItemDefaultFocus();
           }
@@ -473,13 +577,14 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
   ImGui::End();
 }
 
-void UserInterface::render() {
+void UserInterface::render(VkRenderData& renderData) {
   ImGui::Render();
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), renderData.rdCommandBuffer);
 }
 
-void UserInterface::cleanup() {
-  ImGui_ImplOpenGL3_Shutdown();
+void UserInterface::cleanup(VkRenderData& renderData) {
+  vkDestroyDescriptorPool(renderData.rdVkbDevice.device, renderData.rdImguiDescriptorPool, nullptr);
+  ImGui_ImplVulkan_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
 }
