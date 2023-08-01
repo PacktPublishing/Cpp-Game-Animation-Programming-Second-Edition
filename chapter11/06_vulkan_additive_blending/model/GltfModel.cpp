@@ -440,7 +440,7 @@ int GltfModel::getTriangleCount() {
   unsigned int triangles = 0;
   switch (primitives.mode) {
     case TINYGLTF_MODE_TRIANGLES:
-      triangles =  indexAccessor.count;
+      triangles =  indexAccessor.count / 3;
       break;
     default:
       Logger::log(1, "%s error: unknown draw mode %i\n", __FUNCTION__, primitives.mode);
@@ -506,7 +506,7 @@ void GltfModel::draw(VkRenderData &renderData, VkGltfRenderData& gltfRenderData)
      renderData.rdGltfGPUPipeline);
   }
   vkCmdDrawIndexed(renderData.rdCommandBuffer,
-    static_cast<uint32_t>(renderData.rdGltfTriangleCount), 1, 0, 0, 0);
+    static_cast<uint32_t>(renderData.rdGltfTriangleCount * 3), 1, 0, 0, 0);
 }
 
 void GltfModel::cleanup(VkRenderData &renderData, VkGltfRenderData &gltfRenderData) {
