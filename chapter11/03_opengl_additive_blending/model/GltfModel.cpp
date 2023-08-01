@@ -484,7 +484,7 @@ int GltfModel::getTriangleCount() {
   unsigned int triangles = 0;
   switch (primitives.mode) {
     case TINYGLTF_MODE_TRIANGLES:
-      triangles =  indexAccessor.count / 3;
+      triangles =  indexAccessor.count;
       break;
     default:
       Logger::log(1, "%s error: unknown draw mode %i\n", __FUNCTION__, primitives.mode);
