@@ -281,6 +281,10 @@ void OGLRenderer::draw() {
   if (lastIkMode != mRenderData.rdIkMode) {
     mGltfModel->resetNodeData();
     lastIkMode = mRenderData.rdIkMode;
+    /* clear timer */
+    if (mRenderData.rdIkMode == ikMode::off) {
+      mRenderData.rdIKTime = 0.0f;
+    }
   }
 
   static int numIKIterations = mRenderData.rdIkIterations;
@@ -328,16 +332,20 @@ void OGLRenderer::draw() {
   }
 
   /* solve IK */
-  switch (mRenderData.rdIkMode) {
-    case ikMode::ccd:
-      mGltfModel->solveIKByCCD(mRenderData.rdIkTargetPos);
-      break;
-    case ikMode::fabrik:
-      mGltfModel->solveIKByFABRIK(mRenderData.rdIkTargetPos);
-      break;
-    default:
-      /* do nothing */
-      break;
+  if (mRenderData.rdIkMode != ikMode::off) {
+    mIKTimer.start();
+    switch (mRenderData.rdIkMode) {
+      case ikMode::ccd:
+        mGltfModel->solveIKByCCD(mRenderData.rdIkTargetPos);
+        break;
+      case ikMode::fabrik:
+        mGltfModel->solveIKByFABRIK(mRenderData.rdIkTargetPos);
+        break;
+      default:
+        /* do nothing */
+        break;
+    }
+    mRenderData.rdIKTime = mIKTimer.stop();
   }
 
   mLineMesh->vertices.clear();

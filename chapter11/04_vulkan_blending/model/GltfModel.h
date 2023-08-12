@@ -22,7 +22,7 @@ class GltfModel {
 
     void uploadVertexBuffers(VkRenderData& renderData, VkGltfRenderData& gltfRenderData);
     void uploadIndexBuffer(VkRenderData& renderData, VkGltfRenderData& gltfRenderData);
-    std::shared_ptr<VkMesh> getSkeleton(bool enableSkinning);
+    std::shared_ptr<VkMesh> getSkeleton();
     int getJointMatrixSize();
     std::vector<glm::mat4> getJointMatrices();
     int getJointDualQuatsSize();
@@ -39,7 +39,7 @@ class GltfModel {
     void createVertexBuffers(VkRenderData& renderData, VkGltfRenderData& gltfRenderData);
     void createIndexBuffer(VkRenderData& renderData, VkGltfRenderData& gltfRenderData);
     int getTriangleCount();
-    void getSkeletonPerNode(std::shared_ptr<GltfNode> treeNode, bool enableSkinning);
+    void getSkeletonPerNode(std::shared_ptr<GltfNode> treeNode);
 
     void getJointData();
     void getWeightData();

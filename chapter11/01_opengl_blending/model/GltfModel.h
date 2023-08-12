@@ -21,7 +21,7 @@ class GltfModel {
     void cleanup();
     void uploadVertexBuffers();
     void uploadIndexBuffer();
-    std::shared_ptr<OGLMesh> getSkeleton(bool enableSkinning);
+    std::shared_ptr<OGLMesh> getSkeleton();
     int getJointMatrixSize();
     std::vector<glm::mat4> getJointMatrices();
     int getJointDualQuatsSize();
@@ -37,7 +37,7 @@ class GltfModel {
     void createVertexBuffers();
     void createIndexBuffer();
     int getTriangleCount();
-    void getSkeletonPerNode(std::shared_ptr<GltfNode> treeNode, bool enableSkinning);
+    void getSkeletonPerNode(std::shared_ptr<GltfNode> treeNode);
 
     void getJointData();
     void getWeightData();

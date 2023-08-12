@@ -309,7 +309,7 @@ void OGLRenderer::draw() {
 
   /* get gltTF skeleton */
   if (mRenderData.rdDrawSkeleton) {
-    mSkeletonMesh = mGltfModel->getSkeleton(true);
+    mSkeletonMesh = mGltfModel->getSkeleton();
   }
   mRenderData.rdMatrixGenerateTime = mMatrixGenerateTimer.stop();
 

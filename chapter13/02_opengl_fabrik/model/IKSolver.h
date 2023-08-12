@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "GltfNode.h"
-#include "OGLRenderData.h"
 
 class IKSolver {
   public:

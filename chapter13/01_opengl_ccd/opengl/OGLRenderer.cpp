@@ -281,6 +281,10 @@ void OGLRenderer::draw() {
   if (lastIkMode != mRenderData.rdIkMode) {
     mGltfModel->resetNodeData();
     lastIkMode = mRenderData.rdIkMode;
+    /* clear timer */
+    if (mRenderData.rdIkMode == ikMode::off) {
+      mRenderData.rdIKTime = 0.0f;
+    }
   }
 
   static int numIKIterations = mRenderData.rdIkIterations;
@@ -329,7 +333,9 @@ void OGLRenderer::draw() {
 
   /* solve IK */
   if (mRenderData.rdIkMode == ikMode::ccd) {
+    mIKTimer.start();
     mGltfModel->solveIKByCCD(mRenderData.rdIkTargetPos);
+    mRenderData.rdIKTime = mIKTimer.stop();
   }
 
   mLineMesh->vertices.clear();

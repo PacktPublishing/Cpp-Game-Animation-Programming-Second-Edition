@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "GltfNode.h"
-#include "OGLRenderData.h"
 
 class IKSolver {
   public:
@@ -22,9 +21,6 @@ class IKSolver {
   private:
     /* nodes from effector (at index 0) to IK chain root node (last index) */
     std::vector<std::shared_ptr<GltfNode>> mNodes{};
-    std::vector<float> mNodeLengths{};
-
-    void calculateBoneLengths();
 
     unsigned int mIterations = 0;
     float mThreshold = 0.00001f;

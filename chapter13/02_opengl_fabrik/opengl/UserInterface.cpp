@@ -26,6 +26,7 @@ void UserInterface::init(OGLRenderData &renderData) {
   mFrameTimeValues.resize(mNumFrameTimeValues);
   mModelUploadValues.resize(mNumModelUploadValues);
   mMatrixGenerationValues.resize(mNumMatrixGenerationValues);
+  mIKValues.resize(mNumIKValues);
   mMatrixUploadValues.resize(mNumMatrixUploadValues);
   mUiGenValues.resize(mNumUiGenValues);
   mUiDrawValues.resize(mNumUiDrawValues);
@@ -67,6 +68,7 @@ void UserInterface::createFrame(OGLRenderData &renderData) {
   static int frameTimeOffset = 0;
   static int modelUploadOffset = 0;
   static int matrixGenOffset = 0;
+  static int ikOffset = 0;
   static int matrixUploadOffset = 0;
   static int uiGenOffset = 0;
   static int uiDrawOffset = 0;
@@ -83,6 +85,9 @@ void UserInterface::createFrame(OGLRenderData &renderData) {
 
     mMatrixGenerationValues.at(matrixGenOffset) = renderData.rdMatrixGenerateTime;
     matrixGenOffset = ++matrixGenOffset % mNumMatrixGenerationValues;
+
+    mIKValues.at(ikOffset) = renderData.rdIKTime;
+    ikOffset = ++ikOffset % mNumIKValues;
 
     mMatrixUploadValues.at(matrixUploadOffset) = renderData.rdUploadToUBOTime;
     matrixUploadOffset = ++matrixUploadOffset % mNumMatrixUploadValues;
@@ -204,6 +209,30 @@ void UserInterface::createFrame(OGLRenderData &renderData) {
       ImGui::SameLine();
       ImGui::PlotLines("##MatrixGenTimes", mMatrixGenerationValues.data(), mMatrixGenerationValues.size(), matrixGenOffset,
         matrixGenOverlay.c_str(), 0.0f, FLT_MAX, ImVec2(0, 80));
+      ImGui::EndTooltip();
+    }
+
+    ImGui::BeginGroup();
+    ImGui::Text("(IK Generation Time)  :");
+    ImGui::SameLine();
+    ImGui::Text("%s", std::to_string(renderData.rdIKTime).c_str());
+    ImGui::SameLine();
+    ImGui::Text("ms");
+    ImGui::EndGroup();
+
+    if (ImGui::IsItemHovered()) {
+      ImGui::BeginTooltip();
+      float averageIKTime = 0.0f;
+      for (const auto value : mIKValues) {
+        averageIKTime += value;
+      }
+      averageIKTime /= static_cast<float>(mNumIKValues);
+      std::string ikOverlay = "now:     " + std::to_string(renderData.rdIKTime)
+        + " ms\n30s avg: " + std::to_string(averageIKTime) + " ms";
+      ImGui::Text("(IK Generation)");
+      ImGui::SameLine();
+      ImGui::PlotLines("##IKTimes", mIKValues.data(), mIKValues.size(), ikOffset,
+        ikOverlay.c_str(), 0.0f, FLT_MAX, ImVec2(0, 80));
       ImGui::EndTooltip();
     }
 
@@ -498,7 +527,6 @@ void UserInterface::createFrame(OGLRenderData &renderData) {
         }
         ImGui::EndCombo();
       }
-
     }
   }
 

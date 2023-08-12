@@ -133,7 +133,6 @@ void IKSolver::solveFABRIKBackward(glm::vec3 base) {
 /* we need to ROTATE the bones, starting with the root node */
 void IKSolver::adjustFABRIKNodes() {
   for (size_t i = mFABRIKNodePositions.size() - 1; i > 0; --i) {
-  //for (size_t i = 0; i < mFABRIKNodePositions.size() - 1; ++i) {
     std::shared_ptr<GltfNode> node = mNodes.at(i);
     std::shared_ptr<GltfNode> nextNode = mNodes.at(i - 1);
 

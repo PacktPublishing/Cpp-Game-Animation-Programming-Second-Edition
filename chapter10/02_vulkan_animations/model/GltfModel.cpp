@@ -171,42 +171,32 @@ std::string GltfModel::getClipName(int animNum) {
   return mAnimClips.at(animNum)->getClipName();
 }
 
-std::shared_ptr<VkMesh> GltfModel::getSkeleton(bool enableSkinning) {
+std::shared_ptr<VkMesh> GltfModel::getSkeleton() {
   mSkeletonMesh->vertices.resize(mModel->nodes.size() * 2);
   mSkeletonMesh->vertices.clear();
 
   /* start from Armature child */
-  getSkeletonPerNode(mRootNode->getChilds().at(0), enableSkinning);
+  getSkeletonPerNode(mRootNode->getChilds().at(0));
   return mSkeletonMesh;
 }
 
-void GltfModel::getSkeletonPerNode(std::shared_ptr<GltfNode> treeNode, bool enableSkinning) {
+void GltfModel::getSkeletonPerNode(std::shared_ptr<GltfNode> treeNode) {
   glm::vec3 parentPos = glm::vec3(0.0f);
-  if (enableSkinning) {
-    parentPos = glm::vec3(treeNode->getNodeMatrix() * glm::vec4(1.0f));
-  } else {
-    glm::mat4 bindMatrix = glm::inverse(mInverseBindMatrices.at(mNodeToJoint.at(treeNode->getNodeNum())));
-    parentPos = bindMatrix  * treeNode->getNodeMatrix() * glm::vec4(1.0f);
-  }
+  parentPos = glm::vec3(treeNode->getNodeMatrix() * glm::vec4(1.0f));
   VkVertex parentVertex;
   parentVertex.position = parentPos;
   parentVertex.color = glm::vec3(0.0f, 1.0f, 1.0f);
 
   for (const auto &childNode : treeNode->getChilds()) {
     glm::vec3 childPos = glm::vec3(0.0f);
-    if (enableSkinning) {
-      childPos = glm::vec3(childNode->getNodeMatrix() * glm::vec4(1.0f));
-    } else {
-      glm::mat4 bindMatrix = glm::inverse(mInverseBindMatrices.at(mNodeToJoint.at(childNode->getNodeNum())));
-      childPos = bindMatrix * childNode->getNodeMatrix() * glm::vec4(1.0f);
-    }
+    childPos = glm::vec3(childNode->getNodeMatrix() * glm::vec4(1.0f));
     VkVertex childVertex;
     childVertex.position = childPos;
     childVertex.color = glm::vec3(0.0f, 0.0f, 1.0f);
     mSkeletonMesh->vertices.emplace_back(parentVertex);
     mSkeletonMesh->vertices.emplace_back(childVertex);
 
-    getSkeletonPerNode(childNode, enableSkinning);
+    getSkeletonPerNode(childNode);
   }
 }
 

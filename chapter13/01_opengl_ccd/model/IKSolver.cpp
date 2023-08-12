@@ -21,21 +21,6 @@ void IKSolver::setNodes(std::vector<std::shared_ptr<GltfNode>> nodes) {
         node->getNodeName().c_str());
     }
   }
-  calculateBoneLengths();
-}
-
-void IKSolver::calculateBoneLengths() {
-  mNodeLengths.resize(mNodes.size());
-  for (int i = 0; i < mNodes.size() - 1; ++i) {
-    std::shared_ptr<GltfNode> startNode = mNodes.at(i);
-    std::shared_ptr<GltfNode> endNode = mNodes.at(i + 1);
-
-    glm::vec3 startNodePos = startNode->getGlobalPosition();
-    glm::vec3 endNodePos = endNode->getGlobalPosition();
-
-    mNodeLengths.at(i) = glm::length(endNodePos - startNodePos);
-    Logger::log(2, "%s: bone %i has length %f\n", __FUNCTION__, i, mNodeLengths.at(i));
-  }
 }
 
 std::shared_ptr<GltfNode> IKSolver::getIkChainRootNode() {
