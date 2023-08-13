@@ -1,9 +1,8 @@
 /* CCD and FABRIK IK solver */
 #pragma once
-
-#include <glm/glm.hpp>
 #include <vector>
 #include <memory>
+#include <glm/glm.hpp>
 
 #include "GltfNode.h"
 
