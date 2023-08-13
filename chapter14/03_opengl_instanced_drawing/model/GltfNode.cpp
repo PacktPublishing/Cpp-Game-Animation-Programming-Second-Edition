@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 #include "GltfNode.h"
 #include "Logger.h"
@@ -136,6 +137,42 @@ void GltfNode::calculateNodeMatrix() {
 glm::mat4 GltfNode::getNodeMatrix() {
   calculateNodeMatrix();
   return mNodeMatrix;
+}
+
+glm::quat GltfNode::getLocalRotation() {
+  return mBlendRotation;
+}
+
+glm::quat GltfNode::getGlobalRotation() {
+  glm::quat orientation;
+  glm::vec3 scale;
+  glm::vec3 translation;
+  glm::vec3 skew;
+  glm::vec4 perspective;
+
+  if (!glm::decompose(mNodeMatrix, scale, orientation, translation, skew, perspective)) {
+    Logger::log(1, "%s error: could not decompose matrix for node %i\n", __FUNCTION__,
+      mNodeNum);
+    return glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+  }
+
+  return glm::inverse(orientation);
+}
+
+glm::vec3 GltfNode::getGlobalPosition() {
+  glm::quat orientation;
+  glm::vec3 scale;
+  glm::vec3 translation;
+  glm::vec3 skew;
+  glm::vec4 perspective;
+
+  if (!glm::decompose(mNodeMatrix, scale, orientation, translation, skew, perspective)) {
+    Logger::log(1, "%s error: could not decompose matrix for node %i\n", __FUNCTION__,
+      mNodeNum);
+    return glm::vec3(0.0f, 0.0f, 0.0f);
+  }
+
+  return translation;
 }
 
 void GltfNode::printTree() {

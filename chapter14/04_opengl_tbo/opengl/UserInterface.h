@@ -1,6 +1,6 @@
 /* Dear ImGui*/
 #pragma once
-# include <vector>
+#include <vector>
 
 #include "OGLRenderData.h"
 #include "ModelSettings.h"
@@ -28,6 +28,9 @@ class UserInterface {
 
     std::vector<float> mMatrixGenerationValues{};
     int mNumMatrixGenerationValues = 90;
+
+    std::vector<float> mIKValues{};
+    int mNumIKValues = 90;
 
     std::vector<float> mMatrixUploadValues{};
     int mNumMatrixUploadValues = 90;

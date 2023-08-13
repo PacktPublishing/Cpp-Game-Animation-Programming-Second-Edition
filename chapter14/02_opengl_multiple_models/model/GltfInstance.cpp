@@ -44,7 +44,6 @@ GltfInstance::GltfInstance(std::shared_ptr<GltfModel> model, glm::vec2 worldPos,
   mRootNode = nodeData.rootNode;
   mRootNode->setWorldPosition(glm::vec3(mModelSettings.msWorldPosition.x, 0.0f,
     mModelSettings.msWorldPosition.y));
-  mRootNode->setWorldRotation(mModelSettings.msWorldRotation);
 
   mNodeList = nodeData.nodeList;
 
@@ -53,9 +52,9 @@ GltfInstance::GltfInstance(std::shared_ptr<GltfModel> model, glm::vec2 worldPos,
 
   for (const auto &node : mNodeList) {
     if (node) {
-      mModelSettings.msSkelSplitNodeNames.push_back(node->getNodeName());
+      mModelSettings.msSkelNodeNames.push_back(node->getNodeName());
     } else {
-      mModelSettings.msSkelSplitNodeNames.push_back("(invalid)");
+      mModelSettings.msSkelNodeNames.push_back("(invalid)");
     }
   }
 
@@ -78,8 +77,8 @@ GltfInstance::GltfInstance(std::shared_ptr<GltfModel> model, glm::vec2 worldPos,
     mModelSettings.msAnimClip = animClip;
     mModelSettings.msAnimSpeed = animClipSpeed;
     mModelSettings.msWorldRotation = glm::vec3(0.0f, initRotation, 0.0f);
+    mRootNode->setWorldRotation(mModelSettings.msWorldRotation);
   }
-
 
   /* update initial clips etc */
   checkForUpdates();
@@ -87,6 +86,16 @@ GltfInstance::GltfInstance(std::shared_ptr<GltfModel> model, glm::vec2 worldPos,
   /* get Skeleton data */
   mSkeletonMesh = std::make_shared<OGLMesh>();
   mSkeletonMesh->vertices.resize(mNodeCount * 2);
+
+  /* set values for inverse kinematics */
+  /* hard-code zero here as we have different models */
+  mModelSettings.msIkEffectorNode = 0;
+  mModelSettings.msIkRootNode = 0;
+  setInverseKinematicsNodes(mModelSettings.msIkEffectorNode, mModelSettings.msIkRootNode);
+  setNumIKIterations(mModelSettings.msIkIterations);
+
+  mModelSettings.msIkTargetWorldPos = getWorldRotation() *
+    mModelSettings.msIkTargetPos + glm::vec3(worldPos.x, 0.0f, worldPos.y);
 }
 
 void GltfInstance::resetNodeData() {
@@ -188,6 +197,11 @@ void GltfInstance::checkForUpdates() {
   static int skelSplitNode = mModelSettings.msSkelSplitNode;
   static glm::vec2 worldPos = mModelSettings.msWorldPosition;
   static glm::vec3 worldRot = mModelSettings.msWorldRotation;
+  static glm::vec3 ikTargetPos = mModelSettings.msIkTargetPos;
+  static ikMode lastIkMode = mModelSettings.msIkMode;
+  static int numIKIterations = mModelSettings.msIkIterations;
+  static int ikEffectorNode = mModelSettings.msIkEffectorNode;
+  static int ikRootNode = mModelSettings.msIkRootNode;
 
   if (skelSplitNode != mModelSettings.msSkelSplitNode) {
     setSkeletonSplitNode(mModelSettings.msSkelSplitNode);
@@ -207,11 +221,40 @@ void GltfInstance::checkForUpdates() {
     mRootNode->setWorldPosition(glm::vec3(mModelSettings.msWorldPosition.x, 0.0f,
       mModelSettings.msWorldPosition.y));
     worldPos = mModelSettings.msWorldPosition;
+    mModelSettings.msIkTargetWorldPos = getWorldRotation() *
+      mModelSettings.msIkTargetPos + glm::vec3(worldPos.x, 0.0f, worldPos.y);
   }
 
   if (worldRot != mModelSettings.msWorldRotation) {
     mRootNode->setWorldRotation(mModelSettings.msWorldRotation);
     worldRot = mModelSettings.msWorldRotation;
+    mModelSettings.msIkTargetWorldPos = getWorldRotation() *
+      mModelSettings.msIkTargetPos + glm::vec3(worldPos.x, 0.0f, worldPos.y);
+  }
+
+  if (ikTargetPos != mModelSettings.msIkTargetPos) {
+    ikTargetPos = mModelSettings.msIkTargetPos;
+    mModelSettings.msIkTargetWorldPos = getWorldRotation() *
+      mModelSettings.msIkTargetPos + glm::vec3(worldPos.x, 0.0f, worldPos.y);
+  }
+
+  if (lastIkMode != mModelSettings.msIkMode) {
+    resetNodeData();
+    lastIkMode = mModelSettings.msIkMode;
+  }
+
+  if (numIKIterations != mModelSettings.msIkIterations) {
+    setNumIKIterations(mModelSettings.msIkIterations);
+    resetNodeData();
+    numIKIterations = mModelSettings.msIkIterations;
+  }
+
+  if (ikEffectorNode != mModelSettings.msIkEffectorNode ||
+      ikRootNode != mModelSettings.msIkRootNode) {
+    setInverseKinematicsNodes(mModelSettings.msIkEffectorNode, mModelSettings.msIkRootNode);
+    resetNodeData();
+    ikEffectorNode = mModelSettings.msIkEffectorNode;
+    ikRootNode = mModelSettings.msIkRootNode;
   }
 }
 
@@ -239,6 +282,20 @@ void GltfInstance::updateAnimation() {
       blendAnimationFrame(mModelSettings.msAnimClip, mModelSettings.msAnimTimePosition,
         mModelSettings.msAnimBlendFactor);
     }
+  }
+}
+
+void GltfInstance::solveIK() {
+  switch (mModelSettings.msIkMode) {
+    case ikMode::ccd:
+      solveIKByCCD(mModelSettings.msIkTargetWorldPos);
+      break;
+    case ikMode::fabrik:
+      solveIKByFABRIK(mModelSettings.msIkTargetWorldPos);
+      break;
+    default:
+      /* do nothing */
+      break;
   }
 }
 
@@ -343,4 +400,53 @@ float GltfInstance::getAnimationEndTime(int animNum) {
 
 std::shared_ptr<GltfModel> GltfInstance::getModel() {
   return mGltfModel;
+}
+
+void GltfInstance::setInverseKinematicsNodes(int effectorNodeNum, int ikChainRootNodeNum) {
+  if (effectorNodeNum < 0 || effectorNodeNum > (mNodeList.size() - 1)) {
+    Logger::log(1, "%s error: effector node %i is out of range\n", __FUNCTION__,
+      effectorNodeNum);
+    return;
+  }
+
+  if (ikChainRootNodeNum < 0 || ikChainRootNodeNum > (mNodeList.size() - 1)) {
+    Logger::log(1, "%s error: IK chaine root node %i is out of range\n", __FUNCTION__,
+      ikChainRootNodeNum);
+    return;
+  }
+
+  std::vector<std::shared_ptr<GltfNode>> ikNodes{};
+  int currentNodeNum = effectorNodeNum;
+
+  ikNodes.insert(ikNodes.begin(), mNodeList.at(effectorNodeNum));
+  while (currentNodeNum != ikChainRootNodeNum) {
+    std::shared_ptr<GltfNode> node = mNodeList.at(currentNodeNum);
+    if (node) {
+      std::shared_ptr<GltfNode> parentNode = node->getParentNode();
+      if (parentNode) {
+        currentNodeNum = parentNode->getNodeNum();
+        ikNodes.push_back(parentNode);
+      } else {
+        /* force stopping on the root node */
+        Logger::log(1, "%s error: reached skeleton root node, stopping\n", __FUNCTION__);
+        break;
+      }
+    }
+  }
+
+  mIKSolver.setNodes(ikNodes);
+}
+
+void GltfInstance::setNumIKIterations(int iterations) {
+  mIKSolver.setNumIterations(iterations);
+}
+
+void GltfInstance::solveIKByCCD(glm::vec3 target)  {
+  mIKSolver.solveCCD(target);
+  updateNodeMatrices(mIKSolver.getIkChainRootNode());
+}
+
+void GltfInstance::solveIKByFABRIK(glm::vec3 target)  {
+  mIKSolver.solveFABRIK(target);
+  updateNodeMatrices(mIKSolver.getIkChainRootNode());
 }

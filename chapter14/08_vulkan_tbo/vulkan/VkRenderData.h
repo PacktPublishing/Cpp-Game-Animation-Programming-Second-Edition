@@ -36,6 +36,12 @@ enum class blendMode {
   additive
 };
 
+enum class ikMode {
+  off = 0,
+  ccd,
+  fabrik
+};
+
 struct VkTextureData {
   VkImage texTextureImage = VK_NULL_HANDLE;
   VkImageView texTextureImageView = VK_NULL_HANDLE;
@@ -108,6 +114,7 @@ struct VkRenderData {
 
   float rdFrameTime = 0.0f;
   float rdMatrixGenerateTime = 0.0f;
+  float rdIKTime = 0.0f;
   float rdUploadToVBOTime = 0.0f;
   float rdUploadToUBOTime = 0.0f;
   float rdUIGenerateTime = 0.0f;

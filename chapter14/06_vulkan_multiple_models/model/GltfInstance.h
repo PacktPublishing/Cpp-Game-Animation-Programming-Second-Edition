@@ -9,6 +9,7 @@
 #include "GltfModel.h"
 #include "GltfNode.h"
 #include "GltfAnimationClip.h"
+#include "IKSolver.h"
 
 #include "VkRenderData.h"
 #include "ModelSettings.h"
@@ -38,6 +39,10 @@ class GltfInstance {
 
     glm::vec2 getWorldPosition();
     glm::quat getWorldRotation();
+
+    void solveIK();
+    void setInverseKinematicsNodes(int effectorNodeNum, int ikChainRootNodeNum);
+    void setNumIKIterations(int iterations);
 
   private:
     void playAnimation(int animNum, float speedDivider, float blendFactor,
@@ -77,4 +82,8 @@ class GltfInstance {
     std::shared_ptr<VkMesh> mSkeletonMesh = nullptr;
 
     ModelSettings mModelSettings{};
+
+    IKSolver mIKSolver{};
+    void solveIKByCCD(glm::vec3 target);
+    void solveIKByFABRIK(glm::vec3 target);
 };

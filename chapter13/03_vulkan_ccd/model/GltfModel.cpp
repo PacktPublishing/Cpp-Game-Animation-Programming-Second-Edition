@@ -205,7 +205,7 @@ void GltfModel::playAnimation(int sourceAnimNumber, int destAnimNumber, float sp
 void GltfModel::blendAnimationFrame(int animNum, float time, float blendFactor) {
   mAnimClips.at(animNum)->blendAnimationFrame(mNodeList, mAdditiveAnimationMask, time,
     blendFactor);
-  updateNodesMatrices(mRootNode);
+  updateNodeMatrices(mRootNode);
 }
 
 void GltfModel::crossBlendAnimationFrame(int sourceAnimNumber, int destAnimNumber, float time,
@@ -225,7 +225,7 @@ void GltfModel::crossBlendAnimationFrame(int sourceAnimNumber, int destAnimNumbe
   mAnimClips.at(sourceAnimNumber)->blendAnimationFrame(mNodeList,
     mInvertedAdditiveAnimationMask, time, blendFactor);
 
-  updateNodesMatrices(mRootNode);
+  updateNodeMatrices(mRootNode);
 }
 
 float GltfModel::getAnimationEndTime(int animNum) {
@@ -320,12 +320,12 @@ void GltfModel::resetNodeData(std::shared_ptr<GltfNode> treeNode) {
   }
 }
 
-void GltfModel::updateNodesMatrices(std::shared_ptr<GltfNode> treeNode) {
+void GltfModel::updateNodeMatrices(std::shared_ptr<GltfNode> treeNode) {
   treeNode->calculateNodeMatrix();
   updateJointMatricesAndQuats(treeNode);
 
   for (auto& childNode : treeNode->getChilds()) {
-    updateNodesMatrices(childNode);
+    updateNodeMatrices(childNode);
   }
 }
 
@@ -523,7 +523,7 @@ void GltfModel::setNumIKIterations(int iterations) {
 
 void GltfModel::solveIKByCCD(glm::vec3 target)  {
   mIKSolver.solveCCD(target);
-  updateNodesMatrices(mIKSolver.getIkChainRootNode());
+  updateNodeMatrices(mIKSolver.getIkChainRootNode());
 }
 
 void GltfModel::draw(VkRenderData &renderData, VkGltfRenderData& gltfRenderData) {

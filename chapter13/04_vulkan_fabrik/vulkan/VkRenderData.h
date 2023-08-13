@@ -1,7 +1,6 @@
 /* Vulkan */
 #pragma once
 #include <vector>
-#include <memory>
 
 #include <glm/glm.hpp>
 
@@ -10,8 +9,6 @@
 
 #include <VkBootstrap.h>
 #include <vk_mem_alloc.h>
-
-#include "GltfNode.h"
 
 struct VkVertex {
   glm::vec3 position;

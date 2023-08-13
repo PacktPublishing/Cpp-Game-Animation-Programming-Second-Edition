@@ -1,6 +1,6 @@
 /* Dear ImGui*/
 #pragma once
-# include <vector>
+#include <vector>
 
 #include "OGLRenderData.h"
 

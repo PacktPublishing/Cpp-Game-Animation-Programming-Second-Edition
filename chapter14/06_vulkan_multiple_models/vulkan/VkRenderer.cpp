@@ -785,9 +785,14 @@ bool VkRenderer::draw() {
     static_cast<float>(mRenderData.rdVkbSwapchain.extent.width) /
     static_cast<float>(mRenderData.rdVkbSwapchain.extent.height), 0.01f, 500.0f);
 
-  /* animate */
+  /* animate and update inverse kinematics */
+  mRenderData.rdIKTime = 0.0f;
   for (auto &instance : mGltfInstances) {
     instance->updateAnimation();
+
+    mIKTimer.start();
+    instance->solveIK();
+    mRenderData.rdIKTime += mIKTimer.stop();
   }
 
   /* save value to avoid changes during later calls */
@@ -809,9 +814,29 @@ bool VkRenderer::draw() {
     }
   }
 
+  /* get coordinate arrows for the IK target of current instance only */
+  mCoordArrowsLineIndexCount = 0;
+  {
+    ModelSettings ikSettings = mGltfInstances.at(selectedInstance)->getInstanceSettings();
+    if (ikSettings.msIkMode == ikMode::ccd ||
+        ikSettings.msIkMode == ikMode::fabrik) {
+      mCoordArrowsMesh = mCoordArrowsModel.getVertexData();
+      mCoordArrowsLineIndexCount += mCoordArrowsMesh.vertices.size();
+      std::for_each(mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end(),
+        [=](auto &n){
+          n.color /= 2.0f;
+          n.position = modelWorldRot * n.position;
+          n.position += ikSettings.msIkTargetWorldPos;
+      });
+
+      mLineMesh->vertices.insert(mLineMesh->vertices.end(),
+        mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end());
+    }
+  }
+
   /* draw coordiante arrows*/
   mCoordArrowsMesh = mCoordArrowsModel.getVertexData();
-  mCoordArrowsLineIndexCount = mCoordArrowsMesh.vertices.size();
+  mCoordArrowsLineIndexCount += mCoordArrowsMesh.vertices.size();
   std::for_each(mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end(),
     [=](auto &n){
       n.color /= 2.0f;

@@ -118,7 +118,7 @@ bool VkRenderer::init(unsigned int width, unsigned int height) {
   mRenderData.rdSkelSplitNode = mRenderData.rdModelNodeCount - 1;
 
   /* set values for inverse kinematics */
-  /* hard-code left arm here for startup */
+  /* hard-code right arm here for startup */
   mRenderData.rdIkEffectorNode = 19;
   mRenderData.rdIkRootNode = 26;
   mGltfModel->setInverseKinematicsNodes(mRenderData.rdIkEffectorNode,
@@ -877,24 +877,24 @@ bool VkRenderer::draw() {
     mGltfModel->draw(mRenderData, mGltfRenderData);
   }
 
-
-  vkCmdBindVertexBuffers(mRenderData.rdCommandBuffer, 0, 1,
-    &mRenderData.rdVertexBufferData.rdVertexBuffer, &offset);
+  if (mCoordArrowsLineIndexCount > 0 || mSkeletonLineIndexCount > 0) {
+    vkCmdBindVertexBuffers(mRenderData.rdCommandBuffer, 0, 1,
+      &mRenderData.rdVertexBufferData.rdVertexBuffer, &offset);
+    vkCmdSetLineWidth(mRenderData.rdCommandBuffer, 3.0f);
+  }
 
   /* draw the coordinate arrow WITH depth buffer */
   if (mCoordArrowsLineIndexCount > 0) {
     vkCmdBindPipeline(mRenderData.rdCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
       mRenderData.rdLinePipeline);
-    vkCmdSetLineWidth(mRenderData.rdCommandBuffer, 3.0f);
     vkCmdDraw(mRenderData.rdCommandBuffer, mCoordArrowsLineIndexCount, 1,
       mSkeletonLineIndexCount, 0);
   }
 
-  /* draw the skeleton, disable depth test to overlay */
+  /* draw the skeleton last, disable depth test to overlay */
   if (mSkeletonLineIndexCount > 0) {
     vkCmdBindPipeline(mRenderData.rdCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
       mRenderData.rdGltfSkeletonPipeline);
-    vkCmdSetLineWidth(mRenderData.rdCommandBuffer, 3.0f);
     vkCmdDraw(mRenderData.rdCommandBuffer, mSkeletonLineIndexCount, 1, 0, 0);
   }
 

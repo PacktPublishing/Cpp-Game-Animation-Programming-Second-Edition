@@ -527,13 +527,15 @@ void UserInterface::createFrame(VkRenderData& renderData) {
       if (ImGui::BeginCombo("##SplitNodeCombo",
         renderData.rdSkelSplitNodeNames.at(renderData.rdSkelSplitNode).c_str())) {
         for (int i = 0; i < renderData.rdSkelSplitNodeNames.size(); ++i) {
-          const bool isSelected = (renderData.rdSkelSplitNode == i);
-          if (ImGui::Selectable(renderData.rdSkelSplitNodeNames.at(i).c_str(), isSelected)) {
-            renderData.rdSkelSplitNode = i;
-          }
+          if (renderData.rdSkelSplitNodeNames.at(i).compare("(invalid)") != 0) {
+            const bool isSelected = (renderData.rdSkelSplitNode == i);
+            if (ImGui::Selectable(renderData.rdSkelSplitNodeNames.at(i).c_str(), isSelected)) {
+              renderData.rdSkelSplitNode = i;
+            }
 
-          if (isSelected) {
-            ImGui::SetItemDefaultFocus();
+            if (isSelected) {
+              ImGui::SetItemDefaultFocus();
+            }
           }
         }
         ImGui::EndCombo();

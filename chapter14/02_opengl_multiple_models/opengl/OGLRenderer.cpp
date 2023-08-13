@@ -326,10 +326,20 @@ void OGLRenderer::draw() {
 
   mViewMatrix = mCamera.getViewMatrix(mRenderData);
 
-  /* animate */
+  /* animate and update inverse kinematics */
+  mRenderData.rdIKTime = 0.0f;
   for (auto &instance : mGltfInstances) {
     instance->updateAnimation();
+
+    mIKTimer.start();
+    instance->solveIK();
+    mRenderData.rdIKTime += mIKTimer.stop();
   }
+
+  /* save value to avoid changes during later call */
+  int selectedInstance = mRenderData.rdCurrentSelectedInstance;
+  glm::vec2 modelWorldPos = mGltfInstances.at(selectedInstance)->getWorldPosition();
+  glm::quat modelWorldRot = mGltfInstances.at(selectedInstance)->getWorldRotation();
 
   mLineMesh->vertices.clear();
 
@@ -345,14 +355,29 @@ void OGLRenderer::draw() {
     }
   }
 
-  /* save value to avoid changes during later calls */
-  int selectedInstance = mRenderData.rdCurrentSelectedInstance;
-  glm::vec2 modelWorldPos = mGltfInstances.at(selectedInstance)->getWorldPosition();
-  glm::quat modelWorldRot = mGltfInstances.at(selectedInstance)->getWorldRotation();
+  /* get coordinate arrows for the IK target of current instance only */
+  mCoordArrowsLineIndexCount = 0;
+  {
+    ModelSettings ikSettings = mGltfInstances.at(selectedInstance)->getInstanceSettings();
+    if (ikSettings.msIkMode == ikMode::ccd ||
+        ikSettings.msIkMode == ikMode::fabrik) {
+      mCoordArrowsMesh = mCoordArrowsModel.getVertexData();
+      mCoordArrowsLineIndexCount += mCoordArrowsMesh.vertices.size();
+      std::for_each(mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end(),
+        [=](auto &n){
+          n.color /= 2.0f;
+          n.position = modelWorldRot * n.position;
+          n.position += ikSettings.msIkTargetWorldPos;
+      });
+
+      mLineMesh->vertices.insert(mLineMesh->vertices.end(),
+        mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end());
+    }
+  }
 
   /* draw coordiante arrows*/
   mCoordArrowsMesh = mCoordArrowsModel.getVertexData();
-  mCoordArrowsLineIndexCount = mCoordArrowsMesh.vertices.size();
+  mCoordArrowsLineIndexCount += mCoordArrowsMesh.vertices.size();
   std::for_each(mCoordArrowsMesh.vertices.begin(), mCoordArrowsMesh.vertices.end(),
     [=](auto &n){
       n.color /= 2.0f;

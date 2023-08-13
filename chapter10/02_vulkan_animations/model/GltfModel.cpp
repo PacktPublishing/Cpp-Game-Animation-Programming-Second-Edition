@@ -160,7 +160,7 @@ void GltfModel::playAnimation(int animNum, float speedDivider) {
 
 void GltfModel::setAnimationFrame(int animNum, float time) {
   mAnimClips.at(animNum)->setAnimationFrame(mNodeList, time);
-  updateNodesMatrices(mRootNode, glm::mat4(1.0f));
+  updateNodeMatrices(mRootNode, glm::mat4(1.0f));
 }
 
 float GltfModel::getAnimationEndTime(int animNum) {
@@ -241,14 +241,14 @@ void GltfModel::getNodeData(std::shared_ptr<GltfNode> treeNode, glm::mat4 parent
   updateJointMatricesAndQuats(treeNode);
 }
 
-void GltfModel::updateNodesMatrices(std::shared_ptr<GltfNode> treeNode, glm::mat4 parentNodeMatrix) {
+void GltfModel::updateNodeMatrices(std::shared_ptr<GltfNode> treeNode, glm::mat4 parentNodeMatrix) {
   treeNode->calculateNodeMatrix(parentNodeMatrix);
   updateJointMatricesAndQuats(treeNode);
 
   glm::mat4 treeNodeMatrix = treeNode->getNodeMatrix();
 
   for (auto& childNode : treeNode->getChilds()) {
-    updateNodesMatrices(childNode, treeNodeMatrix);
+    updateNodeMatrices(childNode, treeNodeMatrix);
   }
 }
 

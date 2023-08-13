@@ -213,20 +213,29 @@ void GltfModel::getNodeData(std::shared_ptr<GltfNode> treeNode) {
 
   if (node.translation.size()) {
     treeNode->setTranslation(glm::make_vec3(node.translation.data()));
+  } else {
+    treeNode->setTranslation(glm::vec3(0.0f));
   }
+
   if (node.rotation.size()) {
     treeNode->setRotation(glm::make_quat(node.rotation.data()));
+  } else {
+    treeNode->setRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
   }
+
   if (node.scale.size()) {
     treeNode->setScale(glm::make_vec3(node.scale.data()));
+  } else {
+    treeNode->setScale(glm::vec3(1.0f));
   }
 
   treeNode->calculateNodeMatrix();
 }
 
 void GltfModel::resetNodeData(std::shared_ptr<GltfNode> treeNode) {
+  getNodeData(treeNode);
+
   for (auto &childNode : treeNode->getChilds()) {
-    getNodeData(childNode);
     resetNodeData(childNode);
   }
 }

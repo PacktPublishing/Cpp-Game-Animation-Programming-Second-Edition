@@ -26,6 +26,7 @@ void UserInterface::init(OGLRenderData &renderData) {
   mFrameTimeValues.resize(mNumFrameTimeValues);
   mModelUploadValues.resize(mNumModelUploadValues);
   mMatrixGenerationValues.resize(mNumMatrixGenerationValues);
+  mIKValues.resize(mNumIKValues);
   mMatrixUploadValues.resize(mNumMatrixUploadValues);
   mUiGenValues.resize(mNumUiGenValues);
   mUiDrawValues.resize(mNumUiDrawValues);
@@ -67,6 +68,7 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
   static int frameTimeOffset = 0;
   static int modelUploadOffset = 0;
   static int matrixGenOffset = 0;
+  static int ikOffset = 0;
   static int matrixUploadOffset = 0;
   static int uiGenOffset = 0;
   static int uiDrawOffset = 0;
@@ -83,6 +85,9 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
 
     mMatrixGenerationValues.at(matrixGenOffset) = renderData.rdMatrixGenerateTime;
     matrixGenOffset = ++matrixGenOffset % mNumMatrixGenerationValues;
+
+    mIKValues.at(ikOffset) = renderData.rdIKTime;
+    ikOffset = ++ikOffset % mNumIKValues;
 
     mMatrixUploadValues.at(matrixUploadOffset) = renderData.rdUploadToUBOTime;
     matrixUploadOffset = ++matrixUploadOffset % mNumMatrixUploadValues;
@@ -204,6 +209,30 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
       ImGui::SameLine();
       ImGui::PlotLines("##MatrixGenTimes", mMatrixGenerationValues.data(), mMatrixGenerationValues.size(), matrixGenOffset,
         matrixGenOverlay.c_str(), 0.0f, FLT_MAX, ImVec2(0, 80));
+      ImGui::EndTooltip();
+    }
+
+    ImGui::BeginGroup();
+    ImGui::Text("(IK Generation Time)  :");
+    ImGui::SameLine();
+    ImGui::Text("%s", std::to_string(renderData.rdIKTime).c_str());
+    ImGui::SameLine();
+    ImGui::Text("ms");
+    ImGui::EndGroup();
+
+    if (ImGui::IsItemHovered()) {
+      ImGui::BeginTooltip();
+      float averageIKTime = 0.0f;
+      for (const auto value : mIKValues) {
+        averageIKTime += value;
+      }
+      averageIKTime /= static_cast<float>(mNumIKValues);
+      std::string ikOverlay = "now:     " + std::to_string(renderData.rdIKTime)
+        + " ms\n30s avg: " + std::to_string(averageIKTime) + " ms";
+      ImGui::Text("(IK Generation)");
+      ImGui::SameLine();
+      ImGui::PlotLines("##IKTimes", mIKValues.data(), mIKValues.size(), ikOffset,
+        ikOverlay.c_str(), 0.0f, FLT_MAX, ImVec2(0, 80));
       ImGui::EndTooltip();
     }
 
@@ -454,15 +483,85 @@ void UserInterface::createFrame(OGLRenderData &renderData, ModelSettings &settin
       ImGui::Text("Split Node  ");
       ImGui::SameLine();
       if (ImGui::BeginCombo("##SplitNodeCombo",
-        settings.msSkelSplitNodeNames.at(settings.msSkelSplitNode).c_str())) {
-        for (int i = 0; i < settings.msSkelSplitNodeNames.size(); ++i) {
-          const bool isSelected = (settings.msSkelSplitNode == i);
-          if (ImGui::Selectable(settings.msSkelSplitNodeNames.at(i).c_str(), isSelected)) {
-            settings.msSkelSplitNode = i;
-          }
+        settings.msSkelNodeNames.at(settings.msSkelSplitNode).c_str())) {
+        for (int i = 0; i < settings.msSkelNodeNames.size(); ++i) {
+          if (settings.msSkelNodeNames.at(i).compare("(invalid)") != 0) {
+            const bool isSelected = (settings.msSkelSplitNode == i);
+            if (ImGui::Selectable(settings.msSkelNodeNames.at(i).c_str(), isSelected)) {
+              settings.msSkelSplitNode = i;
+            }
 
-          if (isSelected) {
-            ImGui::SetItemDefaultFocus();
+            if (isSelected) {
+              ImGui::SetItemDefaultFocus();
+            }
+          }
+        }
+        ImGui::EndCombo();
+      }
+    }
+  }
+
+  if (ImGui::CollapsingHeader("glTF Inverse Kinematic")) {
+    ImGui::Text("Inverse Kinematics");
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Off",
+      settings.msIkMode == ikMode::off)) {
+       settings.msIkMode = ikMode::off;
+    }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("CCD",
+      settings.msIkMode == ikMode::ccd)) {
+       settings.msIkMode = ikMode::ccd;
+    }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("FABRIK",
+      settings.msIkMode == ikMode::fabrik)) {
+       settings.msIkMode = ikMode::fabrik;
+    }
+
+    if (settings.msIkMode == ikMode::ccd ||
+        settings.msIkMode == ikMode::fabrik) {
+      ImGui::Text("IK Iterations  :");
+      ImGui::SameLine();
+      ImGui::SliderInt("##IKITER", &settings.msIkIterations, 0, 15, "%d", flags);
+
+      ImGui::Text("Target Position:");
+      ImGui::SameLine();
+      ImGui::SliderFloat3("##IKTargetPOS", glm::value_ptr(settings.msIkTargetPos), -10.0f,
+        10.0f, "%.3f", flags);
+      ImGui::Text("Effector Node  :");
+      ImGui::SameLine();
+      if (ImGui::BeginCombo("##EffectorNodeCombo",
+        settings.msSkelNodeNames.at(settings.msIkEffectorNode).c_str())) {
+        for (int i = 0; i < settings.msSkelNodeNames.size(); ++i) {
+          if (settings.msSkelNodeNames.at(i).compare("(invalid)") != 0) {
+            const bool isSelected = (settings.msIkEffectorNode == i);
+            if (ImGui::Selectable(settings.msSkelNodeNames.at(i).c_str(), isSelected)) {
+              settings.msIkEffectorNode = i;
+            }
+
+            if (isSelected) {
+              ImGui::SetItemDefaultFocus();
+            }
+          }
+        }
+        ImGui::EndCombo();
+      }
+
+      ImGui::Text("IK Root Node   :");
+      ImGui::SameLine();
+      if (ImGui::BeginCombo("##RootNodeCombo",
+        settings.msSkelNodeNames.at(settings.msIkRootNode).c_str())) {
+        for (int i = 0; i < settings.msSkelNodeNames.size(); ++i) {
+          if (settings.msSkelNodeNames.at(i).compare("(invalid)") != 0) {
+            const bool isSelected = (settings.msIkRootNode == i);
+            if (ImGui::Selectable(settings.msSkelNodeNames.at(i).c_str(), isSelected)) {
+              settings.msIkRootNode = i;
+            }
+
+            if (isSelected) {
+              ImGui::SetItemDefaultFocus();
+            }
           }
         }
         ImGui::EndCombo();

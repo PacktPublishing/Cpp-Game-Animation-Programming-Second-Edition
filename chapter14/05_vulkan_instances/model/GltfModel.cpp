@@ -203,8 +203,9 @@ void GltfModel::getNodeData(std::shared_ptr<GltfNode> treeNode) {
 }
 
 void GltfModel::resetNodeData(std::shared_ptr<GltfNode> treeNode) {
+  getNodeData(treeNode);
+
   for (auto &childNode : treeNode->getChilds()) {
-    getNodeData(childNode);
     resetNodeData(childNode);
   }
 }

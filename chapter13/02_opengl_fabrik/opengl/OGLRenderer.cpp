@@ -95,7 +95,7 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   mRenderData.rdSkelSplitNode = mRenderData.rdModelNodeCount - 1;
 
   /* set values for inverse kinematics */
-  /* hard-code left arm here for startup */
+  /* hard-code right arm here for startup */
   mRenderData.rdIkEffectorNode = 19;
   mRenderData.rdIkRootNode = 26;
   mGltfModel->setInverseKinematicsNodes(mRenderData.rdIkEffectorNode,

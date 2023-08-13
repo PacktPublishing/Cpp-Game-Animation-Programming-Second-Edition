@@ -2,14 +2,11 @@
 #pragma once
 #include <vector>
 #include <string>
-#include <memory>
 
 #include <glm/glm.hpp>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#include "GltfNode.h"
 
 struct OGLVertex {
   glm::vec3 position;

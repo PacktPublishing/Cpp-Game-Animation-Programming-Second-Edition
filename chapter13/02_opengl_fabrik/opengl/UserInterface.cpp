@@ -452,13 +452,15 @@ void UserInterface::createFrame(OGLRenderData &renderData) {
       if (ImGui::BeginCombo("##SplitNodeCombo",
         renderData.rdSkelNodeNames.at(renderData.rdSkelSplitNode).c_str())) {
         for (int i = 0; i < renderData.rdSkelNodeNames.size(); ++i) {
-          const bool isSelected = (renderData.rdSkelSplitNode == i);
-          if (ImGui::Selectable(renderData.rdSkelNodeNames.at(i).c_str(), isSelected)) {
-            renderData.rdSkelSplitNode = i;
-          }
+          if (renderData.rdSkelNodeNames.at(i).compare("(invalid)") != 0) {
+            const bool isSelected = (renderData.rdSkelSplitNode == i);
+            if (ImGui::Selectable(renderData.rdSkelNodeNames.at(i).c_str(), isSelected)) {
+              renderData.rdSkelSplitNode = i;
+            }
 
-          if (isSelected) {
-            ImGui::SetItemDefaultFocus();
+            if (isSelected) {
+              ImGui::SetItemDefaultFocus();
+            }
           }
         }
         ImGui::EndCombo();

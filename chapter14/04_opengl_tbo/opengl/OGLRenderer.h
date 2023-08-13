@@ -42,6 +42,7 @@ class OGLRenderer {
 
     Timer mFrameTimer{};
     Timer mMatrixGenerateTimer{};
+    Timer mIKTimer{};
     Timer mUploadToVBOTimer{};
     Timer mUploadToUBOTimer{};
     Timer mUIGenerateTimer{};

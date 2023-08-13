@@ -22,6 +22,13 @@ struct ModelSettings {
 
   std::vector<std::string> msClipNames{};
   /* saved per instance as the node list is created here */
-  std::vector<std::string> msSkelSplitNodeNames{};
+  std::vector<std::string> msSkelNodeNames{};
+
+  ikMode msIkMode = ikMode::off;
+  int msIkIterations = 10;
+  glm::vec3 msIkTargetPos = glm::vec3(0.0f, 3.0f, 1.0f);
+  glm::vec3 msIkTargetWorldPos = glm::vec3(0.0f, 0.0f,01.0f);
+  int msIkEffectorNode = 0;
+  int msIkRootNode = 0;
 };
 

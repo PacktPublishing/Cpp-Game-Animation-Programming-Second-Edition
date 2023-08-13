@@ -9,6 +9,7 @@
 #include "GltfModel.h"
 #include "GltfNode.h"
 #include "GltfAnimationClip.h"
+#include "IKSolver.h"
 
 #include "OGLRenderData.h"
 #include "ModelSettings.h"
@@ -19,6 +20,8 @@ class GltfInstance {
     ~GltfInstance();
 
     void resetNodeData();
+
+    std::shared_ptr<GltfModel> getModel();
 
     std::shared_ptr<OGLMesh> getSkeleton();
     void setSkeletonSplitNode(int nodeNum);
@@ -36,6 +39,10 @@ class GltfInstance {
 
     glm::vec2 getWorldPosition();
     glm::quat getWorldRotation();
+
+    void solveIK();
+    void setInverseKinematicsNodes(int effectorNodeNum, int ikChainRootNodeNum);
+    void setNumIKIterations(int iterations);
 
   private:
     void playAnimation(int animNum, float speedDivider, float blendFactor,
@@ -75,4 +82,8 @@ class GltfInstance {
     std::shared_ptr<OGLMesh> mSkeletonMesh = nullptr;
 
     ModelSettings mModelSettings{};
+
+    IKSolver mIKSolver{};
+    void solveIKByCCD(glm::vec3 target);
+    void solveIKByFABRIK(glm::vec3 target);
 };

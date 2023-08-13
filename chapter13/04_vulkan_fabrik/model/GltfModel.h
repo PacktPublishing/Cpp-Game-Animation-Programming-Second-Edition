@@ -64,7 +64,7 @@ class GltfModel {
     void getNodeData(std::shared_ptr<GltfNode> treeNode);
 
     void resetNodeData(std::shared_ptr<GltfNode> treeNode);
-    void updateNodesMatrices(std::shared_ptr<GltfNode> treeNode);
+    void updateNodeMatrices(std::shared_ptr<GltfNode> treeNode);
     void updateJointMatricesAndQuats(std::shared_ptr<GltfNode> treeNode);
     void updateAdditiveMask(std::shared_ptr<GltfNode> treeNode, int splitNodeNum);
 

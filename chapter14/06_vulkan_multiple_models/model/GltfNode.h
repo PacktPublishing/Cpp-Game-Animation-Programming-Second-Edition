@@ -27,6 +27,11 @@ class GltfNode : public std::enable_shared_from_this<GltfNode> {
     void blendTranslation(glm::vec3 translation, float blendFactor);
     void blendRotation(glm::quat rotation, float blendFactor);
 
+    glm::quat getLocalRotation();
+    glm::quat getGlobalRotation();
+
+    glm::vec3 getGlobalPosition();
+
     void setWorldPosition(glm::vec3 pos);
     glm::vec3 getWorldPosition();
     void setWorldRotation(glm::vec3 rot);

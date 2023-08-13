@@ -45,7 +45,7 @@ class GltfModel {
     void getAnimations();
     void getNodes(std::shared_ptr<GltfNode> treeNode);
     void getNodeData(std::shared_ptr<GltfNode> treeNode, glm::mat4 parentNodeMatrix);
-    void updateNodesMatrices(std::shared_ptr<GltfNode> treeNode, glm::mat4 parentNodeMatrix);
+    void updateNodeMatrices(std::shared_ptr<GltfNode> treeNode, glm::mat4 parentNodeMatrix);
     void updateJointMatricesAndQuats(std::shared_ptr<GltfNode> treeNode);
 
     std::vector<glm::tvec4<uint16_t>> mJointVec{};
