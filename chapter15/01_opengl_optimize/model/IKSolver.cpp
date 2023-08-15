@@ -147,8 +147,7 @@ void IKSolver::adjustFABRIKNodes() {
     glm::quat nodeRotation = glm::rotation(toNext, toDesired);
 
     /* calculate the required local rotation from the world rotation */
-    glm::quat worldRotation = rotation * nodeRotation;
-    glm::quat localRotation = worldRotation * glm::conjugate(rotation);
+    glm::quat localRotation = rotation * nodeRotation * glm::conjugate(rotation);
 
     /* rotate the node around the old plus the new rotation */
     glm::quat currentRotation = node->getLocalRotation();
