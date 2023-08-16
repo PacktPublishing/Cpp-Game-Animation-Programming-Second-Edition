@@ -24,7 +24,7 @@ void IKSolver::setNodes(std::vector<std::shared_ptr<GltfNode>> nodes) {
 }
 
 void IKSolver::calculateBoneLengths() {
-  mNodeLengths.resize(mNodes.size());
+  mBoneLengths.resize(mNodes.size() - 1);
   for (int i = 0; i < mNodes.size() - 1; ++i) {
     std::shared_ptr<GltfNode> startNode = mNodes.at(i);
     std::shared_ptr<GltfNode> endNode = mNodes.at(i + 1);
@@ -32,8 +32,8 @@ void IKSolver::calculateBoneLengths() {
     glm::vec3 startNodePos = startNode->getGlobalPosition();
     glm::vec3 endNodePos = endNode->getGlobalPosition();
 
-    mNodeLengths.at(i) = glm::length(endNodePos - startNodePos);
-    Logger::log(2, "%s: bone %i has length %f\n", __FUNCTION__, i, mNodeLengths.at(i));
+    mBoneLengths.at(i) = glm::length(endNodePos - startNodePos);
+    Logger::log(2, "%s: bone %i has length %f\n", __FUNCTION__, i, mBoneLengths.at(i));
   }
 }
 
@@ -105,7 +105,7 @@ void IKSolver::solveFABRIKForward(glm::vec3 target) {
   for (size_t i = 1; i < mFABRIKNodePositions.size(); ++i) {
     glm::vec3 boneDirection =
       glm::normalize(mFABRIKNodePositions.at(i) - mFABRIKNodePositions.at(i - 1));
-    glm::vec3 offset = boneDirection * mNodeLengths.at(i - 1);
+    glm::vec3 offset = boneDirection * mBoneLengths.at(i - 1);
 
     mFABRIKNodePositions.at(i) = mFABRIKNodePositions.at(i - 1) + offset;
   }
@@ -119,7 +119,7 @@ void IKSolver::solveFABRIKBackward(glm::vec3 base) {
   for (int i = mFABRIKNodePositions.size() - 2; i >= 0; --i) {
     glm::vec3 boneDirection =
       glm::normalize(mFABRIKNodePositions.at(i) - mFABRIKNodePositions.at(i + 1));
-    glm::vec3 offset = boneDirection * mNodeLengths.at(i);
+    glm::vec3 offset = boneDirection * mBoneLengths.at(i);
 
     mFABRIKNodePositions.at(i) = mFABRIKNodePositions.at(i + 1) + offset;
   }

@@ -21,7 +21,7 @@ class IKSolver {
   private:
     /* nodes from effector (at index 0) to IK chain root node (last index) */
     std::vector<std::shared_ptr<GltfNode>> mNodes{};
-    std::vector<float> mNodeLengths{};
+    std::vector<float> mBoneLengths{};
 
     void calculateBoneLengths();
 
