@@ -227,33 +227,6 @@ void UserInterface::createFrame(VkRenderData& renderData) {
     ImGui::SliderInt("##FOV", &renderData.rdFieldOfView, 40, 150);
   }
 
-  if (ImGui::CollapsingHeader("Angles")) {
-    ImGui::Checkbox("Draw World Coordinate Arrows", &renderData.rdDrawWorldCoordArrows);
-    ImGui::Checkbox("Draw Model Coordinate Arrows", &renderData.rdDrawModelCoordArrows);
-
-    if (ImGui::Button("Reset Rotation")) {
-      renderData.rdResetAngles = true;
-    }
-
-    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-    ImGui::Text("X Rotation");
-    ImGui::PopStyleColor();
-    ImGui::SameLine();
-    ImGui::SliderInt("##ROTX", &renderData.rdRotXAngle, 0, 360);
-
-    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-    ImGui::Text("Y Rotation");
-    ImGui::PopStyleColor();
-    ImGui::SameLine();
-    ImGui::SliderInt("##ROTY", &renderData.rdRotYAngle, 0, 360);
-
-    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 0, 255, 255));
-    ImGui::Text("Z Rotation");
-    ImGui::PopStyleColor();
-    ImGui::SameLine();
-    ImGui::SliderInt("##ROTZ", &renderData.rdRotZAngle, 0, 360);
-  }
-
   if (ImGui::CollapsingHeader("glTF Model")) {
     ImGui::Checkbox("Draw Model", &renderData.rdDrawGltfModel);
     ImGui::Checkbox("Draw Skeleton", &renderData.rdDrawSkeleton);
