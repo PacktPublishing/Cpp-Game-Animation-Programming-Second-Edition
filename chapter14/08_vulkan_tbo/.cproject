@@ -26,7 +26,7 @@
 					<folderInfo id="cmake4eclipse.mbs.config.debug.737044259." name="/" resourcePath="">
 						<toolChain id="cmake4eclipse.mbs.config.debug.toolChain.2112627055" name="CMake driven" superClass="cmake4eclipse.mbs.config.debug.toolChain">
 							<targetPlatform id="cmake4eclipse.mbs.targetPlatform.cmake.976496310" name="Any Platform" superClass="cmake4eclipse.mbs.targetPlatform.cmake"/>
-							<builder buildPath="/07_vulkan_instanced_drawing/_build/Debug" id="cmake4eclipse.mbs.builder.1190198307" managedBuildOn="true" name="CMake Builder.Debug" superClass="cmake4eclipse.mbs.builder"/>
+							<builder buildPath="/14_08_vulkan_tbo/_build/Debug" id="cmake4eclipse.mbs.builder.1190198307" managedBuildOn="true" name="CMake Builder.Debug" superClass="cmake4eclipse.mbs.builder"/>
 							<tool id="cmake4eclipse.mbs.toolchain.tool.dummy.917149107" name="CMake" superClass="cmake4eclipse.mbs.toolchain.tool.dummy"/>
 						</toolChain>
 					</folderInfo>
@@ -52,7 +52,7 @@
 					<folderInfo id="cmake4eclipse.mbs.config.cmake.1163281950." name="/" resourcePath="">
 						<toolChain id="cmake4eclipse.mbs.config.cmake.toolChain.2084792602" name="CMake driven" superClass="cmake4eclipse.mbs.config.cmake.toolChain">
 							<targetPlatform id="cmake4eclipse.mbs.targetPlatform.cmake.1504628365" name="Any Platform" superClass="cmake4eclipse.mbs.targetPlatform.cmake"/>
-							<builder buildPath="/07_vulkan_instanced_drawing/_build/Default" id="cmake4eclipse.mbs.builder.901358611" managedBuildOn="true" name="CMake Builder.Default" superClass="cmake4eclipse.mbs.builder"/>
+							<builder buildPath="/14_08_vulkan_tbo/_build/Default" id="cmake4eclipse.mbs.builder.901358611" managedBuildOn="true" name="CMake Builder.Default" superClass="cmake4eclipse.mbs.builder"/>
 							<tool id="cmake4eclipse.mbs.toolchain.tool.dummy.894053323" name="CMake" superClass="cmake4eclipse.mbs.toolchain.tool.dummy"/>
 						</toolChain>
 					</folderInfo>
@@ -77,7 +77,7 @@
 					<folderInfo id="cmake4eclipse.mbs.config.release.828474495." name="/" resourcePath="">
 						<toolChain id="cmake4eclipse.mbs.config.release.toolChain.1986723270" name="CMake driven" superClass="cmake4eclipse.mbs.config.release.toolChain">
 							<targetPlatform id="cmake4eclipse.mbs.targetPlatform.cmake.1740548448" name="Any Platform" superClass="cmake4eclipse.mbs.targetPlatform.cmake"/>
-							<builder buildPath="/07_vulkan_instanced_drawing/_build/Release" id="cmake4eclipse.mbs.builder.419142720" managedBuildOn="true" name="CMake Builder.Release" superClass="cmake4eclipse.mbs.builder"/>
+							<builder buildPath="/14_08_vulkan_tbo/_build/Release" id="cmake4eclipse.mbs.builder.419142720" managedBuildOn="true" name="CMake Builder.Release" superClass="cmake4eclipse.mbs.builder"/>
 							<tool id="cmake4eclipse.mbs.toolchain.tool.dummy.516740330" name="CMake" superClass="cmake4eclipse.mbs.toolchain.tool.dummy"/>
 						</toolChain>
 					</folderInfo>
@@ -87,7 +87,7 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="07_vulkan_instanced_drawing.cmake4eclipse.mbs.projectType.456440889" name="Cmake4eclipse" projectType="cmake4eclipse.mbs.projectType"/>
+		<project id="14_08_vulkan_tbo.cmake4eclipse.mbs.projectType.456440889" name="Cmake4eclipse" projectType="cmake4eclipse.mbs.projectType"/>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
