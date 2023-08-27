@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
 
   std::unique_ptr<Window> w = std::make_unique<Window>();
 
-  if (!w->init(960, 720, "OpenGL Renderer")) {
+  if (!w->init(960, 720, "OpenGL Renderer - Additive Blending")) {
     Logger::log(1, "%s error: Window init error\n", __FUNCTION__);
     return -1;
   }
