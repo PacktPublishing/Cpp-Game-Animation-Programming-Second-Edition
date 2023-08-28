@@ -41,7 +41,9 @@ The glTF examples are using the [tinygltf](https://github.com/syoyo/tinygltf) gl
 TinyGLTF is licensed under the [MIT License](https://github.com/syoyo/tinygltf/blob/release/LICENSE).
 
 TinyGLTF uses the following third party libraries.
-* json.hpp : Copyright (c) 2013-2017 Niels Lohmann. MIT license.
-* base64 : Copyright (C) 2004-2008 René Nyffenegger
-* stb\_image.h : v2.08 - public domain
-* stb\_image\_write.h : v1.09 - public domain
+
+* json.hpp : Licensed under the MIT License <http://opensource.org/licenses/MIT>. Copyright (c) 2013-2017 Niels Lohmann <http://nlohmann.me>.
+* stb\_image : Public domain.
+* catch : Copyright (c) 2012 Two Blue Cubes Ltd. All rights reserved. Distributed under the Boost Software License, Version 1.0.
+* RapidJSON : Copyright (C) 2015 THL A29 Limited, a Tencent company, and Milo Yip. All rights reserved. http://rapidjson.org/
+* dlib(uridecode, uriencode) : Copyright (C) 2003  Davis E. King Boost Software License 1.0. http://dlib.net/dlib/server/server\_http.cpp.html
