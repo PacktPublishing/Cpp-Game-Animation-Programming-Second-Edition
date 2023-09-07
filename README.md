@@ -22,6 +22,12 @@ The OpenGL examples are using [glad](https://github.com/Dav1dde/glad) to generat
 
 The generated loader code from glad is any of Public Domain, WTFPL or CC0.
 
+## vk-bootstrap
+
+The Vulkan examples are using [vk-bootstrap](https://github.com/charles-lunarg/vk-bootstrap)
+
+Vk-bootstrap is licensed under the [MIT License](https://github.com/charles-lunarg/vk-bootstrap/blob/master/LICENSE.txt)
+
 ## Vulkan Memory Allocator
 
 The Vulkan examples are using the [Vulkan Memory Allocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator).
