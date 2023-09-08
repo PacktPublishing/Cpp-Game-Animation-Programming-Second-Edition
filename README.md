@@ -24,9 +24,9 @@ The generated loader code from glad is any of Public Domain, WTFPL or CC0.
 
 ## vk-bootstrap
 
-The Vulkan examples are using [vk-bootstrap](https://github.com/charles-lunarg/vk-bootstrap)
+The Vulkan examples are using [vk-bootstrap](https://github.com/charles-lunarg/vk-bootstrap).
 
-Vk-bootstrap is licensed under the [MIT License](https://github.com/charles-lunarg/vk-bootstrap/blob/master/LICENSE.txt)
+Vk-bootstrap is licensed under the [MIT License](https://github.com/charles-lunarg/vk-bootstrap/blob/master/LICENSE.txt).
 
 ## Vulkan Memory Allocator
 
