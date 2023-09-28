@@ -51,17 +51,17 @@ void GltfNode::setRotation(glm::quat rotation) {
 }
 
 void GltfNode::blendScale(glm::vec3 scale, float blendFactor) {
-  float factor = std::min(std::max(blendFactor, 0.0f), 1.0f);
+  float factor = std::clamp(blendFactor, 0.0f, 1.0f);
   mBlendScale = scale * factor + mScale * (1.0f - factor);
 }
 
 void GltfNode::blendTranslation(glm::vec3 translation, float blendFactor) {
-  float factor = std::min(std::max(blendFactor, 0.0f), 1.0f);
+  float factor = std::clamp(blendFactor, 0.0f, 1.0f);
   mBlendTranslation = translation * factor + mTranslation * (1.0f - factor) ;
 }
 
 void GltfNode::blendRotation(glm::quat rotation, float blendFactor) {
-  float factor = std::min(std::max(blendFactor, 0.0f), 1.0f);
+  float factor = std::clamp(blendFactor, 0.0f, 1.0f);
   mBlendRotation = glm::slerp(mRotation, rotation, factor);
 }
 
