@@ -145,7 +145,6 @@ void GltfNode::calculateNodeMatrix() {
 }
 
 glm::mat4 GltfNode::getNodeMatrix() {
-  calculateNodeMatrix();
   return mNodeMatrix;
 }
 
