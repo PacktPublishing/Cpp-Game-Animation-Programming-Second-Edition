@@ -25,16 +25,18 @@ If you feel this book is for you, get your [copy](https://www.amazon.com/dp/1803
 alt="https://www.packtpub.com/" border="5" /></a>
 
 ## Instructions and Navigations
-All of the code is organized into folders. 
+All of the code is organized into folders.:w
+
 
 **Following is what you need for this book:**
 This book is for curious C++ developers, game programmers, game designers, and character animators, either pursuing this as a hobby or profession, who have always wanted to look behind the curtain and see how character animation in games works. The book assumes basic C++ and math knowledge, and you should be able to read code and math formulas to get the most out of this book.
-	
+
 With the following software and hardware list you can run all code files present in the book (Chapter 1-15).
+
 ### Software and Hardware List
 | Chapter | Software required | OS required |
 | -------- | ------------------------------------ | ----------------------------------- |
-| 1-15 | Visual Studio 2022 or Eclipse 2023 | Windows (10 or newer), and Linux (Ubuntu 22.04 or newer) |
+| 1-15 | Visual Studio 2022 or Eclipse 2023-06 (or newer) | Windows 10 (or newer), or Linux (i.e. Ubuntu 22.04, Debian 12, or newer) |
 
 
 ### Related products
