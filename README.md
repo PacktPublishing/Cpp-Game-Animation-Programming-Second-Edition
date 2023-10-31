@@ -34,7 +34,7 @@ With the following software and hardware list you can run all code files present
 ### Software and Hardware List
 | Chapter | Software required | OS required |
 | -------- | ------------------------------------ | ----------------------------------- |
-| 1-15 | Visual Studio Code or Visual Studio 2022 | Windows, Mac OS X, and Linux (Any) |
+| 1-15 | Visual Studio 2022 or Eclipse 2023 | Windows (10 or newer), and Linux (Ubuntu 22.04 or newer) |
 
 
 ### Related products
