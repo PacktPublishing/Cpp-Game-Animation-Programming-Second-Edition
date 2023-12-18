@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vulkan/vulkan.h>
-#include <GLFW/glfw3.h>
 
 class Shader {
   public:

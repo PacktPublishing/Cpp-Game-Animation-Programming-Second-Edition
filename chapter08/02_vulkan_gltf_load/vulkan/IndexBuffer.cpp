@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "IndexBuffer.h"
 #include "CommandBuffer.h"
 #include "Logger.h"
@@ -58,7 +60,7 @@ bool IndexBuffer::uploadData(VkRenderData &renderData, VkIndexBufferData &indexB
   /* copy data to staging buffer*/
   void* data;
   vmaMapMemory(renderData.rdAllocator, indexBufferData.rdStagingBufferAlloc, &data);
-  memcpy(data, &buffer.data.at(0) + bufferView.byteOffset, bufferView.byteLength);
+  std::memcpy(data, &buffer.data.at(0) + bufferView.byteOffset, bufferView.byteLength);
   vmaUnmapMemory(renderData.rdAllocator, indexBufferData.rdStagingBufferAlloc);
 
   VkBufferMemoryBarrier vertexBufferBarrier{};

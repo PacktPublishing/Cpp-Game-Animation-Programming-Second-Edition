@@ -1,5 +1,7 @@
 #include <vector>
 
+#include <VkBootstrap.h>
+
 #include "Pipeline.h"
 #include "Logger.h"
 #include "Shader.h"

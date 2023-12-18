@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "VertexBuffer.h"
 #include "CommandBuffer.h"
 #include "Logger.h"
@@ -59,7 +61,7 @@ bool VertexBuffer::uploadData(VkRenderData& renderData, VkVertexBufferData &vert
   /* copy data to staging buffer*/
   void* data;
   vmaMapMemory(renderData.rdAllocator, vertexBufferData.rdStagingBufferAlloc, &data);
-  memcpy(data, vertexData.vertices.data(), vertexDataSize);
+  std::memcpy(data, vertexData.vertices.data(), vertexDataSize);
   vmaUnmapMemory(renderData.rdAllocator, vertexBufferData.rdStagingBufferAlloc);
 
   VkBufferMemoryBarrier vertexBufferBarrier{};
@@ -102,7 +104,7 @@ bool VertexBuffer::uploadData(VkRenderData &renderData, VkVertexBufferData &vert
   /* copy data to staging buffer*/
   void* data;
   vmaMapMemory(renderData.rdAllocator, vertexBufferData.rdStagingBufferAlloc, &data);
-  memcpy(data, &buffer.data.at(0) + bufferView.byteOffset, bufferView.byteLength);
+  std::memcpy(data, &buffer.data.at(0) + bufferView.byteOffset, bufferView.byteLength);
   vmaUnmapMemory(renderData.rdAllocator, vertexBufferData.rdStagingBufferAlloc);
 
   VkBufferMemoryBarrier vertexBufferBarrier{};

@@ -93,8 +93,22 @@ bool TexelBuffer::init(VkRenderData& renderData, VkTexelBufferData &TBOData,
 
   vkUpdateDescriptorSets(renderData.rdVkbDevice.device, 1, &writeDescriptorSet, 0, nullptr);
 
+  TBOData.rdTexelBufferSize = bufferSize;
   Logger::log(1, "%s: created texel buffer of size %i\n", __FUNCTION__, tboInfo.range);
 	return true;
+}
+
+void TexelBuffer::uploadData(VkRenderData &renderData, VkTexelBufferData &TBOData,
+      std::vector<glm::mat4> matricesToUpload) {
+  if (matricesToUpload.size() == 0) {
+    return;
+  }
+
+  void* data;
+  vmaMapMemory(renderData.rdAllocator, TBOData.rdTboBufferAlloc,
+    &data);
+  std::memcpy(data, matricesToUpload.data(), TBOData.rdTexelBufferSize);
+  vmaUnmapMemory(renderData.rdAllocator, TBOData.rdTboBufferAlloc);
 }
 
 void TexelBuffer::cleanup(VkRenderData& renderData, VkTexelBufferData &TBOData) {

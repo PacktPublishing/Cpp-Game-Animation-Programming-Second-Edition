@@ -1,6 +1,8 @@
 #include "SyncObjects.h"
 #include "Logger.h"
 
+#include <VkBootstrap.h>
+
 bool SyncObjects::init(VkRenderData &renderData) {
   VkFenceCreateInfo fenceInfo{};
   fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;

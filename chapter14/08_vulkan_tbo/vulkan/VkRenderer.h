@@ -95,31 +95,29 @@ class VkRenderer {
 
     std::vector<glm::mat4> mPerspViewMatrices{};
 
-    bool deviceInit(VkRenderData &renderData);
+    bool deviceInit();
     bool getQueue();
-    bool createDepthBuffer(VkRenderData &renderData);
-    bool createVBO(VkRenderData &renderData);
-    bool createUBO(VkRenderData &renderData, VkUniformBufferData &UBOData,
-      std::vector<glm::mat4> matricesToUpload);
-    bool createMatrixTBO(VkRenderData &renderData, VkTexelBufferData &TBOData);
-    bool createDQSSBO(VkRenderData &renderData, VkShaderStorageBufferData &SSBOData);
-    bool createSwapchain(VkRenderData &renderData);
-    bool createRenderPass(VkRenderData &renderData);
-    bool createGltfPipelineLayout(VkRenderData& renderData, VkTextureData textureData);
-    bool createLinePipeline(VkRenderData& renderData);
-    bool createGltfSkeletonPipeline(VkRenderData& renderData);
-    bool createGltfGPUPipeline(VkRenderData& renderData);
-    bool createGltfGPUDQPipeline(VkRenderData& renderData);
-    bool createFramebuffer(VkRenderData &renderData);
-    bool createCommandPool(VkRenderData &renderData);
-    bool createCommandBuffer(VkRenderData &renderData);
-    bool createSyncObjects(VkRenderData &renderData);
-    bool loadTexture(VkRenderData &renderData, VkTextureData &textureData);
-    bool initUserInterface(VkRenderData &renderData);
-    bool loadGltfModel(VkRenderData &renderData);
-    bool createInstances(VkRenderData &renderData);
+    bool createDepthBuffer();
+    bool createVBO();
+    bool createUBO();
+    bool createMatrixTBO();
+    bool createDQSSBO();
+    bool createSwapchain();
+    bool createRenderPass();
+    bool createGltfPipelineLayout();
+    bool createLinePipeline();
+    bool createGltfSkeletonPipeline();
+    bool createGltfGPUPipeline();
+    bool createGltfGPUDQPipeline();
+    bool createFramebuffer();
+    bool createCommandPool();
+    bool createCommandBuffer();
+    bool createSyncObjects();
+    bool initUserInterface();
+    bool loadGltfModel();
+    bool createInstances();
 
     bool initVma();
 
-    bool recreateSwapchain(VkRenderData &renderData);
+    bool recreateSwapchain();
 };

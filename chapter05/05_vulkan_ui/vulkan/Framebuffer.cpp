@@ -20,7 +20,7 @@ bool Framebuffer::init(VkRenderData &renderData) {
     FboInfo.layers = 1;
 
     if (vkCreateFramebuffer(renderData.rdVkbDevice.device, &FboInfo, nullptr, &renderData.rdFramebuffers[i]) != VK_SUCCESS) {
-      Logger::log(1, "%s error: failed to create framebuffer %i", __FUNCTION__, i);
+      Logger::log(1, "%s error: failed to create framebuffer %i\n", __FUNCTION__, i);
       return false;
     }
   }

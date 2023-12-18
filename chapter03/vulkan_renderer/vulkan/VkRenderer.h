@@ -42,19 +42,19 @@ class VkRenderer {
     VkBuffer mVertexBuffer;
     VmaAllocation mVertexBufferAlloc;
 
-    bool deviceInit(VkRenderData &renderData);
+    bool deviceInit();
     bool getQueue();
-    bool createDepthBuffer(VkRenderData &renderData);
-    bool createSwapchain(VkRenderData &renderData);
-    bool createRenderPass(VkRenderData &renderData);
-    bool createPipeline(VkRenderData &renderData);
-    bool createFramebuffer(VkRenderData &renderData);
-    bool createCommandPool(VkRenderData &renderData);
-    bool createCommandBuffer(VkRenderData &renderData);
-    bool createSyncObjects(VkRenderData &renderData);
-    bool loadTexture(VkRenderData &renderData);
+    bool createDepthBuffer();
+    bool createSwapchain();
+    bool createRenderPass();
+    bool createPipeline();
+    bool createFramebuffer();
+    bool createCommandPool();
+    bool createCommandBuffer();
+    bool createSyncObjects();
+    bool loadTexture();
 
     bool initVma();
 
-    bool recreateSwapchain(VkRenderData &renderData);
+    bool recreateSwapchain();
 };

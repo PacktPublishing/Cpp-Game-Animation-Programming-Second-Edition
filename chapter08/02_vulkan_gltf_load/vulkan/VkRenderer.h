@@ -107,27 +107,27 @@ class VkRenderer {
 
     VkUploadMatrices mMatrices{};
 
-    bool deviceInit(VkRenderData &renderData);
+    bool deviceInit();
     bool getQueue();
-    bool createDepthBuffer(VkRenderData &renderData);
-    bool createVBO(VkRenderData &renderData);
-    bool createUBO(VkRenderData &renderData);
-    bool createSwapchain(VkRenderData &renderData);
-    bool createRenderPass(VkRenderData &renderData);
-    bool createPipelineLayout(VkRenderData &renderData);
-    bool createBasicPipeline(VkRenderData &renderData);
-    bool createLinePipeline(VkRenderData &renderData);
-    bool createGltfPipelineLayout(VkRenderData& renderData, VkGltfRenderData &gltfRenderData);
-    bool createGltfPipeline(VkRenderData& renderData);
-    bool createFramebuffer(VkRenderData &renderData);
-    bool createCommandPool(VkRenderData &renderData);
-    bool createCommandBuffer(VkRenderData &renderData);
-    bool createSyncObjects(VkRenderData &renderData);
-    bool loadTexture(VkRenderData &renderData, VkTextureData &textureData);
-    bool initUserInterface(VkRenderData &renderData);
-    bool loadGltfModel(VkRenderData &renderData, VkGltfRenderData &gltfRenderData);
+    bool createDepthBuffer();
+    bool createVBO();
+    bool createUBO();
+    bool createSwapchain();
+    bool createRenderPass();
+    bool createPipelineLayout();
+    bool createBasicPipeline();
+    bool createLinePipeline();
+    bool createGltfPipelineLayout();
+    bool createGltfPipeline();
+    bool createFramebuffer();
+    bool createCommandPool();
+    bool createCommandBuffer();
+    bool createSyncObjects();
+    bool loadTexture();
+    bool initUserInterface();
+    bool loadGltfModel();
 
     bool initVma();
 
-    bool recreateSwapchain(VkRenderData &renderData);
+    bool recreateSwapchain();
 };

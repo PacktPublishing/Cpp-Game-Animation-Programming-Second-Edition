@@ -25,7 +25,7 @@ If you feel this book is for you, get your [copy](https://www.amazon.com/dp/1803
 alt="https://www.packtpub.com/" border="5" /></a>
 
 ## Instructions and Navigations
-All of the code is organized into folders.:w
+All of the code is organized into folders.
 
 
 **Following is what you need for this book:**

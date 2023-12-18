@@ -5,7 +5,6 @@
 #include <vulkan/vulkan.h>
 
 #include "VkRenderData.h"
-#include "CommandBuffer.h"
 
 class Texture {
   public:

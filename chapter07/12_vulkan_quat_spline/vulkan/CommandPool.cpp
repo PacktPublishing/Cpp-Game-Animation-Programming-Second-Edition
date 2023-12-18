@@ -1,6 +1,8 @@
 #include "CommandPool.h"
 #include "Logger.h"
 
+#include <VkBootstrap.h>
+
 bool CommandPool::init(VkRenderData &renderData) {
   VkCommandPoolCreateInfo poolCreateInfo{};
   poolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;

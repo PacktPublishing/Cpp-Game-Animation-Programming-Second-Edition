@@ -4,6 +4,9 @@
 #include "Logger.h"
 #include "Shader.h"
 
+#include <glm/glm.hpp>
+#include <VkBootstrap.h>
+
 bool GltfGPUPipeline::init(VkRenderData& renderData, VkPipelineLayout& pipelineLayout,
     VkPipeline& pipeline, VkPrimitiveTopology topology,
     std::string vertexShaderFilename, std::string fragmentShaderFilename) {

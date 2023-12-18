@@ -4,6 +4,9 @@
 #include "Logger.h"
 #include "Shader.h"
 
+#include <glm/glm.hpp>
+#include <VkBootstrap.h>
+
 bool GltfPipeline::init(VkRenderData& renderData, VkPipelineLayout& pipelineLayout, VkPipeline& pipeline, VkPrimitiveTopology topology, std::string vertexShaderFilename, std::string fragmentShaderFilename) {
   /* shader */
   VkShaderModule vertexModule = Shader::loadShader(renderData.rdVkbDevice.device, vertexShaderFilename);

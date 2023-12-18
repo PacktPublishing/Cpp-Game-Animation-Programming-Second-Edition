@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "VertexBuffer.h"
 #include "CommandBuffer.h"
 #include "Logger.h"
@@ -54,7 +56,7 @@ bool VertexBuffer::uploadData(VkRenderData &renderData, VkMesh vertexData) {
   /* copy data to staging buffer*/
   void* data;
   vmaMapMemory(renderData.rdAllocator, renderData.rdVertexStagingBufferAlloc, &data);
-  memcpy(data, vertexData.vertices.data(), vertexDataSize);
+  std::memcpy(data, vertexData.vertices.data(), vertexDataSize);
   vmaUnmapMemory(renderData.rdAllocator, renderData.rdVertexStagingBufferAlloc);
 
   VkBufferMemoryBarrier vertexBufferBarrier{};

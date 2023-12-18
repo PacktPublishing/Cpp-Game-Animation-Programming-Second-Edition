@@ -1,6 +1,8 @@
 /* Vulkan Pipeline Layout */
 #pragma once
 
+#include <vulkan/vulkan.h>
+
 #include "VkRenderData.h"
 
 class PipelineLayout {

@@ -1,11 +1,13 @@
 #include "ShaderStorageBuffer.h"
 #include "Logger.h"
 
+#include <VkBootstrap.h>
+
 bool ShaderStorageBuffer::init(VkRenderData& renderData, VkShaderStorageBufferData &SSBOData,
-    std::vector<glm::mat4> matricesToUpload) {
+    size_t bufferSize) {
   VkBufferCreateInfo bufferInfo{};
   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-  bufferInfo.size = matricesToUpload.size() * sizeof(glm::mat4);
+  bufferInfo.size = bufferSize;
   bufferInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 
   VmaAllocationCreateInfo vmaAllocInfo{};
@@ -66,7 +68,7 @@ bool ShaderStorageBuffer::init(VkRenderData& renderData, VkShaderStorageBufferDa
   VkDescriptorBufferInfo ssboInfo{};
   ssboInfo.buffer = SSBOData.rdSsboBuffer;
   ssboInfo.offset = 0;
-  ssboInfo.range = matricesToUpload.size() * sizeof(glm::mat4);
+  ssboInfo.range = bufferSize;
 
   VkWriteDescriptorSet writeDescriptorSet{};
   writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -78,8 +80,22 @@ bool ShaderStorageBuffer::init(VkRenderData& renderData, VkShaderStorageBufferDa
 
   vkUpdateDescriptorSets(renderData.rdVkbDevice.device, 1, &writeDescriptorSet, 0, nullptr);
 
+  SSBOData.rdSsboBufferSize = bufferSize;
+
   Logger::log(1, "%s: created shader storage buffer of size %i\n", __FUNCTION__, ssboInfo.range);
 	return true;
+}
+
+void ShaderStorageBuffer::uploadData(VkRenderData &renderData,
+    VkShaderStorageBufferData &SSBOData, std::vector<glm::mat4> matricesToUpload) {
+  if (matricesToUpload.size() == 0) {
+    return;
+  }
+
+  void* data;
+  vmaMapMemory(renderData.rdAllocator, SSBOData.rdSsboBufferAlloc, &data);
+  std::memcpy(data, matricesToUpload.data(), SSBOData.rdSsboBufferSize);
+  vmaUnmapMemory(renderData.rdAllocator, SSBOData.rdSsboBufferAlloc);
 }
 
 void ShaderStorageBuffer::cleanup(VkRenderData& renderData, VkShaderStorageBufferData &SSBOData) {

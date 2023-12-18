@@ -1,6 +1,8 @@
 #include "Renderpass.h"
 #include "Logger.h"
 
+#include <VkBootstrap.h>
+
 bool Renderpass::init(VkRenderData &renderData) {
   VkAttachmentDescription colorAtt{};
   colorAtt.format = renderData.rdVkbSwapchain.image_format;

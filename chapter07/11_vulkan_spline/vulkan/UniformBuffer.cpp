@@ -1,6 +1,8 @@
 #include "UniformBuffer.h"
 #include "Logger.h"
 
+#include <VkBootstrap.h>
+
 bool UniformBuffer::init(VkRenderData& renderData) {
   VkBufferCreateInfo bufferInfo{};
   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -74,6 +76,13 @@ bool UniformBuffer::init(VkRenderData& renderData) {
   vkUpdateDescriptorSets(renderData.rdVkbDevice.device, 1, &writeDescriptorSet, 0, nullptr);
 
 	return true;
+}
+
+void UniformBuffer::uploadData(VkRenderData &renderData, VkUploadMatrices matrices) {
+  void* data;
+  vmaMapMemory(renderData.rdAllocator, renderData.rdUboBufferAlloc, &data);
+  std::memcpy(data, &matrices, sizeof(VkUploadMatrices));
+  vmaUnmapMemory(renderData.rdAllocator, renderData.rdUboBufferAlloc);
 }
 
 void UniformBuffer::cleanup(VkRenderData& renderData) {

@@ -1,6 +1,8 @@
 #include "CommandBuffer.h"
 #include "Logger.h"
 
+#include <VkBootstrap.h>
+
 bool CommandBuffer::init(VkRenderData &renderData, VkCommandBuffer &commandBuffer) {
   VkCommandBufferAllocateInfo bufferAllocInfo{};
   bufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

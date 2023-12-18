@@ -2,7 +2,6 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
-#include <VkBootstrap.h>
 
 #include "VkRenderData.h"
 

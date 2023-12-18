@@ -1,6 +1,8 @@
 #include "PipelineLayout.h"
 #include "Logger.h"
 
+#include <VkBootstrap.h>
+
 bool PipelineLayout::init(VkRenderData &renderData, VkTextureData &textureData, VkPipelineLayout &pipelineLayout) {
 
   VkPushConstantRange pushConstants{};

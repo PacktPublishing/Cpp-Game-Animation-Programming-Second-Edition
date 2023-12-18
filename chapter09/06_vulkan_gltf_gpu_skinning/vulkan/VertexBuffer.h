@@ -2,6 +2,7 @@
 #pragma once
 #include <vector>
 #include <vulkan/vulkan.h>
+#include <glm/glm.hpp>
 #include <tiny_gltf.h>
 
 #include "VkRenderData.h"

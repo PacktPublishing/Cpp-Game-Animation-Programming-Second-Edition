@@ -1,6 +1,8 @@
 #include "PipelineLayout.h"
 #include "Logger.h"
 
+#include <VkBootstrap.h>
+
 bool PipelineLayout::init(VkRenderData& renderData, VkPipelineLayout& pipelineLayout) {
 
   VkDescriptorSetLayout layouts [] = { renderData.rdTextureDescriptorLayout , renderData.rdUBODescriptorLayout };

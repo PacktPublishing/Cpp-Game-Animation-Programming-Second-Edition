@@ -1,9 +1,7 @@
 /* Renderpass as separate object */
 #pragma once
 
-/* Vulkan also before GLFW */
 #include <vulkan/vulkan.h>
-#include <GLFW/glfw3.h>
 
 #include "VkRenderData.h"
 

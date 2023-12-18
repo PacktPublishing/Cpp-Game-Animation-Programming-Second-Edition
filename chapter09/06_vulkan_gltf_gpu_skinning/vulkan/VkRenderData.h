@@ -48,6 +48,7 @@ struct VkIndexBufferData {
 };
 
 struct VkUniformBufferData {
+  unsigned int rdUniformBufferSize = 0;
   VkBuffer rdUboBuffer = VK_NULL_HANDLE;
   VmaAllocation rdUboBufferAlloc = nullptr;
 

@@ -52,22 +52,22 @@ class VkRenderer {
 
     bool mUseChangedShader = false;
 
-    bool deviceInit(VkRenderData &renderData);
+    bool deviceInit();
     bool getQueue();
-    bool createDepthBuffer(VkRenderData &renderData);
-    bool createUBO(VkRenderData &renderData);
-    bool createSwapchain(VkRenderData &renderData);
-    bool createRenderPass(VkRenderData &renderData);
-    bool createPipelineLayout(VkRenderData &renderData);
-    bool createBasicPipeline(VkRenderData &renderData);
-    bool createChangedPipeline(VkRenderData& renderData);
-    bool createFramebuffer(VkRenderData &renderData);
-    bool createCommandPool(VkRenderData &renderData);
-    bool createCommandBuffer(VkRenderData &renderData);
-    bool createSyncObjects(VkRenderData &renderData);
-    bool loadTexture(VkRenderData &renderData);
+    bool createDepthBuffer();
+    bool createUBO();
+    bool createSwapchain();
+    bool createRenderPass();
+    bool createPipelineLayout();
+    bool createBasicPipeline();
+    bool createChangedPipeline();
+    bool createFramebuffer();
+    bool createCommandPool();
+    bool createCommandBuffer();
+    bool createSyncObjects();
+    bool loadTexture();
 
     bool initVma();
 
-    bool recreateSwapchain(VkRenderData &renderData);
+    bool recreateSwapchain();
 };

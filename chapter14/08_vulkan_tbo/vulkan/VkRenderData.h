@@ -54,7 +54,7 @@ struct VkTextureData {
 };
 
 struct VkVertexBufferData {
-  unsigned int rdVertexBufferSize = 0;
+  size_t rdVertexBufferSize = 0;
 	VkBuffer rdVertexBuffer = VK_NULL_HANDLE;
 	VmaAllocation rdVertexBufferAlloc = nullptr;
 	VkBuffer rdStagingBuffer = VK_NULL_HANDLE;
@@ -62,7 +62,7 @@ struct VkVertexBufferData {
 };
 
 struct VkIndexBufferData {
-  unsigned int rdIndexBufferSize = 0;
+  size_t rdIndexBufferSize = 0;
 	VkBuffer rdIndexBuffer = VK_NULL_HANDLE;
 	VmaAllocation rdIndexBufferAlloc = nullptr;
 	VkBuffer rdStagingBuffer = VK_NULL_HANDLE;
@@ -70,6 +70,7 @@ struct VkIndexBufferData {
 };
 
 struct VkUniformBufferData {
+  size_t rdUniformBufferSize = 0;
   VkBuffer rdUboBuffer = VK_NULL_HANDLE;
   VmaAllocation rdUboBufferAlloc = nullptr;
 
@@ -79,6 +80,7 @@ struct VkUniformBufferData {
 };
 
 struct VkTexelBufferData {
+  size_t rdTexelBufferSize = 0;
   VkBuffer rdTboBuffer = VK_NULL_HANDLE;
   VkBufferView rdTboBufferView = VK_NULL_HANDLE;
   VmaAllocation rdTboBufferAlloc = nullptr;
@@ -89,6 +91,7 @@ struct VkTexelBufferData {
 };
 
 struct VkShaderStorageBufferData {
+  size_t rdSsboBufferSize = 0;
   VkBuffer rdSsboBuffer = VK_NULL_HANDLE;
   VmaAllocation rdSsboBufferAlloc = nullptr;
 

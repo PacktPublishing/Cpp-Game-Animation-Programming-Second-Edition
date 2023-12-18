@@ -1,11 +1,13 @@
 #include "UniformBuffer.h"
 #include "Logger.h"
 
+#include <VkBootstrap.h>
+
 bool UniformBuffer::init(VkRenderData& renderData, VkUniformBufferData &UBOData,
-    std::vector<glm::mat4> matricesToUpload) {
+    size_t bufferSize) {
   VkBufferCreateInfo bufferInfo{};
   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-  bufferInfo.size = matricesToUpload.size() * sizeof(glm::mat4);
+  bufferInfo.size = bufferSize;
   bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
   VmaAllocationCreateInfo vmaAllocInfo{};
@@ -66,7 +68,7 @@ bool UniformBuffer::init(VkRenderData& renderData, VkUniformBufferData &UBOData,
   VkDescriptorBufferInfo uboInfo{};
   uboInfo.buffer = UBOData.rdUboBuffer;
   uboInfo.offset = 0;
-  uboInfo.range = matricesToUpload.size() * sizeof(glm::mat4);
+  uboInfo.range = bufferSize;
 
   VkWriteDescriptorSet writeDescriptorSet{};
   writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -78,8 +80,22 @@ bool UniformBuffer::init(VkRenderData& renderData, VkUniformBufferData &UBOData,
 
   vkUpdateDescriptorSets(renderData.rdVkbDevice.device, 1, &writeDescriptorSet, 0, nullptr);
 
+  UBOData.rdUniformBufferSize = bufferSize;
   Logger::log(1, "%s: created uniform buffer of size %i\n", __FUNCTION__, uboInfo.range);
 	return true;
+}
+
+void UniformBuffer::uploadData(VkRenderData &renderData, VkUniformBufferData &UBOData,
+      std::vector<glm::mat4> matricesToUpload) {
+  if (matricesToUpload.size() == 0) {
+    return;
+  }
+
+  void* data;
+  vmaMapMemory(renderData.rdAllocator, UBOData.rdUboBufferAlloc,
+    &data);
+  std::memcpy(data, matricesToUpload.data(), UBOData.rdUniformBufferSize);
+  vmaUnmapMemory(renderData.rdAllocator, UBOData.rdUboBufferAlloc);
 }
 
 void UniformBuffer::cleanup(VkRenderData& renderData, VkUniformBufferData &UBOData) {

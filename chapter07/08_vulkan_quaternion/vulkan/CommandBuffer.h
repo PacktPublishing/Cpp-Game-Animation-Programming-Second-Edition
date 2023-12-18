@@ -1,7 +1,6 @@
 /* Vulkan command buffers */
 #pragma once
 
-#include <vector>
 #include <vulkan/vulkan.h>
 
 #include "VkRenderData.h"

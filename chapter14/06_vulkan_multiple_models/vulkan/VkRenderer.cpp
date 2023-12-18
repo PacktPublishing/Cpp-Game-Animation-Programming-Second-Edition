@@ -31,7 +31,7 @@ bool VkRenderer::init(unsigned int width, unsigned int height) {
     return false;
   }
 
-  if (!deviceInit(mRenderData)) {
+  if (!deviceInit()) {
     return false;
   }
 
@@ -43,81 +43,81 @@ bool VkRenderer::init(unsigned int width, unsigned int height) {
     return false;
   }
 
-  if (!createSwapchain(mRenderData)) {
+  if (!createSwapchain()) {
     return false;
   }
 
   /* must be done AFTER swapchain as we need data from it */
-  if (!createDepthBuffer(mRenderData)) {
+  if (!createDepthBuffer()) {
     return false;
   }
 
-  if (!createCommandPool(mRenderData)) {
+  if (!createCommandPool()) {
     return false;
   }
 
-  if (!createCommandBuffer(mRenderData)) {
+  if (!createCommandBuffer()) {
     return false;
   }
 
-  if (!createUBO(mRenderData, mRenderData.rdPerspViewMatrixUBO, mPerspViewMatrices)) {
+  if (!createUBO()) {
     return false;
   }
   /* before pipeline layout and pipeline */
 
-  if (!loadGltfModel(mRenderData)) {
+  if (!loadGltfModel()) {
     return false;
   }
 
-  if (!createInstances(mRenderData)) {
+  if (!createInstances()) {
     return false;
   }
 
-  if (!createMatrixSSBO(mRenderData, mRenderData.rdJointMatrixSSBO)) {
+  if (!createMatrixSSBO()) {
     return false;
   }
 
-  if (!createDQSSBO(mRenderData, mRenderData.rdJointDualQuatSSBO)) {
+  if (!createDQSSBO()) {
     return false;
   }
 
-  if (!createVBO(mRenderData)) {
+  if (!createVBO()) {
     return false;
   }
 
-  if (!createRenderPass(mRenderData)) {
+  if (!createRenderPass()) {
     return false;
   }
 
-  if (!createGltfPipelineLayout(mRenderData, mGltfModels.at(0)->getVkTextureData())) {
+  if (!createGltfPipelineLayout()) {
       return false;
   }
 
-  if (!createLinePipeline(mRenderData)) {
+  if (!createLinePipeline()) {
       return false;
   }
 
-  if (!createGltfSkeletonPipeline(mRenderData)) {
+  if (!createGltfSkeletonPipeline()) {
       return false;
   }
 
-  if (!createGltfGPUPipeline(mRenderData)) {
+  if (!createGltfGPUPipeline()) {
       return false;
   }
 
-  if (!createGltfGPUDQPipeline(mRenderData)) {
+  if (!createGltfGPUDQPipeline()) {
       return false;
   }
 
-  if (!createFramebuffer(mRenderData)) {
+  if (!createFramebuffer()) {
     return false;
   }
 
-  if (!createSyncObjects(mRenderData)) {
+  if (!createSyncObjects()) {
     return false;
   }
 
-  if (!initUserInterface(mRenderData)) {
+  if (!initUserInterface()) {
     return false;
   }
 
@@ -131,7 +131,7 @@ bool VkRenderer::init(unsigned int width, unsigned int height) {
   return true;
 }
 
-bool VkRenderer::deviceInit(VkRenderData &renderData) {
+bool VkRenderer::deviceInit() {
   /* instance and window - we need Vukan 1.1 for the "VK_KHR_maintenance1" extension */
   vkb::InstanceBuilder instBuild;
   auto instRet = instBuild.use_default_debug_messenger().request_validation_layers().require_api_version(1, 1, 0).build();
@@ -139,10 +139,10 @@ bool VkRenderer::deviceInit(VkRenderData &renderData) {
     Logger::log(1, "%s error: could not build vkb instance\n", __FUNCTION__);
     return false;
   }
-  renderData.rdVkbInstance = instRet.value();
+  mRenderData.rdVkbInstance = instRet.value();
 
   VkResult result = VK_ERROR_UNKNOWN;
-  result = glfwCreateWindowSurface(renderData.rdVkbInstance, mRenderData.rdWindow, nullptr, &mSurface);
+  result = glfwCreateWindowSurface(mRenderData.rdVkbInstance, mRenderData.rdWindow, nullptr, &mSurface);
   if (result != VK_SUCCESS) {
     Logger::log(1, "%s error: Could not create Vulkan surface\n", __FUNCTION__);
     return false;
@@ -165,20 +165,20 @@ bool VkRenderer::deviceInit(VkRenderData &renderData) {
     Logger::log(1, "%s error: could not get physical devices\n", __FUNCTION__);
     return false;
   }
-  renderData.rdVkbPhysicalDevice = secondPhysicalDevSelRet.value();
+  mRenderData.rdVkbPhysicalDevice = secondPhysicalDevSelRet.value();
 
-  Logger::log(1, "%s: found physical device '%s'\n", __FUNCTION__, renderData.rdVkbPhysicalDevice.name.c_str());
+  Logger::log(1, "%s: found physical device '%s'\n", __FUNCTION__, mRenderData.rdVkbPhysicalDevice.name.c_str());
 
-  mMinUniformBufferOffsetAlignment = renderData.rdVkbPhysicalDevice.properties.limits.minUniformBufferOffsetAlignment;
+  mMinUniformBufferOffsetAlignment = mRenderData.rdVkbPhysicalDevice.properties.limits.minUniformBufferOffsetAlignment;
   Logger::log(1, "%s: the psyical device as a minimal unifom buffer offset of %i bytes\n", __FUNCTION__, mMinUniformBufferOffsetAlignment);
 
-  vkb::DeviceBuilder devBuilder{renderData.rdVkbPhysicalDevice};
+  vkb::DeviceBuilder devBuilder{mRenderData.rdVkbPhysicalDevice};
   auto devBuilderRet = devBuilder.build();
   if (!devBuilderRet) {
     Logger::log(1, "%s error: could not get devices\n", __FUNCTION__);
     return false;
   }
-  renderData.rdVkbDevice = devBuilderRet.value();
+  mRenderData.rdVkbDevice = devBuilderRet.value();
 
   return true;
 }
@@ -201,19 +201,19 @@ bool VkRenderer::getQueue() {
   return true;
 }
 
-bool VkRenderer::createDepthBuffer(VkRenderData &renderData) {
+bool VkRenderer::createDepthBuffer() {
   VkExtent3D depthImageExtent = {
-        renderData.rdVkbSwapchain.extent.width,
-        renderData.rdVkbSwapchain.extent.height,
+        mRenderData.rdVkbSwapchain.extent.width,
+        mRenderData.rdVkbSwapchain.extent.height,
         1
   };
 
-  renderData.rdDepthFormat = VK_FORMAT_D32_SFLOAT;
+  mRenderData.rdDepthFormat = VK_FORMAT_D32_SFLOAT;
 
   VkImageCreateInfo depthImageInfo{};
   depthImageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
   depthImageInfo.imageType = VK_IMAGE_TYPE_2D;
-  depthImageInfo.format = renderData.rdDepthFormat;
+  depthImageInfo.format = mRenderData.rdDepthFormat;
   depthImageInfo.extent = depthImageExtent;
   depthImageInfo.mipLevels = 1;
   depthImageInfo.arrayLayers = 1;
@@ -225,7 +225,7 @@ bool VkRenderer::createDepthBuffer(VkRenderData &renderData) {
   depthAllocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
   depthAllocInfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-  if (vmaCreateImage(renderData.rdAllocator, &depthImageInfo, &depthAllocInfo, &renderData.rdDepthImage, &renderData.rdDepthImageAlloc, nullptr) != VK_SUCCESS) {
+  if (vmaCreateImage(mRenderData.rdAllocator, &depthImageInfo, &depthAllocInfo, &mRenderData.rdDepthImage, &mRenderData.rdDepthImageAlloc, nullptr) != VK_SUCCESS) {
     Logger::log(1, "%s error: could not allocate depth buffer memory\n", __FUNCTION__);
     return false;
   }
@@ -233,102 +233,90 @@ bool VkRenderer::createDepthBuffer(VkRenderData &renderData) {
   VkImageViewCreateInfo depthImageViewinfo{};
   depthImageViewinfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
   depthImageViewinfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-  depthImageViewinfo.image = renderData.rdDepthImage;
-  depthImageViewinfo.format = renderData.rdDepthFormat;
+  depthImageViewinfo.image = mRenderData.rdDepthImage;
+  depthImageViewinfo.format = mRenderData.rdDepthFormat;
   depthImageViewinfo.subresourceRange.baseMipLevel = 0;
   depthImageViewinfo.subresourceRange.levelCount = 1;
   depthImageViewinfo.subresourceRange.baseArrayLayer = 0;
   depthImageViewinfo.subresourceRange.layerCount = 1;
   depthImageViewinfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 
-  if (vkCreateImageView(renderData.rdVkbDevice.device, &depthImageViewinfo, nullptr, &renderData.rdDepthImageView) != VK_SUCCESS) {
+  if (vkCreateImageView(mRenderData.rdVkbDevice.device, &depthImageViewinfo, nullptr, &mRenderData.rdDepthImageView) != VK_SUCCESS) {
     Logger::log(1, "%s error: could not create depth buffer image view\n", __FUNCTION__);
     return false;
   }
   return true;
 }
 
-bool VkRenderer::createSwapchain(VkRenderData &renderData) {
-  vkb::SwapchainBuilder swapChainBuild{renderData.rdVkbDevice};
+bool VkRenderer::createSwapchain() {
+  vkb::SwapchainBuilder swapChainBuild{mRenderData.rdVkbDevice};
 
   /* VK_PRESENT_MODE_FIFO_KHR enables vsync */
-  auto  swapChainBuildRet = swapChainBuild.set_old_swapchain(renderData.rdVkbSwapchain).set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR).build();
+  auto  swapChainBuildRet = swapChainBuild.set_old_swapchain(mRenderData.rdVkbSwapchain).set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR).build();
   if (!swapChainBuildRet) {
     Logger::log(1, "%s error: could not init swapchain\n", __FUNCTION__);
     return false;
   }
 
-  vkb::destroy_swapchain(renderData.rdVkbSwapchain);
-  renderData.rdVkbSwapchain = swapChainBuildRet.value();
+  vkb::destroy_swapchain(mRenderData.rdVkbSwapchain);
+  mRenderData.rdVkbSwapchain = swapChainBuildRet.value();
 
   return true;
 }
 
-bool VkRenderer::recreateSwapchain(VkRenderData &renderData) {
+bool VkRenderer::recreateSwapchain() {
   /* handle minimize */
   while (mRenderData.rdWidth == 0 || mRenderData.rdHeight == 0) {
     glfwGetFramebufferSize(mRenderData.rdWindow, &mRenderData.rdWidth, &mRenderData.rdHeight);
     glfwWaitEvents();
   }
-  vkDeviceWaitIdle(renderData.rdVkbDevice.device);
+  vkDeviceWaitIdle(mRenderData.rdVkbDevice.device);
 
   /* cleanup */
-  CommandBuffer::cleanup(mRenderData, mRenderData.rdCommandBuffer);
-  CommandPool::cleanup(renderData);
-  Framebuffer::cleanup(renderData);
+  Framebuffer::cleanup(mRenderData);
   vkDestroyImageView(mRenderData.rdVkbDevice.device, mRenderData.rdDepthImageView, nullptr);
   vmaDestroyImage(mRenderData.rdAllocator, mRenderData.rdDepthImage, mRenderData.rdDepthImageAlloc);
 
-  renderData.rdVkbSwapchain.destroy_image_views(renderData.rdSwapchainImageViews);
+  mRenderData.rdVkbSwapchain.destroy_image_views(mRenderData.rdSwapchainImageViews);
 
   /* and recreate */
-  if (!createSwapchain(renderData)) {
+  if (!createSwapchain()) {
     Logger::log(1, "%s error: could not recreate swapchain\n", __FUNCTION__);
     return false;
   }
 
-  if (!createDepthBuffer(mRenderData)) {
+  if (!createDepthBuffer()) {
     Logger::log(1, "%s error: could not recreate depth buffer\n", __FUNCTION__);
     return false;
   }
 
-  if (!createFramebuffer(renderData)) {
+  if (!createFramebuffer()) {
     Logger::log(1, "%s error: could not recreate framebuffers\n", __FUNCTION__);
-    return false;
-  }
-
-  if (!createCommandPool(renderData)) {
-    Logger::log(1, "%s error: could not create command pool\n", __FUNCTION__);
-    return false;
-  }
-
-  if (!createCommandBuffer(renderData)) {
-    Logger::log(1, "%s error: could not create command buffers\n", __FUNCTION__);
     return false;
   }
 
   return true;
 }
 
-bool VkRenderer::createVBO(VkRenderData &renderData) {
+bool VkRenderer::createVBO() {
   /* init with arbitrary size here */
-  if (!VertexBuffer::init(renderData, renderData.rdVertexBufferData, 2000)) {
+  if (!VertexBuffer::init(mRenderData, mRenderData.rdVertexBufferData, 2000)) {
     Logger::log(1, "%s error: could not create vertex buffer\n", __FUNCTION__);
     return false;
   }
   return true;
 }
 
-bool VkRenderer::createUBO(VkRenderData &renderData, VkUniformBufferData &UBOData,
-  std::vector<glm::mat4> matricesToUpload) {
-  if (!UniformBuffer::init(renderData, UBOData, matricesToUpload)) {
+bool VkRenderer::createUBO() {
+  size_t matrixSize = mPerspViewMatrices.size() * sizeof(glm::mat4);
+  if (!UniformBuffer::init(mRenderData, mRenderData.rdPerspViewMatrixUBO, matrixSize)) {
     Logger::log(1, "%s error: could not create uniform buffers\n", __FUNCTION__);
     return false;
   }
   return true;
 }
 
-bool VkRenderer::createMatrixSSBO(VkRenderData &renderData, VkShaderStorageBufferData &SSBOData) {
+bool VkRenderer::createMatrixSSBO() {
   size_t modelJointMatrixBufferSize = 0;
   int jointMatrixSize = 0;
 
@@ -337,14 +325,14 @@ bool VkRenderer::createMatrixSSBO(VkRenderData &renderData, VkShaderStorageBuffe
     modelJointMatrixBufferSize += instance->getJointMatrixSize() * sizeof(glm::mat4);
   }
 
-  if (!ShaderStorageBuffer::init(renderData, SSBOData, modelJointMatrixBufferSize)) {
+  if (!ShaderStorageBuffer::init(mRenderData, mRenderData.rdJointMatrixSSBO, modelJointMatrixBufferSize)) {
     Logger::log(1, "%s error: could not create shader storage buffers\n", __FUNCTION__);
     return false;
   }
   return true;
 }
 
-bool VkRenderer::createDQSSBO(VkRenderData &renderData, VkShaderStorageBufferData &SSBOData) {
+bool VkRenderer::createDQSSBO() {
   size_t modelJointDualQuatBufferSize = 0;
   int jointQuatSize = 0;
 
@@ -354,7 +342,7 @@ bool VkRenderer::createDQSSBO(VkRenderData &renderData, VkShaderStorageBufferDat
       sizeof(glm::mat2x4);
   }
 
-  if (!ShaderStorageBuffer::init(renderData, SSBOData, modelJointDualQuatBufferSize)) {
+  if (!ShaderStorageBuffer::init(mRenderData, mRenderData.rdJointDualQuatSSBO, modelJointDualQuatBufferSize)) {
     Logger::log(1, "%s error: could not create shader storage buffers\n", __FUNCTION__);
     return false;
   }
@@ -362,37 +350,38 @@ bool VkRenderer::createDQSSBO(VkRenderData &renderData, VkShaderStorageBufferDat
   return true;
 }
 
-bool VkRenderer::createRenderPass(VkRenderData &renderData) {
-  if (!Renderpass::init(renderData)) {
+bool VkRenderer::createRenderPass() {
+  if (!Renderpass::init(mRenderData)) {
     Logger::log(1, "%s error: could not init renderpass\n", __FUNCTION__);
     return false;
   }
   return true;
 }
-bool VkRenderer::createGltfPipelineLayout(VkRenderData& renderData, VkTextureData textureData) {
-    if (!PipelineLayout::init(renderData, textureData, renderData.rdGltfPipelineLayout)) {
-        Logger::log(1, "%s error: could not init pipeline layout\n", __FUNCTION__);
-        return false;
-    }
-    return true;
+bool VkRenderer::createGltfPipelineLayout() {
+  VkTextureData texData = mGltfModels.at(0)->getVkTextureData();
+  if (!PipelineLayout::init(mRenderData, texData, mRenderData.rdGltfPipelineLayout)) {
+      Logger::log(1, "%s error: could not init pipeline layout\n", __FUNCTION__);
+      return false;
+  }
+  return true;
 }
 
-bool VkRenderer::createLinePipeline(VkRenderData& renderData) {
-    std::string vertexShaderFile = "shader/line.vert.spv";
-    std::string fragmentShaderFile = "shader/line.frag.spv";
-    if (!Pipeline::init(renderData, renderData.rdGltfPipelineLayout, renderData.rdLinePipeline,
-        VK_PRIMITIVE_TOPOLOGY_LINE_LIST, vertexShaderFile, fragmentShaderFile)) {
-        Logger::log(1, "%s error: could not init line shader pipeline\n", __FUNCTION__);
-        return false;
-    }
-    return true;
-}
-
-bool VkRenderer::createGltfSkeletonPipeline(VkRenderData& renderData) {
+bool VkRenderer::createLinePipeline() {
   std::string vertexShaderFile = "shader/line.vert.spv";
   std::string fragmentShaderFile = "shader/line.frag.spv";
-  if (!GltfSkeletonPipeline::init(renderData, renderData.rdGltfPipelineLayout,
-      renderData.rdGltfSkeletonPipeline, VK_PRIMITIVE_TOPOLOGY_LINE_LIST,
+  if (!Pipeline::init(mRenderData, mRenderData.rdGltfPipelineLayout, mRenderData.rdLinePipeline,
+      VK_PRIMITIVE_TOPOLOGY_LINE_LIST, vertexShaderFile, fragmentShaderFile)) {
+      Logger::log(1, "%s error: could not init line shader pipeline\n", __FUNCTION__);
+      return false;
+  }
+  return true;
+}
+
+bool VkRenderer::createGltfSkeletonPipeline() {
+  std::string vertexShaderFile = "shader/line.vert.spv";
+  std::string fragmentShaderFile = "shader/line.frag.spv";
+  if (!GltfSkeletonPipeline::init(mRenderData, mRenderData.rdGltfPipelineLayout,
+      mRenderData.rdGltfSkeletonPipeline, VK_PRIMITIVE_TOPOLOGY_LINE_LIST,
       vertexShaderFile, fragmentShaderFile)) {
     Logger::log(1, "%s error: could not init gltf skeleton shader pipeline\n", __FUNCTION__);
     return false;
@@ -400,11 +389,11 @@ bool VkRenderer::createGltfSkeletonPipeline(VkRenderData& renderData) {
   return true;
 }
 
-bool VkRenderer::createGltfGPUPipeline(VkRenderData& renderData) {
+bool VkRenderer::createGltfGPUPipeline() {
   std::string vertexShaderFile = "shader/gltf_gpu.vert.spv";
   std::string fragmentShaderFile = "shader/gltf_gpu.frag.spv";
-  if (!GltfGPUPipeline::init(renderData, renderData.rdGltfPipelineLayout,
-      renderData.rdGltfGPUPipeline, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+  if (!GltfGPUPipeline::init(mRenderData, mRenderData.rdGltfPipelineLayout,
+      mRenderData.rdGltfGPUPipeline, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
       vertexShaderFile, fragmentShaderFile)) {
     Logger::log(1, "%s error: could not init gltf GPU shader pipeline\n", __FUNCTION__);
     return false;
@@ -412,11 +401,11 @@ bool VkRenderer::createGltfGPUPipeline(VkRenderData& renderData) {
   return true;
 }
 
-bool VkRenderer::createGltfGPUDQPipeline(VkRenderData& renderData) {
+bool VkRenderer::createGltfGPUDQPipeline() {
   std::string vertexShaderFile = "shader/gltf_gpu_dquat.vert.spv";
   std::string fragmentShaderFile = "shader/gltf_gpu_dquat.frag.spv";
-  if (!GltfGPUPipeline::init(renderData, renderData.rdGltfPipelineLayout,
-      renderData.rdGltfGPUDQPipeline, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+  if (!GltfGPUPipeline::init(mRenderData, mRenderData.rdGltfPipelineLayout,
+      mRenderData.rdGltfGPUDQPipeline, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
       vertexShaderFile, fragmentShaderFile)) {
     Logger::log(1, "%s error: could not init gltf GPU dual quat shader pipeline\n", __FUNCTION__);
     return false;
@@ -424,42 +413,33 @@ bool VkRenderer::createGltfGPUDQPipeline(VkRenderData& renderData) {
   return true;
 }
 
-bool VkRenderer::createFramebuffer(VkRenderData &renderData) {
-  if (!Framebuffer::init(renderData)) {
+bool VkRenderer::createFramebuffer() {
+  if (!Framebuffer::init(mRenderData)) {
     Logger::log(1, "%s error: could not init framebuffer\n", __FUNCTION__);
     return false;
   }
   return true;
 }
 
-bool VkRenderer::createCommandPool(VkRenderData &renderData) {
-  if (!CommandPool::init(renderData)) {
+bool VkRenderer::createCommandPool() {
+  if (!CommandPool::init(mRenderData)) {
     Logger::log(1, "%s error: could not create command pool\n", __FUNCTION__);
     return false;
   }
   return true;
 }
 
-bool VkRenderer::createCommandBuffer(VkRenderData &renderData) {
-  if (!CommandBuffer::init(renderData, renderData.rdCommandBuffer)) {
+bool VkRenderer::createCommandBuffer() {
+  if (!CommandBuffer::init(mRenderData, mRenderData.rdCommandBuffer)) {
     Logger::log(1, "%s error: could not create command buffers\n", __FUNCTION__);
     return false;
   }
   return true;
 }
 
-bool VkRenderer::createSyncObjects(VkRenderData& renderData) {
-  if (!SyncObjects::init(renderData)) {
+bool VkRenderer::createSyncObjects() {
+  if (!SyncObjects::init(mRenderData)) {
     Logger::log(1, "%s error: could not create sync objects\n", __FUNCTION__);
-    return false;
-  }
-  return true;
-}
-
-bool VkRenderer::loadTexture(VkRenderData& renderData, VkTextureData& textureData) {
-  std::string textureFileName = "textures/crate.png";
-  if (!Texture::loadTexture(renderData, textureData, textureFileName)) {
-    Logger::log(1, "%s error: could not load texture\n", __FUNCTION__);
     return false;
   }
   return true;
@@ -477,15 +457,15 @@ bool VkRenderer::initVma() {
   return true;
 }
 
-bool VkRenderer::initUserInterface(VkRenderData& renderData) {
-  if (!mUserInterface.init(renderData)) {
+bool VkRenderer::initUserInterface() {
+  if (!mUserInterface.init(mRenderData)) {
     Logger::log(1, "%s error: could not init ImGui\n", __FUNCTION__);
     return false;
   }
   return true;
 }
 
-bool VkRenderer::loadGltfModel(VkRenderData &renderData) {
+bool VkRenderer::loadGltfModel() {
   /* load 2x the woman and the sq model */
   mGltfModels.resize(3);
 
@@ -518,7 +498,7 @@ bool VkRenderer::loadGltfModel(VkRenderData &renderData) {
   return true;
 }
 
-bool VkRenderer::createInstances(VkRenderData &renderData) {
+bool VkRenderer::createInstances() {
   int numTriangles = 0;
 
   /* create glTF instances from the model */
@@ -539,8 +519,8 @@ bool VkRenderer::createInstances(VkRenderData &renderData) {
     numTriangles += mGltfModels.at(2)->getTriangleCount();
   }
 
-  renderData.rdTriangleCount = numTriangles;
-  renderData.rdNumberOfInstances = mGltfInstances.size();
+  mRenderData.rdTriangleCount = numTriangles;
+  mRenderData.rdNumberOfInstances = mGltfInstances.size();
 
   if (!mGltfInstances.size()) {
     Logger::log(1, "%s: glTF instance creation failed\n", __FUNCTION__);
@@ -717,12 +697,12 @@ bool VkRenderer::draw() {
   handleMovementKeys();
 
   if (vkWaitForFences(mRenderData.rdVkbDevice.device, 1, &mRenderData.rdRenderFence, VK_TRUE, UINT64_MAX) != VK_SUCCESS) {
-    Logger::log(1, "%s error: waiting for fence failed", __FUNCTION__);
+    Logger::log(1, "%s error: waiting for fence failed\n", __FUNCTION__);
     return false;
   }
 
   if (vkResetFences(mRenderData.rdVkbDevice.device, 1, &mRenderData.rdRenderFence) != VK_SUCCESS) {
-    Logger::log(1, "%s error:  fence reset failed", __FUNCTION__);
+    Logger::log(1, "%s error:  fence reset failed\n", __FUNCTION__);
     return false;
   }
 
@@ -735,8 +715,7 @@ bool VkRenderer::draw() {
       &imageIndex);
 
   if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-    mRenderData.rdFrameTime = mFrameTimer.stop();
-    return recreateSwapchain(mRenderData);
+    return recreateSwapchain();
   } else {
     if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
       Logger::log(1, "%s error: failed to acquire swapchain image. Error is '%i'\n", __FUNCTION__, result);
@@ -1006,28 +985,11 @@ bool VkRenderer::draw() {
 
   /* upload UBO data after commands are created */
   mUploadToUBOTimer.start();
-  void* data;
-  vmaMapMemory(mRenderData.rdAllocator, mRenderData.rdPerspViewMatrixUBO.rdUboBufferAlloc,
-    &data);
-  memcpy(data, mPerspViewMatrices.data(),
-    static_cast<uint32_t>(mPerspViewMatrices.size() * sizeof(glm::mat4)));
-  vmaUnmapMemory(mRenderData.rdAllocator, mRenderData.rdPerspViewMatrixUBO.rdUboBufferAlloc);
 
-  if (mModelJointDualQuats.size() > 0) {
-    vmaMapMemory(mRenderData.rdAllocator, mRenderData.rdJointDualQuatSSBO.rdSsboBufferAlloc,
-      &data);
-    memcpy(data, mModelJointDualQuats.data(),
-      static_cast<uint32_t>(mModelJointDualQuats.size() * sizeof(glm::mat2x4)));
-    vmaUnmapMemory(mRenderData.rdAllocator, mRenderData.rdJointDualQuatSSBO.rdSsboBufferAlloc);
-  }
+  UniformBuffer::uploadData(mRenderData, mRenderData.rdPerspViewMatrixUBO, mPerspViewMatrices);
 
-  if (mModelJointMatrices.size() > 0) {
-    vmaMapMemory(mRenderData.rdAllocator, mRenderData.rdJointMatrixSSBO.rdSsboBufferAlloc,
-      &data);
-    memcpy(data, mModelJointMatrices.data(),
-      static_cast<uint32_t>(mModelJointMatrices.size() * sizeof(glm::mat4)));
-    vmaUnmapMemory(mRenderData.rdAllocator, mRenderData.rdJointMatrixSSBO.rdSsboBufferAlloc);
-  }
+  ShaderStorageBuffer::uploadData(mRenderData, mRenderData.rdJointDualQuatSSBO, mModelJointDualQuats);
+  ShaderStorageBuffer::uploadData(mRenderData, mRenderData.rdJointMatrixSSBO, mModelJointMatrices);
 
   mRenderData.rdUploadToUBOTime = mUploadToUBOTimer.stop();
 
@@ -1064,8 +1026,7 @@ bool VkRenderer::draw() {
 
   result = vkQueuePresentKHR(mRenderData.rdPresentQueue, &presentInfo);
   if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
-    mRenderData.rdFrameTime = mFrameTimer.stop();
-    return recreateSwapchain(mRenderData);
+    return recreateSwapchain();
   } else {
     if (result != VK_SUCCESS) {
       Logger::log(1, "%s error: failed to present swapchain image\n", __FUNCTION__);
