@@ -47,7 +47,7 @@ With the following software and hardware list you can run all code files present
 
 ## Get to Know the Authors
 **Michael Dunsky**
-is an educated electronics technician, game developer, and console porting programmer with more than 20 years of programming experience. He started at the age of 14 with BASIC, adding his way to Assembly language, C, C++, Java, Python, VHDL, OpenGL, GLSL, and Vulkan to his portfolio. During his career, he also gained extensive knowledge in virtual machines, server operation, infrastructure automation, and other DevOps topics. Michael holds a Computer Science BSc. Degree with a focus on computer graphics, parallel programming, and distributed systems.
+is an educated electronics technician, game developer, and console porting programmer with more than 20 years of programming experience. He started at the age of 14 with BASIC, adding on his way Assembly language, C, C++, Java, Python, VHDL, OpenGL, GLSL, and Vulkan to his portfolio. During his career, he also gained extensive knowledge in virtual machines, server operation, infrastructure automation, and other DevOps topics. Michael holds a Master of Science degree in Computer Science from the FernUniversität in Hagen, focused on computer graphics, parallel programming and software systems.
 
 **Gabor Szauer**
 has been making games since 2010. He graduated from Full Sail University in 2010 with a bachelor's degree in game development. Gabor maintains an active Twitter presence, and maintains a programming-oriented game development blog. Gabor's previously published books are Game Physics Programming Cookbook and Lua Quick Start Guide, both published by Packt.
