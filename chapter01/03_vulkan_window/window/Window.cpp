@@ -88,6 +88,7 @@ bool Window::initVulkan() {
   }
 
   std::vector<VkPhysicalDevice> devices;
+  devices.resize(physicalDeviceCount);
   vkEnumeratePhysicalDevices(mInstance, &physicalDeviceCount, devices.data());
 
   Logger::log(1, "%s: Found %u physical device(s)\n", __FUNCTION__, physicalDeviceCount);
