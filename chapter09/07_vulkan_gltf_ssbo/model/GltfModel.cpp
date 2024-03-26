@@ -140,10 +140,10 @@ std::shared_ptr<VkMesh> GltfModel::getSkeleton(bool enableSkinning) {
 void GltfModel::getSkeletonPerNode(std::shared_ptr<GltfNode> treeNode, bool enableSkinning) {
   glm::vec3 parentPos = glm::vec3(0.0f);
   if (enableSkinning) {
-    parentPos = glm::vec3(treeNode->getNodeMatrix() * glm::vec4(1.0f));
+    parentPos = glm::vec3(treeNode->getNodeMatrix()[3]);
   } else {
     glm::mat4 bindMatrix = glm::inverse(mInverseBindMatrices.at(mNodeToJoint.at(treeNode->getNodeNum())));
-    parentPos = bindMatrix  * treeNode->getNodeMatrix() * glm::vec4(1.0f);
+    parentPos = bindMatrix  * treeNode->getNodeMatrix()[3];
   }
   VkVertex parentVertex;
   parentVertex.position = parentPos;
@@ -152,10 +152,10 @@ void GltfModel::getSkeletonPerNode(std::shared_ptr<GltfNode> treeNode, bool enab
   for (const auto &childNode : treeNode->getChilds()) {
     glm::vec3 childPos = glm::vec3(0.0f);
     if (enableSkinning) {
-      childPos = glm::vec3(childNode->getNodeMatrix() * glm::vec4(1.0f));
+      childPos = glm::vec3(childNode->getNodeMatrix()[3]);
     } else {
       glm::mat4 bindMatrix = glm::inverse(mInverseBindMatrices.at(mNodeToJoint.at(childNode->getNodeNum())));
-      childPos = bindMatrix * childNode->getNodeMatrix() * glm::vec4(1.0f);
+      childPos = bindMatrix * childNode->getNodeMatrix()[3];
     }
     VkVertex childVertex;
     childVertex.position = childPos;
