@@ -93,6 +93,9 @@ endif()
 
 include_directories(${GLFW3_INCLUDE_DIR} ${GLM_INCLUDE_DIRS})
 
+# enable experimental GLM functions globally
+add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
+
 if(MSVC)
   target_link_libraries(Main ${GLFW3_LIBRARY} Vulkan::Vulkan)
 else()

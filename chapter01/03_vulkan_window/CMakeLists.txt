@@ -20,7 +20,6 @@ add_executable(Main ${SOURCES})
 
 find_package(glfw3 3.3 REQUIRED)
 find_package(Vulkan REQUIRED)
-find_package(glm REQUIRED)
 
 # variable is set by FindGLFW3.cmake, reuse for Linux
 if(UNIX)
