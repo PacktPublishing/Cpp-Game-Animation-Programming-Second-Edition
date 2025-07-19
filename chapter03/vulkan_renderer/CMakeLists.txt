@@ -25,6 +25,7 @@ target_include_directories(Main PUBLIC include window tools vulkan model vkb vma
 
 find_package(glfw3 3.3 REQUIRED)
 find_package(Vulkan REQUIRED)
+find_package(glm REQUIRED)
 
 # compile shaders
 file(GLOB GLSL_SOURCE_FILES
@@ -90,7 +91,10 @@ if(UNIX)
   set(GLFW3_LIBRARY glfw)
 endif()
 
-include_directories(${GLFW3_INCLUDE_DIR})
+include_directories(${GLFW3_INCLUDE_DIR} ${GLM_INCLUDE_DIRS})
+
+# enable experimental GLM functions globally
+add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
 
 if(MSVC)
   target_link_libraries(Main ${GLFW3_LIBRARY} Vulkan::Vulkan)

@@ -15,6 +15,32 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_CXX_FLAGS "-O3")
 endif()
 
+include(FetchContent)
+set(FETCHCONTENT_QUIET OFF)
+
+# Skip downloading if Vulkan SDK has been found
+if (WIN32 AND NOT DEFINED ENV{VK_SDK_PATH})
+  # get GLM
+  FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm
+    GIT_TAG        1.0.1
+    GIT_SHALLOW 1
+  )
+
+  # GLM is header only, but needs to be populated for the download
+  FetchContent_MakeAvailable(glm)
+
+  FetchContent_GetProperties(glm)
+  if(NOT glm_POPULATED)
+    FetchContent_Populate(glm)
+    add_subdirectory(${glm_SOURCE_DIR} EXCLUDE_FROM_ALL)
+  endif()
+
+  # set variable that will be used in find_package
+  set(GLM_INCLUDE_DIR ${glm_SOURCE_DIR})
+endif()
+
 file(GLOB SOURCES
   Main.cpp
   src/glad.c
@@ -92,7 +118,10 @@ if(UNIX)
   set(GLFW3_LIBRARY glfw)
 endif()
 
-include_directories(${GLFW3_INCLUDE_DIR} ${GLM_INCLUDE_DIR})
+include_directories(${GLFW3_INCLUDE_DIR} ${GLM_INCLUDE_DIRS})
+
+# enable experimental GLM functions globally
+add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
 
 if(MSVC)
   target_link_libraries(Main ${GLFW3_LIBRARY} OpenGL::GL)
