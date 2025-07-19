@@ -7,12 +7,11 @@ bool Framebuffer::init(unsigned int width, unsigned int height) {
 
   glGenFramebuffers(1, &mBuffer);
   glBindFramebuffer(GL_FRAMEBUFFER, mBuffer);
-  glEnable(GL_FRAMEBUFFER_SRGB);
 
   /* color texture */
   glGenTextures(1, &mColorTex);
   glBindTexture(GL_TEXTURE_2D, mColorTex);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,  0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height,  0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

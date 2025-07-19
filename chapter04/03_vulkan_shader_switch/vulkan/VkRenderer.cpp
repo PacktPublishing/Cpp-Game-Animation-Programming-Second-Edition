@@ -189,10 +189,20 @@ bool VkRenderer::createDepthBuffer() {
 }
 
 bool VkRenderer::createSwapchain() {
-   vkb::SwapchainBuilder swapChainBuild{mRenderData.rdVkbDevice};
+  vkb::SwapchainBuilder swapChainBuild{mRenderData.rdVkbDevice};
+  VkSurfaceFormatKHR surfaceFormat;
+
+  /* set surface to non-sRGB */
+  surfaceFormat.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+  surfaceFormat.format = VK_FORMAT_B8G8R8A8_UNORM;
 
   /* VK_PRESENT_MODE_FIFO_KHR enables vsync */
-  auto swapChainBuildRet = swapChainBuild.set_old_swapchain(mRenderData.rdVkbSwapchain).set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR).build();
+  auto swapChainBuildRet = swapChainBuild
+    .set_old_swapchain(mRenderData.rdVkbSwapchain)
+    .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
+    .set_desired_format(surfaceFormat)
+    .build();
+
   if (!swapChainBuildRet) {
     Logger::log(1, "%s error: could not init swapchain\n", __FUNCTION__);
     return false;
@@ -403,11 +413,6 @@ bool VkRenderer::draw() {
     return false;
   }
 
-  if (vkResetFences(mRenderData.rdVkbDevice.device, 1, &mRenderData.rdRenderFence) != VK_SUCCESS) {
-    Logger::log(1, "%s error:  fence reset failed\n", __FUNCTION__);
-    return false;
-  }
-
   uint32_t imageIndex = 0;
   VkResult result = vkAcquireNextImageKHR(mRenderData.rdVkbDevice.device,
       mRenderData.rdVkbSwapchain.swapchain,
@@ -423,6 +428,11 @@ bool VkRenderer::draw() {
       Logger::log(1, "%s error: failed to acquire swapchain image. Error is '%i'\n", __FUNCTION__, result);
       return false;
     }
+  }
+
+  if (vkResetFences(mRenderData.rdVkbDevice.device, 1, &mRenderData.rdRenderFence) != VK_SUCCESS) {
+    Logger::log(1, "%s error:  fence reset failed\n", __FUNCTION__);
+    return false;
   }
 
   if (vkResetCommandBuffer(mRenderData.rdCommandBuffer, 0) != VK_SUCCESS) {
