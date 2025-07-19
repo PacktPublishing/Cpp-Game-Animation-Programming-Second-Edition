@@ -87,7 +87,10 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   glEnable(GL_DEPTH_TEST);
   glLineWidth(3.0);
 
-  /* load 2x the woman and the sq model */
+  /* disable sRGB framebuffer */
+  glDisable(GL_FRAMEBUFFER_SRGB);
+
+  /* load 2x the woman and the dq model */
   mGltfModels.resize(3);
   mGltfModels.at(0) = std::make_shared<GltfModel>();
   std::string modelFilename = "assets/Woman.gltf";

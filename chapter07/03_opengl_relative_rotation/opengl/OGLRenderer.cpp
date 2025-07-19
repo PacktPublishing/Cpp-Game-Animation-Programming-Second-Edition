@@ -68,6 +68,9 @@ bool OGLRenderer::init(unsigned int width, unsigned int height) {
   glEnable(GL_DEPTH_TEST);
   glLineWidth(3.0);
 
+  /* disable sRGB framebuffer */
+  glDisable(GL_FRAMEBUFFER_SRGB);
+
   mModel = std::make_unique<Model>();
 
   mEulerModelMesh = std::make_unique<OGLMesh>();
