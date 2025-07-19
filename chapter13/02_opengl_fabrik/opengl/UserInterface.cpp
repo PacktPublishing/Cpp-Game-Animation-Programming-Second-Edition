@@ -279,7 +279,7 @@ void UserInterface::createFrame(OGLRenderData &renderData) {
         + " ms\n30s avg: " + std::to_string(averageUiGen) + " ms";
       ImGui::Text("UI Generation");
       ImGui::SameLine();
-      ImGui::PlotLines("##ModelUpload", mUiGenValues.data(), mUiGenValues.size(), uiGenOffset,
+      ImGui::PlotLines("##UIGenTimes", mUiGenValues.data(), mUiGenValues.size(), uiGenOffset,
         uiGenOverlay.c_str(), 0.0f, FLT_MAX, ImVec2(0, 80));
       ImGui::EndTooltip();
     }
@@ -303,7 +303,7 @@ void UserInterface::createFrame(OGLRenderData &renderData) {
         + " ms\n30s avg: " + std::to_string(averageUiDraw) + " ms";
       ImGui::Text("UI Draw");
       ImGui::SameLine();
-      ImGui::PlotLines("##UIDrawTimes", mUiDrawValues.data(), mUiDrawValues.size(), uiGenOffset,
+      ImGui::PlotLines("##UIDrawTimes", mUiDrawValues.data(), mUiDrawValues.size(), uiDrawOffset,
         uiDrawOverlay.c_str(), 0.0f, FLT_MAX, ImVec2(0, 80));
       ImGui::EndTooltip();
     }
