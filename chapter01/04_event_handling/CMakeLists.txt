@@ -27,9 +27,6 @@ endif()
 
 include_directories(${GLFW3_INCLUDE_DIR} window tools)
 
-# enable experimental GLM functions globally
-add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
-
 if(MSVC)
   target_link_libraries(Main ${GLFW3_LIBRARY})
 else()
