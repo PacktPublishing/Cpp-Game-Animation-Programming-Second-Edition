@@ -222,14 +222,14 @@ std::shared_ptr<OGLMesh> GltfModel::getSkeleton() {
 
 void GltfModel::getSkeletonPerNode(std::shared_ptr<GltfNode> treeNode) {
   glm::vec3 parentPos = glm::vec3(0.0f);
-  parentPos = glm::vec3(treeNode->getNodeMatrix() * glm::vec4(1.0f));
+  parentPos = glm::vec3(treeNode->getNodeMatrix()[3]);
   OGLVertex parentVertex;
   parentVertex.position = parentPos;
   parentVertex.color = glm::vec3(0.0f, 1.0f, 1.0f);
 
   for (const auto &childNode : treeNode->getChilds()) {
     glm::vec3 childPos = glm::vec3(0.0f);
-    childPos = glm::vec3(childNode->getNodeMatrix() * glm::vec4(1.0f));
+    childPos = glm::vec3(childNode->getNodeMatrix()[3]);
     OGLVertex childVertex;
     childVertex.position = childPos;
     childVertex.color = glm::vec3(0.0f, 0.0f, 1.0f);
