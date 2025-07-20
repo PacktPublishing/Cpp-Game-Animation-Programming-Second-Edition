@@ -30,7 +30,7 @@ bool Texture::loadTexture(VkRenderData &renderData, VkTextureData& textureData, 
   imageInfo.extent.depth = 1;
   imageInfo.mipLevels = 1;
   imageInfo.arrayLayers = 1;
-  imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+  imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
   imageInfo.tiling = VK_IMAGE_TILING_LINEAR;
   imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
   imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
@@ -192,7 +192,7 @@ bool Texture::loadTexture(VkRenderData &renderData, VkTextureData& textureData, 
   texViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
   texViewInfo.image = textureData.texTextureImage;
   texViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-  texViewInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+  texViewInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
   texViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
   texViewInfo.subresourceRange.baseMipLevel = 0;
   texViewInfo.subresourceRange.levelCount = 1;
