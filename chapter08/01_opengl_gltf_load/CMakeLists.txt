@@ -113,7 +113,7 @@ if(UNIX)
   set(GLFW3_LIBRARY glfw)
 endif()
 
-include_directories(${GLFW3_INCLUDE_DIR} ${GLM_INCLUDE_DIRS)
+include_directories(${GLFW3_INCLUDE_DIR} ${GLM_INCLUDE_DIRS})
 
 # enable experimental GLM functions globally
 add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
