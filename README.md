@@ -55,6 +55,15 @@ has been making games since 2010. He graduated from Full Sail University in 2010
 ## Author Notes & Recent Fixes
 The following section contains updates within the text of the book.
 
+### Chapter 1
+When using MSYS2 + Eclipse, the Windows version of CMake might fail to find the GLFW3 library installed in the MINGW64 environment.
+In this case, uninstall the Windows version of CMake and install CMake inside the MINGW64 environment:
+```
+pacman -S mingw-x64-x86_64-cmake
+```
+
+You must restart Eclipse to learn about the Windows path changes after CMake was removed, plus you need to delete the `_build` folder of the project(s) to remove the CMake cache. On the next `Build Project` in Eclipse, GLFW3 should be found.
+
 ### Chapter 2
 CMake needs two additional custom targets to copy the shaders and textures to the correct path, relative to the executable file.
 
