@@ -6,6 +6,15 @@ This is the code repository for [C++ Game Animation Programming](https://www.pac
 
 **Learn modern animation techniques from theory to implementation using C++, OpenGL, and Vulkan**
 
+<p align="center">
+   <a href="https://packt.link/cppgameanimation" alt="Discord" title="Learn more on the Discord server"><img width="32px" src="https://cliply.co/wp-content/uploads/2021/08/372108630_DISCORD_LOGO_400.gif"/></a>
+  &#8287;&#8287;&#8287;&#8287;&#8287;
+  <a href="https://packt.link/free-ebook/9781803246529"><img width="32px" alt="Free PDF" title="Free PDF" src="https://cdn-icons-png.flaticon.com/512/4726/4726010.png"/></a>
+ &#8287;&#8287;&#8287;&#8287;&#8287;
+   <a href="https://www.amazon.de/Game-Animation-Programming-techniques-implementation/dp/1803246529"><img width="32px" alt="Amazon" title="Get your copy" src="https://cdn-icons-png.flaticon.com/512/15466/15466027.png"/></a>
+  &#8287;&#8287;&#8287;&#8287;&#8287;
+</p>
+
 ## What is this book about?
 If you‘re fascinated by the complexities of animating video game characters and are curious about the transformation of model files into 3D avatars and NPCs that can explore virtual worlds, then this book is for you.
 
