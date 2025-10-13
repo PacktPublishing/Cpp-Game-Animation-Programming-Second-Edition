@@ -65,13 +65,52 @@ has been making games since 2010. He graduated from Full Sail University in 2010
 The following section contains updates within the text of the book.
 
 ### Chapter 1
+
+#### MSYS2 package name error
+
+In section `Installing a C++ compiler on your Windows PC` on page 8 a command line to install `gcc`, `glfw` and the development tools is shown:
+```
+pacman –S mingw-x64-x86_64-gcc mingw-w64-x86_64-glfw base-devel
+```
+
+The line contains a minor error: The file name of the `gcc` package starts with **`mingw-w64-`** instead of **`mingw-x64-`** ('w' instead of 'x'):
+```
+pacman –S mingw-w64-x86_64-gcc mingw-w64-x86_64-glfw base-devel
+```
+
+#### CMake and MSYS2
+
 When using MSYS2 + Eclipse, the Windows version of CMake might fail to find the GLFW3 library installed in the MINGW64 environment.
 In this case, uninstall the Windows version of CMake and install CMake inside the MINGW64 environment:
 ```
-pacman -S mingw-x64-x86_64-cmake
+pacman -S mingw-w64-x86_64-cmake
 ```
 
 You must restart Eclipse to learn about the Windows path changes after CMake was removed, plus you need to delete the `_build` folder of the project(s) to remove the CMake cache. On the next `Build Project` in Eclipse, GLFW3 should be found.
+
+
+#### Conflicts between Visual Studio 2022 and MSYS2
+
+If your Visual Studion 2022 build fails with strange warnings about `_VCRUNTIME_DISABLED_WARNINGS` or similar, check the error output for lines containing includes from MSYS2:
+```
+C:\msys64\mingw64\...\include\_mingw.h...
+```
+
+If such lines appear in the output, Visual Studio detects headers and/or binaries from MSYS2.
+A safe way to keep Visual Studio away from MSYS2 is to remove the `PATH` settings related to MSYS2 and restart Visual Studio when compiling the examples.
+You should write down (or otherwise store) the `PATH` settings to restore the previous state later.
+
+
+#### Linker warning in Visual Studio 2022
+
+This warning when compiling projects can be ignored:
+```
+warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+```
+
+The warning is caused by building a debug application while using the relase GLFW library.
+If you want to disable the warning, both switching the application to `RelWithDebInfo` or manually building a debug version of GLFW could be done.
+
 
 ### Chapter 2
 CMake needs two additional custom targets to copy the shaders and textures to the correct path, relative to the executable file.
