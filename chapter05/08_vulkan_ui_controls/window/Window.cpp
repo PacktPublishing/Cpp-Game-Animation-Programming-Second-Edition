@@ -26,7 +26,7 @@ bool Window::init(unsigned int width, unsigned int height, std::string title) {
   mRenderer = std::make_unique<VkRenderer>(mWindow);
 
   glfwSetWindowUserPointer(mWindow, mRenderer.get());
-  glfwSetWindowSizeCallback(mWindow, [](GLFWwindow *win, int width, int height) {
+  glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow *win, int width, int height) {
     auto renderer = static_cast<VkRenderer*>(glfwGetWindowUserPointer(win));
     renderer->setSize(width, height);
     }

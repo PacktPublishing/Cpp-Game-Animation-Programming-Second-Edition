@@ -264,6 +264,7 @@ bool VkRenderer::recreateSwapchain() {
     return false;
   }
 
+  Logger::log(1, "%s: swapchain recreated\n", __FUNCTION__);
   return true;
 }
 
@@ -387,7 +388,7 @@ void VkRenderer::cleanup() {
 }
 
 void VkRenderer::setSize(unsigned int width, unsigned int height) {
-  /* Vulkan detects changes and recreates swapchain */
+  // Vulkan detects changes and recreates swapchain
   Logger::log(1, "%s: resized window to %ix%i\n", __FUNCTION__, width, height);
 }
 

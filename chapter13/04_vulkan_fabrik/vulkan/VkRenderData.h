@@ -91,6 +91,7 @@ struct VkShaderStorageBufferData {
 
 struct VkRenderData {
   GLFWwindow *rdWindow = nullptr;
+  bool rdWaylandFound = false;
 
   int rdWidth = 0;
   int rdHeight = 0;
