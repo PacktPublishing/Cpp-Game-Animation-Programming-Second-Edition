@@ -11,12 +11,14 @@ bool Window::init(unsigned int width, unsigned int height, std::string title) {
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
   mWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-
   if (!mWindow) {
     Logger::log(1, "%s: Could not create window\n", __FUNCTION__);
     glfwTerminate();
     return false;
   }
+
+  /* needed for Wayland to show window */
+  glfwMakeContextCurrent(mWindow);
 
   Logger::log(1, "%s: Window successfully initialized\n", __FUNCTION__);
   return true;
@@ -24,6 +26,9 @@ bool Window::init(unsigned int width, unsigned int height, std::string title) {
 
 void Window::mainLoop() {
   while (!glfwWindowShouldClose(mWindow)) {
+
+    /* needed for Wayland - BEFORE event polling */
+    glfwSwapBuffers(mWindow);
 
     /* poll events in a loop */
     glfwPollEvents();

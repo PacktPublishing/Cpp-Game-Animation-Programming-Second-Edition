@@ -48,78 +48,13 @@ bool UserInterface::init(VkRenderData& renderData) {
   imguiIinitInfo.DescriptorPool = renderData.rdImguiDescriptorPool;
   imguiIinitInfo.MinImageCount = 2;
   imguiIinitInfo.ImageCount = renderData.rdSwapchainImages.size();
-  imguiIinitInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+  imguiIinitInfo.PipelineInfoMain.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+  imguiIinitInfo.PipelineInfoMain.RenderPass = renderData.rdRenderpass;
 
-  ImGui_ImplVulkan_Init(&imguiIinitInfo, renderData.rdRenderpass);
-
-  VkCommandBuffer imguiCommandBuffer;
-
-  if (!CommandBuffer::init(renderData, imguiCommandBuffer)) {
-    Logger::log(1, "%s error: could not create texture upload command buffers\n", __FUNCTION__);
+  if (!ImGui_ImplVulkan_Init(&imguiIinitInfo)) {
+    Logger::log(1, "%s error: could not init ImGui for Vulkan \n", __FUNCTION__);
     return false;
   }
-
-  if (vkResetCommandBuffer(imguiCommandBuffer, 0) != VK_SUCCESS) {
-    Logger::log(1, "%s error: failed to reset imgui command buffer\n", __FUNCTION__);
-    return false;
-  }
-
-  VkCommandBufferBeginInfo cmdBeginInfo{};
-  cmdBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-  cmdBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-  if(vkBeginCommandBuffer(imguiCommandBuffer, &cmdBeginInfo) != VK_SUCCESS) {
-    Logger::log(1, "%s error: failed to begin imgui command buffer\n", __FUNCTION__);
-    return false;
-  }
-
-  ImGui_ImplVulkan_CreateFontsTexture(imguiCommandBuffer);
-
-  if (vkEndCommandBuffer(imguiCommandBuffer) != VK_SUCCESS) {
-    Logger::log(1, "%s error: failed to end staging command buffer\n", __FUNCTION__);
-    return false;
-  }
-
-  VkSubmitInfo submitInfo{};
-  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-  submitInfo.pWaitDstStageMask = nullptr;
-  submitInfo.waitSemaphoreCount = 0;
-  submitInfo.pWaitSemaphores = nullptr;
-  submitInfo.signalSemaphoreCount = 0;
-  submitInfo.pSignalSemaphores = nullptr;
-  submitInfo.commandBufferCount = 1;
-  submitInfo.pCommandBuffers = &imguiCommandBuffer;;
-
-  VkFence imguiBufferFence;
-
-  VkFenceCreateInfo fenceInfo{};
-  fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-  fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-  if (vkCreateFence(renderData.rdVkbDevice.device, &fenceInfo, nullptr, &imguiBufferFence) != VK_SUCCESS) {
-    Logger::log(1, "%s error: failed to imgui buffer fence\n", __FUNCTION__);
-    return false;
-  }
-
-  if (vkResetFences(renderData.rdVkbDevice.device, 1, &imguiBufferFence) != VK_SUCCESS) {
-    Logger::log(1, "%s error: imgui buffer fence reset failed", __FUNCTION__);
-    return false;
-  }
-
-  if (vkQueueSubmit(renderData.rdGraphicsQueue, 1, &submitInfo, imguiBufferFence) != VK_SUCCESS) {
-    Logger::log(1, "%s error: failed to imgui init command buffer\n", __FUNCTION__);
-    return false;
-  }
-
-  if (vkWaitForFences(renderData.rdVkbDevice.device, 1, &imguiBufferFence, VK_TRUE, UINT64_MAX) != VK_SUCCESS) {
-    Logger::log(1, "%s error: waiting for imgui init fence failed", __FUNCTION__);
-    return false;
-  }
-
-  vkDestroyFence(renderData.rdVkbDevice.device, imguiBufferFence, nullptr);
-  CommandBuffer::cleanup(renderData, imguiCommandBuffer);
-
-  ImGui_ImplVulkan_DestroyFontUploadObjects();
 
   ImGui::StyleColorsDark();
 
@@ -177,8 +112,8 @@ void UserInterface::render(VkRenderData& renderData) {
 }
 
 void UserInterface::cleanup(VkRenderData& renderData) {
-  vkDestroyDescriptorPool(renderData.rdVkbDevice.device, renderData.rdImguiDescriptorPool, nullptr);
   ImGui_ImplVulkan_Shutdown();
   ImGui_ImplGlfw_Shutdown();
+  vkDestroyDescriptorPool(renderData.rdVkbDevice.device, renderData.rdImguiDescriptorPool, nullptr);
   ImGui::DestroyContext();
 }

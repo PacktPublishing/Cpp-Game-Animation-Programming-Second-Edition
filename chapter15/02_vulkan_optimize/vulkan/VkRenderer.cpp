@@ -17,6 +17,12 @@ VkRenderer::VkRenderer(GLFWwindow *window) {
 
   mPerspViewMatrices.emplace_back(glm::mat4(1.0f)); // view matrix
   mPerspViewMatrices.emplace_back(glm::mat4(1.0f)); // perspective matrix
+
+  if (const char* envVar = std::getenv("XDG_SESSION_TYPE")) {
+    if (std::string(envVar) == "wayland") {
+      mRenderData.rdWaylandFound = true;
+    }
+  }
 }
 
 bool VkRenderer::init(unsigned int width, unsigned int height) {
@@ -267,11 +273,18 @@ bool VkRenderer::createSwapchain() {
   surfaceFormat.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
   surfaceFormat.format = VK_FORMAT_B8G8R8A8_UNORM;
 
+  int frameBufferWidth = 0;
+  int frameBufferHeight = 0;
+  // get framebuffer size instead of window size in case some scaling has been applied (Wayland)
+  glfwGetFramebufferSize(mRenderData.rdWindow, &frameBufferWidth, &frameBufferHeight);
+
   /* VK_PRESENT_MODE_FIFO_KHR enables vsync */
   auto swapChainBuildRet = swapChainBuild
     .set_old_swapchain(mRenderData.rdVkbSwapchain)
     .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
     .set_desired_format(surfaceFormat)
+    // Wayland needs the extent here or we will get something like 256x256 pixel sized swapchain images
+    .set_desired_extent(frameBufferWidth, frameBufferHeight)
     .build();
 
   if (!swapChainBuildRet) {
@@ -281,6 +294,10 @@ bool VkRenderer::createSwapchain() {
 
   vkb::destroy_swapchain(mRenderData.rdVkbSwapchain);
   mRenderData.rdVkbSwapchain = swapChainBuildRet.value();
+
+  // set width and height from swapchain
+  mRenderData.rdWidth = mRenderData.rdVkbSwapchain.extent.width;
+  mRenderData.rdHeight = mRenderData.rdVkbSwapchain.extent.height;
 
   return true;
 }
@@ -316,6 +333,7 @@ bool VkRenderer::recreateSwapchain() {
     return false;
   }
 
+  Logger::log(1, "%s: swapchain recreated\n", __FUNCTION__);
   return true;
 }
 
@@ -549,8 +567,15 @@ void VkRenderer::cleanup() {
 }
 
 void VkRenderer::setSize(unsigned int width, unsigned int height) {
-  mRenderData.rdWidth = width;
-  mRenderData.rdHeight = height;
+  /* handle minimize */
+  if (width == 0 || height == 0) {
+    return;
+  }
+
+  // Vulkan detects changes and recreates swapchain on Windows and X11, but NOT on Wayland
+  if (mRenderData.rdWaylandFound) {
+    recreateSwapchain();
+  }
 
   /* Vulkan detects changes and recreates swapchain */
   Logger::log(1, "%s: resized window to %ix%i\n", __FUNCTION__, width, height);

@@ -18,6 +18,9 @@ bool Window::init(unsigned int width, unsigned int height, std::string title) {
     return false;
   }
 
+  /* needed for Wayland to show window */
+  glfwMakeContextCurrent(mWindow);
+
   /* the C handlers needs a little 'stunt' here */
   /* 1) save the pointer to the instance as user pointer */
   glfwSetWindowUserPointer(mWindow, this);
@@ -170,6 +173,9 @@ void Window::handleMouseEnterLeaveEvents(int enter) {
 
 void Window::mainLoop() {
   while (!glfwWindowShouldClose(mWindow)) {
+
+    /* needed for Wayland - BEFORE event polling */
+    glfwSwapBuffers(mWindow);
 
     /* poll events in a loop */
     glfwPollEvents();

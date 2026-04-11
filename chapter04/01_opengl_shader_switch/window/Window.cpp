@@ -29,8 +29,14 @@ bool Window::init(unsigned int width, unsigned int height, std::string title) {
     return false;
   }
 
+  // use framebuffer size instead of window size in case some scaling has been applied (Wayland)
+  int frameBufferWidth = 0;
+  int frameBufferHeight = 0;
+  glfwGetFramebufferSize(mWindow, &frameBufferWidth, &frameBufferHeight);
+  mRenderer->setSize(frameBufferWidth, frameBufferHeight);
+
   glfwSetWindowUserPointer(mWindow, mRenderer.get());
-  glfwSetWindowSizeCallback(mWindow, [](GLFWwindow *win, int width, int height) {
+  glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow *win, int width, int height) {
       auto renderer = static_cast<OGLRenderer*>(glfwGetWindowUserPointer(win));
       renderer->setSize(width, height);
     }
