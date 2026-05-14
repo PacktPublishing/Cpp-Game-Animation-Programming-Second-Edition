@@ -97,6 +97,7 @@ void UniformBuffer::uploadData(VkRenderData &renderData, VkUniformBufferData &UB
     &data);
   std::memcpy(data, matricesToUpload.data(), UBOData.rdUniformBufferSize);
   vmaUnmapMemory(renderData.rdAllocator, UBOData.rdUboBufferAlloc);
+  vmaFlushAllocation(renderData.rdAllocator, UBOData.rdUboBufferAlloc, 0, UBOData.rdUniformBufferSize);
 }
 
 void UniformBuffer::cleanup(VkRenderData& renderData, VkUniformBufferData &UBOData) {

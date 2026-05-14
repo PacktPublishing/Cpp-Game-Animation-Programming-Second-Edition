@@ -19,6 +19,7 @@ bool ShaderStorageBuffer::init(VkRenderData& renderData, VkShaderStorageBufferDa
     return false;
   }
 
+
   VkDescriptorSetLayoutBinding ssboBind{};
   ssboBind.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
   ssboBind.binding = 0;
@@ -95,6 +96,7 @@ void ShaderStorageBuffer::uploadData(VkRenderData &renderData,
   vmaMapMemory(renderData.rdAllocator, SSBOData.rdSsboBufferAlloc, &data);
   std::memcpy(data, matricesToUpload.data(), SSBOData.rdSsboBufferSize);
   vmaUnmapMemory(renderData.rdAllocator, SSBOData.rdSsboBufferAlloc);
+  vmaFlushAllocation(renderData.rdAllocator, SSBOData.rdSsboBufferAlloc, 0, SSBOData.rdSsboBufferSize);
 }
 
 void ShaderStorageBuffer::uploadData(VkRenderData &renderData,
@@ -107,6 +109,7 @@ void ShaderStorageBuffer::uploadData(VkRenderData &renderData,
   vmaMapMemory(renderData.rdAllocator, SSBOData.rdSsboBufferAlloc, &data);
   std::memcpy(data, matricesToUpload.data(), SSBOData.rdSsboBufferSize);
   vmaUnmapMemory(renderData.rdAllocator, SSBOData.rdSsboBufferAlloc);
+  vmaFlushAllocation(renderData.rdAllocator, SSBOData.rdSsboBufferAlloc, 0, SSBOData.rdSsboBufferSize);
 }
 
 void ShaderStorageBuffer::cleanup(VkRenderData& renderData, VkShaderStorageBufferData &SSBOData) {
