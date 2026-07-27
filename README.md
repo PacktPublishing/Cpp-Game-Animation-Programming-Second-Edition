@@ -290,6 +290,14 @@ As last step, add the `mWindow` variable in the file `window/Window.cpp` as para
 There's also a correction to the text on page 123:
 In the third paragraph, two functions are named, `init()` and `resize()`. The correct name of the second function is `setSize()`.
 
+### Chapter 9
+In the second formula on page 266, the star denoting the conjugate operation when extracting the translation value from `p` is missing.
+The correct formula looks like this:
+
+```
+t = 2 * q * p*
+```
+
 ### Chapter 10
 Autocorrection did some unwanted changes to the two enum class names `ETargetPath` and `EInterpolationType`: the second letter is written in lowercase instead of uppercase.
 
